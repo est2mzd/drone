@@ -9,5 +9,9 @@
 | `slam/out/overlay_div40.mp4` | 465 |
 | `slam/out/overlay_div80.mp4` | 1050 |
 | `slam/out/overlay_div160.mp4` | 1797 |
+| `slam/out/overlay_div320.mp4` | 2461 |
+| `slam/out/overlay_div640.mp4` | 2956 |
 
 いずれも 1280×720、38.03 秒、H.264、1141 フレーム。点と姿勢は `slam/out/20260930_233924_points_calib.txt` と `..._poses.txt`。この実行の点は 3468 個。
+
+色はカメラからの距離を 6 段階に分けたもの。近い方が赤、遠い方が青。各フレームに見えている距離の範囲で段階を切っている。

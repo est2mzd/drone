@@ -256,7 +256,33 @@ def load_poses(path):
     return raw
 
 
-def overlay_voxels(frame, centers, colors, size, pose):
+# Near is red, far is blue. Six steps of camera distance.
+DISTANCE_COLORS = np.array(
+    [
+        [40, 40, 255],
+        [0, 110, 255],
+        [0, 210, 255],
+        [50, 190, 40],
+        [255, 150, 30],
+        [230, 40, 20],
+    ],
+    dtype=np.uint8,
+)
+
+
+def distance_colors(depths):
+    log_depth = np.log(np.clip(depths, 1e-3, None))
+    low, high = np.percentile(log_depth, [5, 95])
+    span = float(high - low)
+    if span < 1e-6:
+        band = np.zeros(len(depths), dtype=np.int32)
+    else:
+        unit = np.clip((log_depth - low) / span, 0.0, 1.0)
+        band = np.minimum((unit * len(DISTANCE_COLORS)).astype(np.int32), len(DISTANCE_COLORS) - 1)
+    return DISTANCE_COLORS[band]
+
+
+def overlay_voxels(frame, centers, size, pose):
     if len(centers) == 0 or pose[8] < 0.5:
         return frame
     rotation = quat_to_matrix(pose[4], pose[5], pose[6], pose[7])
@@ -267,6 +293,8 @@ def overlay_voxels(frame, centers, colors, size, pose):
     keep = np.flatnonzero(depth > 0.2)
     if len(keep) == 0:
         return frame
+    colors = np.zeros((len(centers), 3), dtype=np.uint8)
+    colors[keep] = distance_colors(depth[keep])
     order = keep[np.argsort(depth[keep])[::-1]]
     layer = frame.copy()
     half = size * 0.5
@@ -284,8 +312,18 @@ def overlay_voxels(frame, centers, colors, size, pose):
             if pixels.shape != (4, 2) or not np.isfinite(pixels).all():
                 continue
             span = pixels.max(axis=0) - pixels.min(axis=0)
-            if span.min() < 1.5 or span.max() > 140:
+            if span.max() > 140:
                 continue
+            if span.max() < 2.0:
+                center = pixels.mean(axis=0)
+                pixels = np.stack(
+                    [
+                        center + [-1.0, -1.0],
+                        center + [1.0, -1.0],
+                        center + [1.0, 1.0],
+                        center + [-1.0, 1.0],
+                    ]
+                )
             polygon = np.round(pixels).astype(np.int32)
             cv2.fillConvexPoly(layer, polygon, colors[index].tolist(), lineType=cv2.LINE_8)
     return cv2.addWeighted(layer, 0.75, frame, 0.25, 0)
@@ -305,7 +343,6 @@ def save_overlay(video, points_path, poses_path, out_path, divisor):
     points = load_points(points_path)
     poses = load_poses(poses_path)
     centers, times, size = build_voxels(points, divisor)
-    colors = height_colors(centers)
     poses_by_time = pose_table(poses)
     capture = cv2.VideoCapture(video)
     if not capture.isOpened():
@@ -317,7 +354,7 @@ def save_overlay(video, points_path, poses_path, out_path, divisor):
     writer = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
     if not writer.isOpened():
         raise SystemExit(f"cannot write {out_path}")
-    caption = f"overlay 1/{int(divisor)}  n={len(centers)}"
+    caption = f"overlay 1/{int(divisor)}  near=red far=blue"
     drawn = 0
     for index in range(frame_count):
         ok, frame = capture.read()
@@ -328,7 +365,7 @@ def save_overlay(video, points_path, poses_path, out_path, divisor):
         if pose is None:
             image = frame
         else:
-            image = overlay_voxels(frame, centers[:count], colors[:count], size, pose)
+            image = overlay_voxels(frame, centers[:count], size, pose)
             if pose[8] > 0.5:
                 drawn += 1
         cv2.putText(image, caption, (16, 36), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
