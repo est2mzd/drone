@@ -1,0 +1,4 @@
+-keep class dji.** { *; }
+-keep class com.dji.** { *; }
+-dontwarn dji.**
+-dontwarn com.dji.**

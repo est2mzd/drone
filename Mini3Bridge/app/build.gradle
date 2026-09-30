@@ -1,0 +1,88 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+}
+
+def escapeJava(String value) {
+    return value
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\$", "\\\$")
+            .replace("\r", "")
+            .replace("\n", "\\n")
+}
+
+android {
+    namespace "com.fsr.djibridge"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.fsr.djibridge"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        def secrets = new Properties()
+        def secretsFile = rootProject.file("../.secrets/dji_secrets")
+        if (secretsFile.exists()) {
+            secretsFile.withInputStream { secrets.load(it) }
+        }
+        def apiKey = (secrets.getProperty("DJI_API_KEY") ?: "").trim()
+        def djiEmail = (secrets.getProperty("DJI_EMAIL") ?: "").trim()
+        def djiPassword = (secrets.getProperty("DJI_PASSWORD") ?: "").trim()
+        manifestPlaceholders["API_KEY"] = apiKey
+        buildConfigField "boolean", "API_KEY_PRESENT", apiKey.isEmpty() ? "false" : "true"
+        buildConfigField "String", "DJI_EMAIL", "\"${escapeJava(djiEmail)}\""
+        buildConfigField "String", "DJI_PASSWORD", "\"${escapeJava(djiPassword)}\""
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xjvm-default=all"]
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    packagingOptions {
+        pickFirst "lib/arm64-v8a/libc++_shared.so"
+        doNotStrip "**/*.so"
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compileOnly "com.dji:dji-sdk-v5-aircraft-provided:5.18.0"
+    implementation "com.dji:dji-sdk-v5-aircraft:5.18.0"
+    runtimeOnly "com.dji:dji-sdk-v5-networkImp:5.18.0"
+
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "androidx.core:core-ktx:1.15.0"
+    implementation "androidx.multidex:multidex:2.0.1"
+}

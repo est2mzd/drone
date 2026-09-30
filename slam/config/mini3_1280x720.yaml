@@ -1,0 +1,42 @@
+%YAML:1.0
+
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Source values are for 1920x1080. This recording is 1280x720, so fx, fy, cx, cy
+# are multiplied by 1280/1920. Distortion coefficients are unchanged.
+# FHD: fx = fy = 1100, cx = 960, cy = 540.
+Camera1.fx: 733.3333
+Camera1.fy: 733.3333
+Camera1.cx: 640.0
+Camera1.cy: 360.0
+
+# Mini 3 Pro published calibration, used as a starting guess for Mini 3.
+Camera1.k1: 0.114164794
+Camera1.k2: -0.262303843
+Camera1.k3: 0.229064778
+Camera1.p1: -0.004601610
+Camera1.p2: 0.002629248
+
+Camera.width: 1280
+Camera.height: 720
+Camera.fps: 30
+Camera.RGB: 0
+
+ORBextractor.nFeatures: 1000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0

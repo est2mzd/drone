@@ -1,0 +1,166 @@
+diff --git a/include/System.h b/include/System.h
+index 872c86e..e1ca349 100644
+--- a/include/System.h
++++ b/include/System.h
+@@ -177,6 +177,16 @@ public:
+     std::vector<MapPoint*> GetTrackedMapPoints();
+     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
+ 
++    // Write "t x y z" for map points in the largest map.
++    // t is the earliest keyframe timestamp that observed the point.
++    // Call after Shutdown().
++    void SaveTimedMapPoints(const std::string &filename);
++
++    // Write "t tx ty tz qx qy qz qw valid" for Tcw in the same world frame
++    // as SaveTimedMapPoints. valid is 0 when the frame is lost or on another map.
++    // Call after Shutdown().
++    void SaveCameraPoses(const std::string &filename);
++
+     // For debugging
+     double GetTimeFromIMUInit();
+     bool isLost();
+diff --git a/src/System.cc b/src/System.cc
+index 60d9c51..9942db5 100644
+--- a/src/System.cc
++++ b/src/System.cc
+@@ -20,7 +20,12 @@
+ 
+ #include "System.h"
+ #include "Converter.h"
++#include <algorithm>
++#include <cmath>
++#include <fstream>
++#include <limits>
+ #include <thread>
++#include <tuple>
+ #include <pangolin/pangolin.h>
+ #include <iomanip>
+ #include <openssl/md5.h>
+@@ -1336,6 +1341,127 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
+     return mTrackedKeyPointsUn;
+ }
+ 
++void System::SaveTimedMapPoints(const string &filename)
++{
++    vector<Map*> maps = mpAtlas->GetAllMaps();
++    Map* bigger = nullptr;
++    size_t best = 0;
++    for (Map* map : maps)
++    {
++        size_t n = map->GetAllMapPoints().size();
++        if (n > best)
++        {
++            best = n;
++            bigger = map;
++        }
++    }
++
++    ofstream out(filename.c_str());
++    out << fixed << setprecision(6);
++    if (!bigger)
++    {
++        cout << "timed points 0" << endl;
++        return;
++    }
++
++    vector<tuple<double, float, float, float>> rows;
++    vector<MapPoint*> points = bigger->GetAllMapPoints();
++    for (MapPoint* point : points)
++    {
++        if (!point || point->isBad())
++            continue;
++        double earliest = numeric_limits<double>::infinity();
++        for (const auto& observation : point->GetObservations())
++        {
++            KeyFrame* frame = observation.first;
++            if (!frame || frame->isBad())
++                continue;
++            earliest = min(earliest, frame->mTimeStamp);
++        }
++        if (!isfinite(earliest))
++            continue;
++        Eigen::Vector3f position = point->GetWorldPos();
++        rows.emplace_back(earliest, position.x(), position.y(), position.z());
++    }
++    sort(rows.begin(), rows.end());
++    for (const auto& row : rows)
++    {
++        out << get<0>(row) << " " << get<1>(row) << " " << get<2>(row) << " " << get<3>(row) << "\n";
++    }
++    cout << "timed points " << rows.size() << " -> " << filename << endl;
++}
++
++void System::SaveCameraPoses(const string &filename)
++{
++    vector<Map*> maps = mpAtlas->GetAllMaps();
++    Map* bigger = nullptr;
++    size_t best = 0;
++    for (Map* map : maps)
++    {
++        size_t n = map->GetAllMapPoints().size();
++        if (n > best)
++        {
++            best = n;
++            bigger = map;
++        }
++    }
++
++    ofstream out(filename.c_str());
++    out << fixed;
++    if (!bigger)
++    {
++        cout << "camera poses 0" << endl;
++        return;
++    }
++
++    auto reference = mpTracker->mlpReferences.begin();
++    auto stamp = mpTracker->mlFrameTimes.begin();
++    auto lost = mpTracker->mlbLost.begin();
++    int kept = 0;
++    int total = 0;
++    for (auto relative = mpTracker->mlRelativeFramePoses.begin();
++         relative != mpTracker->mlRelativeFramePoses.end();
++         ++relative, ++reference, ++stamp, ++lost)
++    {
++        total += 1;
++        bool ok = !(*lost);
++        KeyFrame* keyframe = *reference;
++        Sophus::SE3f parent_chain;
++        if (ok && !keyframe)
++            ok = false;
++        if (ok)
++        {
++            while (keyframe->isBad())
++            {
++                parent_chain = parent_chain * keyframe->mTcp;
++                keyframe = keyframe->GetParent();
++                if (!keyframe)
++                {
++                    ok = false;
++                    break;
++                }
++            }
++        }
++        if (ok && keyframe->GetMap() != bigger)
++            ok = false;
++
++        out << setprecision(6) << *stamp << " ";
++        if (!ok)
++        {
++            out << "0 0 0 0 0 0 1 0\n";
++            continue;
++        }
++        Sophus::SE3f Tcw = (*relative) * parent_chain * keyframe->GetPose();
++        Eigen::Quaternionf q = Tcw.unit_quaternion();
++        Eigen::Vector3f translation = Tcw.translation();
++        out << setprecision(9)
++            << translation.x() << " " << translation.y() << " " << translation.z() << " "
++            << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << " 1\n";
++        kept += 1;
++    }
++    cout << "camera poses " << kept << "/" << total << " -> " << filename << endl;
++}
++
+ double System::GetTimeFromIMUInit()
+ {
+     double aux = mpLocalMapper->GetCurrKFTime()-mpLocalMapper->mFirstTs;

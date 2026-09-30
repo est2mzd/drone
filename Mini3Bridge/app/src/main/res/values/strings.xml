@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mini3Bridge</string>
+    <string name="host_hint">PC の IP</string>
+    <string name="port_hint">ポート</string>
+    <string name="start">転送開始</string>
+    <string name="stop">転送停止</string>
+    <string name="login">DJIアカウントログイン</string>
+    <string name="usb">USBを許可</string>
+</resources>

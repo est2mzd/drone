@@ -1,0 +1,8 @@
+.secrets/
+Mobile-SDK-Android-V5/
+slam/third_party/
+slam/build/
+slam/out/
+slam/offline_mono
+**/__pycache__/
+
