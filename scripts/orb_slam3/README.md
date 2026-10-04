@@ -20,7 +20,7 @@ ORB-SLAM3 の動作確認には、同じ映像を繰り返し再生できるフ�
 
 ## 使い方
 
-ORB-SLAM3 と Pangolin は `third_party/ORB_SLAM3` と `third_party/pangolin-install` に置いてあること。置き方は `third_party/README.md` にある。語彙ファイルは `third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt`。
+ORB-SLAM3 と Pangolin は `third_party/ORB_SLAM3` と `third_party/pangolin-install` に置いてあること。どちらもこのリポジトリでは管理しない。置き方はリポジトリ直下の README「環境設定」にある。語彙ファイルは `third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt`。
 
 入力の例は `mini3_bridge/pc/recordings/日時.mp4`。`scripts/mini3/recv.sh` がこれを作る。
 

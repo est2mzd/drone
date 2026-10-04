@@ -10,28 +10,116 @@
 
 # 環境設定
 
-アプリは `mini3_bridge/`。機体接続と映像の API は Maven の DJI MSDK 5.18.0 を使う。公式ソースは参照用で、ビルドには含めない。`third_party/` の中身は `README.md` 以外 Git に入らない。
+このリポジトリに入るのは、mini3_bridge、校正、追跡の自前コードと手順だけである。次の場所は別途用意する。`third_party/` のうち Git に入るのは `README.md` だけである。
+
+| 場所 | 内容 | この環境の固定 |
+| --- | --- | --- |
+| `third_party/Mobile-SDK-Android-V5/` | DJI Mobile SDK V5 の公式ツリー。参照用。アプリのビルドは Maven の MSDK 5.18.0 を使い、このディレクトリは Gradle モジュールにしない | `dev-sdk-main` の `a48aa4e7` |
+| `third_party/ORB_SLAM3/` | 追跡ライブラリ。地図点と姿勢の書き出しは、このリポジトリのパッチを当てた差分である | `master` の `4452a3c4` |
+| `third_party/Pangolin/` | ORB-SLAM3 をビルドするためのビューアライブラリ。v0.6 | `dd801d24` |
+| `third_party/pangolin-install/` | Pangolin のインストール先。Git リポジトリではない | 下の cmake install |
+| `~/work/Android/Sdk/` | Android のコマンドライン SDK。Android Studio は使わない | platform 35、build-tools 35.0.0 |
+| `/opt/ros/jazzy/` | rviz2。Ubuntu のパッケージ | ROS 2 Jazzy desktop |
+| `.secrets/dji_secrets` | DJI の App Key とアカウント | 手元で書く |
+
+実行してできる次のものも Git に入らない。`mini3_bridge/pc/recordings/`、`mini3_calib/out/`、`slam/out/`、`slam/build/`、`slam/offline_mono`。
+
+OS はこの環境と同じ Ubuntu 24.04 を想定する。コマンドはリポジトリのルートで実行する。
 
 ## 1. パッケージを入れる
 
 ```bash
 sudo apt update
-sudo apt install -y unzip wget openjdk-17-jdk ffmpeg
+sudo apt install -y \
+  unzip wget curl openjdk-17-jdk ffmpeg \
+  build-essential cmake pkg-config \
+  libopencv-dev python3-opencv python3-numpy python3-pyqt5 \
+  libeigen3-dev libboost-serialization-dev libssl-dev \
+  libglew-dev libx11-dev
 ```
 
-`ffmpeg` は PC 側の `ffplay` と保存用の `ffmpeg` に使う。
+`ffmpeg` は PC 側の `ffplay` と保存用の `ffmpeg` に使う。OpenCV は 4.6、校正の円表示は PyQt5 を使う。
 
-## 2. 公式 Android SDK をクローンする
-
-ブランチは `dev-sdk-main`。この環境で参照したコミットは `a48aa4e7`。
+## 2. 管理していないリポジトリをクローンする
 
 ```bash
 git clone --branch dev-sdk-main https://github.com/dji-sdk/Mobile-SDK-Android-V5.git third_party/Mobile-SDK-Android-V5
+git -C third_party/Mobile-SDK-Android-V5 checkout a48aa4e7811d824c27abfa973f5655579bfb8a77
+
+git clone https://github.com/UZ-SLAMLab/ORB_SLAM3.git third_party/ORB_SLAM3
+git -C third_party/ORB_SLAM3 checkout 4452a3c4ab75b1cde34e5505a36ec3f9edcdc4c4
+
+git clone https://github.com/stevenlovegrove/Pangolin.git third_party/Pangolin
+git -C third_party/Pangolin checkout dd801d244db3a8e27b7fe8020cd751404aa818fd
 ```
 
-公式ツリーは変更しない。mini3_bridge からこのディレクトリを Gradle のモジュールとしては参照しない。
+公式の Mobile SDK ツリーは変更しない。ORB-SLAM3 には、時刻付きの点と姿勢を書く差分を当てる。この差分は上流には無い。
 
-## 3. Android Command-line Tools を置く
+```bash
+git -C third_party/ORB_SLAM3 apply "$PWD/slam/patches/orbslam3_timed_points.patch"
+```
+
+## 3. Pangolin をインストールする
+
+v0.8 は gcc 13 で `cstdint` が無く失敗する。v0.6 も同じ欠落があるので、`slam/patches/pangolin_gcc13.h` を全翻訳単位で読ませる。FFmpeg 6 とは合わないので、FFmpeg 対応は切る。
+
+```bash
+cmake -S third_party/Pangolin -B third_party/Pangolin/build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$PWD/third_party/pangolin-install" \
+  -DBUILD_PANGOLIN_FFMPEG=OFF \
+  -DBUILD_EXAMPLES=OFF \
+  -DBUILD_TOOLS=OFF \
+  -DCMAKE_CXX_FLAGS="-include $PWD/slam/patches/pangolin_gcc13.h"
+cmake --build third_party/Pangolin/build -j"$(nproc)"
+cmake --install third_party/Pangolin/build
+```
+
+`third_party/pangolin-install/lib/cmake/Pangolin/PangolinConfig.cmake` があればインストールできている。
+
+## 4. ORB-SLAM3 をビルドする
+
+語彙は同梱の `ORBvoc.txt.tar.gz` を展開する。約 145 MB の `Vocabulary/ORBvoc.txt` になる。DBoW2、g2o、Sophus を先にビルドし、本体は手順 3 の Pangolin を参照する。
+
+```bash
+tar -xf third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt.tar.gz -C third_party/ORB_SLAM3/Vocabulary
+cmake -S third_party/ORB_SLAM3/Thirdparty/DBoW2 -B third_party/ORB_SLAM3/Thirdparty/DBoW2/build -DCMAKE_BUILD_TYPE=Release
+cmake --build third_party/ORB_SLAM3/Thirdparty/DBoW2/build -j"$(nproc)"
+cmake -S third_party/ORB_SLAM3/Thirdparty/g2o -B third_party/ORB_SLAM3/Thirdparty/g2o/build -DCMAKE_BUILD_TYPE=Release
+cmake --build third_party/ORB_SLAM3/Thirdparty/g2o/build -j"$(nproc)"
+cmake -S third_party/ORB_SLAM3/Thirdparty/Sophus -B third_party/ORB_SLAM3/Thirdparty/Sophus/build -DCMAKE_BUILD_TYPE=Release
+cmake --build third_party/ORB_SLAM3/Thirdparty/Sophus/build -j"$(nproc)"
+cmake -S third_party/ORB_SLAM3 -B third_party/ORB_SLAM3/build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$PWD/third_party/pangolin-install"
+cmake --build third_party/ORB_SLAM3/build -j"$(nproc)"
+```
+
+`third_party/ORB_SLAM3/lib/libORB_SLAM3.so` ができていれば、追跡用の実行ファイルは次で作れる。`run.sh` は、`slam/offline_mono` が無いときに同じビルドを呼ぶ。
+
+```bash
+scripts/orb_slam3/build.sh
+```
+
+## 5. ROS 2 Jazzy を入れる
+
+rviz2 は `/opt/ros/jazzy` のパッケージである。このリポジトリにはクローンしない。`scripts/orb_slam3/show_rviz.sh` が `setup.bash` を自分で読む。
+
+```bash
+sudo apt install -y software-properties-common
+sudo add-apt-repository universe
+sudo apt update
+sudo apt install -y curl
+export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F tag_name | awk -F\" '{print $4}')
+curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo "${UBUNTU_CODENAME:-${VERSION_CODENAME}}")_all.deb"
+sudo dpkg -i /tmp/ros2-apt-source.deb
+sudo apt update
+sudo apt install -y ros-jazzy-desktop
+```
+
+`/opt/ros/jazzy/setup.bash` があれば使える。
+
+## 6. Android Command-line Tools を置く
 
 Android Studio は入れない。SDK 管理ツールだけを `~/work/Android/Sdk` に置く。
 
@@ -47,7 +135,7 @@ rmdir cmdline-tools
 
 `~/work/Android/Sdk/cmdline-tools/latest/bin/sdkmanager` があれば配置できている。
 
-## 4. 環境変数を設定する
+## 7. 環境変数を設定する
 
 ```bash
 cat >> ~/.bashrc <<'EOF'
@@ -70,7 +158,7 @@ echo "$ANDROID_HOME"
 android-sdkmanager --version
 ```
 
-## 5. ライセンス、platform、build-tools、adb を入れる
+## 8. ライセンス、platform、build-tools、adb を入れる
 
 ```bash
 yes | android-sdkmanager --licenses
@@ -80,7 +168,7 @@ android-adb version
 
 `android-adb version` が表示され、`$ANDROID_HOME/platforms/android-35` と `$ANDROID_HOME/build-tools/35.0.0` があればビルドに使える。
 
-## 6. 秘密情報を書く
+## 9. 秘密情報を書く
 
 `.secrets/dji_secrets` は Git に入らない。次の3行を書く。
 
