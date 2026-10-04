@@ -9,7 +9,7 @@ Pixel 8a 上の公式アプリでは既に映像が見えている。今回ほ�
 ## 制約
 
 - パッケージ名は `com.fsr.djibridge`。DJI MSDK V5 **5.18.0**（クローン済みサンプルと同じ版）を使う。
-- 公式リポジトリ `Mobile-SDK-Android-V5/` は変更しない。アプリは `Mini3Bridge/` に独立して置く。
+- 公式リポジトリ `third_party/Mobile-SDK-Android-V5/` は変更しない。アプリは `mini3_bridge/` に独立して置く。
 - 公式アプリのメモリや画面は取得できない。MSDK で機体に接続したこのアプリが下り映像を受け取る。公式アプリと同時に機体接続はできない。
 - RC-N1 が Pixel 8a の USB-C を使う。飛行中の PC 転送経路は USB ではなく、同じ LAN の Wi-Fi とする。
 - Virtual Stick、機内録画、複数カメラ切替、電話画面への映像描画は今回やらない。
@@ -80,29 +80,29 @@ ffplay は入力を最大十数MBためて先頭から再生する。そのま�
 
 | ファイル | 役割 |
 |---|---|
-| `Mini3Bridge/settings.gradle` | `:app` のみ |
-| `Mini3Bridge/build.gradle` | Android Gradle Plugin 8.7.0、Kotlin 2.1.0 |
-| `Mini3Bridge/gradle.properties` | compile/target 35、min 24、`API_KEY` プレースホルダ |
-| `Mini3Bridge/gradle/wrapper/gradle-wrapper.properties` | Gradle 8.12 |
-| `Mini3Bridge/gradlew` `gradlew.bat` | ラッパー |
-| `Mini3Bridge/app/build.gradle` | `applicationId` `com.fsr.djibridge`、`arm64-v8a`、aircraft / aircraft-provided / networkImp、DJI の `.so` を `doNotStrip` |
-| `Mini3Bridge/app/proguard-rules.pro` | release 用の最小ルール |
-| `Mini3Bridge/app/src/main/AndroidManifest.xml` | 権限、`com.dji.sdk.API_KEY`、USB accessory、Activity |
-| `Mini3Bridge/app/src/main/java/com/fsr/djibridge/BridgeApplication.kt` | `SDKManager.init` と `registerApp` |
-| `Mini3Bridge/app/src/main/java/com/fsr/djibridge/MainActivity.kt` | 登録・接続・機種、PC のアドレス、転送開始停止、送信量 |
-| `Mini3Bridge/app/src/main/java/com/fsr/djibridge/UsbAttachActivity.kt` | RC-N1 の USB 接続で `MainActivity` を開く |
-| `Mini3Bridge/app/src/main/java/com/fsr/djibridge/StreamForwarder.kt` | `ReceiveStreamListener` から上記 TCP メッセージを送る |
-| `Mini3Bridge/app/src/main/res/layout/activity_main.xml` | 状態表示とアドレス入力。映像用 Surface は置かない |
-| `Mini3Bridge/app/src/main/res/values/strings.xml` | 文言 |
-| `Mini3Bridge/app/src/main/res/values/themes.xml` | テーマ |
-| `Mini3Bridge/app/src/main/res/xml/accessory_filter.xml` | DJI USB accessory。このクローンには公式の同名 XML が無い |
-| `Mini3Bridge/pc/recv_play.py` | TCP 待受、コーデック選択、ffplay へパイプ |
+| `mini3_bridge/settings.gradle` | `:app` のみ |
+| `mini3_bridge/build.gradle` | Android Gradle Plugin 8.7.0、Kotlin 2.1.0 |
+| `mini3_bridge/gradle.properties` | compile/target 35、min 24、`API_KEY` プレースホルダ |
+| `mini3_bridge/gradle/wrapper/gradle-wrapper.properties` | Gradle 8.12 |
+| `mini3_bridge/gradlew` `gradlew.bat` | ラッパー |
+| `mini3_bridge/app/build.gradle` | `applicationId` `com.fsr.djibridge`、`arm64-v8a`、aircraft / aircraft-provided / networkImp、DJI の `.so` を `doNotStrip` |
+| `mini3_bridge/app/proguard-rules.pro` | release 用の最小ルール |
+| `mini3_bridge/app/src/main/AndroidManifest.xml` | 権限、`com.dji.sdk.API_KEY`、USB accessory、Activity |
+| `mini3_bridge/app/src/main/java/com/fsr/djibridge/BridgeApplication.kt` | `SDKManager.init` と `registerApp` |
+| `mini3_bridge/app/src/main/java/com/fsr/djibridge/MainActivity.kt` | 登録・接続・機種、PC のアドレス、転送開始停止、送信量 |
+| `mini3_bridge/app/src/main/java/com/fsr/djibridge/UsbAttachActivity.kt` | RC-N1 の USB 接続で `MainActivity` を開く |
+| `mini3_bridge/app/src/main/java/com/fsr/djibridge/StreamForwarder.kt` | `ReceiveStreamListener` から上記 TCP メッセージを送る |
+| `mini3_bridge/app/src/main/res/layout/activity_main.xml` | 状態表示とアドレス入力。映像用 Surface は置かない |
+| `mini3_bridge/app/src/main/res/values/strings.xml` | 文言 |
+| `mini3_bridge/app/src/main/res/values/themes.xml` | テーマ |
+| `mini3_bridge/app/src/main/res/xml/accessory_filter.xml` | DJI USB accessory。このクローンには公式の同名 XML が無い |
+| `mini3_bridge/pc/recv_play.py` | TCP 待受、コーデック選択、ffplay へパイプ |
 
 `gradle.properties` の API キーは空のプレースホルダとする。DJI 開発者サイトで `com.fsr.djibridge` に発行したキーを実行前に入れる。
 
 ## 作業順
 
-1. `Mini3Bridge/` を上記構成で作り、Pixel 8a で SDK 登録と Mini 3 接続表示まで通す。
+1. `mini3_bridge/` を上記構成で作り、Pixel 8a で SDK 登録と Mini 3 接続表示まで通す。
 2. 圧縮チャンクを短時間ファイル保存し、PC で ffplay 再生できることを確認する。
 3. `StreamForwarder` と `pc/recv_play.py` を足し、Wi-Fi 経由のライブ表示まで通す。
 4. 送信バイト毎秒、チャンクサイズ、画面の崩れ、体感遅延を記録する。TCP のバッファリングが支配的だった場合だけ、欠落に耐える UDP へ切り替える。

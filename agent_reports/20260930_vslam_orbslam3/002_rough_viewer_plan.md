@@ -2,7 +2,7 @@
 
 ## 結論
 
-できる。入力は `Mini3Bridge/pc/recordings/20260930_233924.mp4` とする。1 つのウィンドウの左に地図点のボクセル、右にその動画を出す。
+できる。入力は `mini3_bridge/pc/recordings/20260930_233924.mp4` とする。1 つのウィンドウの左に地図点のボクセル、右にその動画を出す。
 
 左は部屋の密な立体ではない。ORB-SLAM3 が追えた点を格子に入れた疎なボクセルである。テレビの映像や白い壁では点が少なく、棚や段ボールや机の縁に点が寄る。
 
@@ -10,7 +10,7 @@
 
 | 項目 | 値 |
 |---|---|
-| ファイル | `Mini3Bridge/pc/recordings/20260930_233924.mp4` |
+| ファイル | `mini3_bridge/pc/recordings/20260930_233924.mp4` |
 | コーデック | H.264 High、yuv420p、B フレーム無し |
 | 解像度 | 1280×720 |
 | フレーム | 30 fps、1141 枚、38.03 秒 |
@@ -58,8 +58,8 @@ SLAM が終わってから再生する。再生中に左のボクセルは、そ
 
 | パス | 役割 |
 |---|---|
-| `slam/third_party/Pangolin` | ORB-SLAM3 のビルド依存 |
-| `slam/third_party/ORB_SLAM3` | 固定コミット。gcc 13 用パッチを `slam/patches/` から当てる |
+| `third_party/Pangolin` | ORB-SLAM3 のビルド依存 |
+| `third_party/ORB_SLAM3` | 固定コミット。gcc 13 用パッチを `slam/patches/` から当てる |
 | `slam/config/mini3_1280x720.yaml` | 上の初期内部パラメータ、fps 30、特徴点 1500 |
 | `slam/src/offline_mono.cpp` | mp4 を読み、`TrackMonocular` し、点と初観測時刻を書く |
 | `slam/viewer/view.py` | 左ボクセル、右動画 |
@@ -78,13 +78,13 @@ Android とライブ TCP はこの範囲に入れない。
 
 ```bash
 ./slam/offline_mono \
-  slam/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt \
+  third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt \
   slam/config/mini3_1280x720.yaml \
-  Mini3Bridge/pc/recordings/20260930_233924.mp4 \
+  mini3_bridge/pc/recordings/20260930_233924.mp4 \
   slam/out/20260930_233924_points.txt
 
 python3 slam/viewer/view.py \
-  Mini3Bridge/pc/recordings/20260930_233924.mp4 \
+  mini3_bridge/pc/recordings/20260930_233924.mp4 \
   slam/out/20260930_233924_points.txt
 ```
 

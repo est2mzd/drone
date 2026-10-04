@@ -18,7 +18,7 @@
 
 ## この動画の数値
 
-- 入力: `Mini3Bridge/pc/recordings/20260930_233924.mp4`（1280×720、30 fps、1141 フレーム）
+- 入力: `mini3_bridge/pc/recordings/20260930_233924.mp4`（1280×720、30 fps、1141 フレーム）
 - 点: `slam/out/20260930_233924_points.txt`（5628 行、`t x y z`、t は 7.133 秒から 34.967 秒）
 - ボクセル一辺: 点群の対角の 1/80（0.049）
 - 確認画像: `slam/out/viewer_check.png`
@@ -27,7 +27,7 @@
 
 ```bash
 python3 slam/viewer/view.py \
-  Mini3Bridge/pc/recordings/20260930_233924.mp4 \
+  mini3_bridge/pc/recordings/20260930_233924.mp4 \
   slam/out/20260930_233924_points.txt
 ```
 
@@ -37,9 +37,9 @@ python3 slam/viewer/view.py \
 
 ```bash
 ./slam/offline_mono \
-  slam/third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt \
+  third_party/ORB_SLAM3/Vocabulary/ORBvoc.txt \
   slam/config/mini3_1280x720.yaml \
-  Mini3Bridge/pc/recordings/20260930_233924.mp4 \
+  mini3_bridge/pc/recordings/20260930_233924.mp4 \
   slam/out/20260930_233924_points.txt
 ```
 

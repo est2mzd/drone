@@ -4,6 +4,13 @@
 import argparse
 import sys
 import time
+from pathlib import Path
+
+# USER_SETTINGS
+CAMERA_YAML = (
+    Path(__file__).resolve().parents[2] / "mini3_calib/out/mini3.yaml"
+)  # 円パターンで測ったカメラ設定。run.sh の SETTINGS と同じファイル
+VOXEL_DIV = 80.0  # 箱の一辺。点群の対角長さをこの数で割る。小さいほど箱は大きい。view.sh の VOXEL_DIV と同じ
 
 import cv2
 import numpy as np
@@ -227,14 +234,28 @@ def check(video, points_path, dump_path, divisor):
     print("check ok")
 
 
-K = np.array(
-    [[733.3333, 0.0, 640.0], [0.0, 733.3333, 360.0], [0.0, 0.0, 1.0]],
-    dtype=np.float64,
-)
-DIST = np.array(
-    [0.114164794, -0.262303843, -0.004601610, 0.002629248, 0.229064778],
-    dtype=np.float64,
-)
+def load_camera(path):
+    if not path.is_file():
+        raise SystemExit(f"calibration file not found: {path}")
+    storage = cv2.FileStorage(str(path), cv2.FILE_STORAGE_READ)
+    if not storage.isOpened():
+        raise SystemExit(f"cannot read {path}")
+    fx = storage.getNode("Camera1.fx").real()
+    fy = storage.getNode("Camera1.fy").real()
+    cx = storage.getNode("Camera1.cx").real()
+    cy = storage.getNode("Camera1.cy").real()
+    k1 = storage.getNode("Camera1.k1").real()
+    k2 = storage.getNode("Camera1.k2").real()
+    p1 = storage.getNode("Camera1.p1").real()
+    p2 = storage.getNode("Camera1.p2").real()
+    k3 = storage.getNode("Camera1.k3").real()
+    storage.release()
+    matrix = np.array([[fx, 0.0, cx], [0.0, fy, cy], [0.0, 0.0, 1.0]], dtype=np.float64)
+    dist = np.array([k1, k2, p1, p2, k3], dtype=np.float64)
+    return matrix, dist
+
+
+K, DIST = load_camera(CAMERA_YAML)
 
 
 def quat_to_matrix(x, y, z, w):
@@ -351,7 +372,7 @@ def save_overlay(video, points_path, poses_path, out_path, divisor):
     fps = float(capture.get(cv2.CAP_PROP_FPS) or 30.0)
     width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    writer = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
+    writer = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*"avc1"), fps, (width, height))
     if not writer.isOpened():
         raise SystemExit(f"cannot write {out_path}")
     caption = f"overlay 1/{int(divisor)}  near=red far=blue"
@@ -528,16 +549,30 @@ def main():
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--dump")
     parser.add_argument("--save", help="write a side-by-side mp4 and exit")
-    parser.add_argument("--overlay", help="write the video with voxels projected onto it")
+    parser.add_argument(
+        "--overlay",
+        nargs="?",
+        const="auto",
+        help="write voxels onto the input video; the file is saved beside it",
+    )
     parser.add_argument("--poses", help="Tcw file from offline_mono; defaults to <points>_poses.txt")
-    parser.add_argument("--voxel-div", type=float, default=80.0, help="voxel edge = point-cloud diagonal / this")
+    parser.add_argument(
+        "--voxel-div",
+        type=float,
+        default=VOXEL_DIV,
+        help="voxel edge = point-cloud diagonal / this",
+    )
     args = parser.parse_args()
     if args.overlay:
         poses = args.poses
         if not poses:
             stem = args.points.rsplit(".", 1)[0]
             poses = stem + "_poses.txt"
-        save_overlay(args.video, args.points, poses, args.overlay, args.voxel_div)
+        video_path = Path(args.video)
+        out_path = video_path.with_name(
+            f"{video_path.stem}_div_{int(round(args.voxel_div)):03d}.mp4"
+        )
+        save_overlay(args.video, args.points, poses, str(out_path), args.voxel_div)
         return 0
     if args.save:
         save_video(args.video, args.points, args.save, args.voxel_div)

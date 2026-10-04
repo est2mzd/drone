@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Pixel 8a に接続中の RC-N1: manufacturer=DJI model=com.dji.logiclink -->
-    <usb-accessory manufacturer="DJI" model="com.dji.logiclink" />
-</resources>

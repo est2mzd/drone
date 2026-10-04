@@ -1,8 +1,9 @@
 .secrets/
-Mobile-SDK-Android-V5/
-slam/third_party/
+third_party/*
+!third_party/README.md
 slam/build/
 slam/out/
+mini3_calib/out/
 slam/offline_mono
 **/__pycache__/
 

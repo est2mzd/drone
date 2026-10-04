@@ -1,0 +1,34 @@
+---
+description: 変える値はファイル冒頭の USER_SETTINGS に書き、各変数は値の右に説明を付ける
+alwaysApply: true
+---
+
+# USER_SETTINGS
+
+人が変える値は、ファイル冒頭の `USER_SETTINGS` にだけ書く。以降のコードはその変数名を参照し、同じ値を直書きしない。
+
+Python ではモジュール先頭の大文字の変数にする。設定専用のクラスは作らない。
+
+対象は、寸法、台数、ポート、ホスト、パスの初期値、閾値、機能のオンオフなど、実行前に決めている値。ループ変数や計算結果はここに置かない。
+
+コマンドライン引数で上書きするときは、初期値だけを `USER_SETTINGS` に書く。
+
+各変数は `名前 = 値  # 説明` の形にする。説明は値と同じ行の末尾に書く。説明のない設定は置かない。
+
+```python
+# USER_SETTINGS
+DIAGONAL_IN = 27.0  # モニタの対角（インチ）
+COLS = 4            # 1行の円の数
+ROWS = 5            # 行数
+
+spec = geometry(width, height, DIAGONAL_IN, COLS, ROWS)
+```
+
+```bash
+# USER_SETTINGS
+HOST_DEFAULT=192.168.10.14  # 引数を省略したときの PC の IP
+PORT_DEFAULT=5000           # 引数を省略したときの待受ポート
+
+HOST="${1:-$HOST_DEFAULT}"
+PORT="${2:-$PORT_DEFAULT}"
+```

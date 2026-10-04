@@ -172,7 +172,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 印の一辺の長さと、印と印の隙間がメートルで書いてあります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Calibration/recorder_empty/april_6x6_80x80cm_larues.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Calibration/recorder_empty/april_6x6_80x80cm_larues.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -192,7 +192,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular-Inertial/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular-Inertial/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -244,7 +244,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -295,7 +295,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular-Inertial/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular-Inertial/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -347,7 +347,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular-Inertial/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular-Inertial/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -398,7 +398,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 遠い点は位置が狂いやすいので、一定より遠い点は使いません。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular-Inertial/TUM-VI_far.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular-Inertial/TUM-VI_far.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -449,7 +449,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -495,7 +495,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/KITTI00-02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/KITTI00-02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -539,7 +539,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/KITTI03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/KITTI03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -583,7 +583,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/KITTI04-12.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/KITTI04-12.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -627,7 +627,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -671,7 +671,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -715,7 +715,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -759,7 +759,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/TUM1.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/TUM1.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -804,7 +804,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/TUM2.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/TUM2.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -849,7 +849,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Monocular/TUM3.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Monocular/TUM3.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -893,7 +893,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/RGB-D-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/RGB-D-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -947,7 +947,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/RGB-D/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/RGB-D/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -994,7 +994,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/RGB-D/TUM1.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/RGB-D/TUM1.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1042,7 +1042,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/RGB-D/TUM2.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/RGB-D/TUM2.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1090,7 +1090,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/RGB-D/TUM3.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/RGB-D/TUM3.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1137,7 +1137,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo-Inertial/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo-Inertial/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1198,7 +1198,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1247,7 +1247,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo-Inertial/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo-Inertial/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1313,7 +1313,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo-Inertial/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo-Inertial/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1378,7 +1378,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 遠い点は位置が狂いやすいので、一定より遠い点は使いません。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo-Inertial/TUM-VI_far.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo-Inertial/TUM-VI_far.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1443,7 +1443,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1498,7 +1498,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/KITTI00-02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/KITTI00-02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1540,7 +1540,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/KITTI03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/KITTI03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1582,7 +1582,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/KITTI04-12.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/KITTI04-12.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1624,7 +1624,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1666,7 +1666,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1724,7 +1724,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は今の ORB-SLAM3 です。ファイルの中に File.version: 1.0 があります。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples/Stereo/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples/Stereo/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1782,7 +1782,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1832,7 +1832,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH01.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH01.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1883,7 +1883,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1935,7 +1935,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -1987,7 +1987,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH04.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH04.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2039,7 +2039,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH05.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_MH05.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2091,7 +2091,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V101.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V101.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2142,7 +2142,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V102.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V102.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2194,7 +2194,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V103.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V103.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2246,7 +2246,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V201.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V201.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2297,7 +2297,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V202.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V202.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2349,7 +2349,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V203.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/MultiSession/EuRoC_V203.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2400,7 +2400,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2453,7 +2453,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2505,7 +2505,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2555,7 +2555,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 遠い点は位置が狂いやすいので、一定より遠い点は使いません。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/TUM-VI_far.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular-Inertial/TUM-VI_far.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2605,7 +2605,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2650,7 +2650,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI00-02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI00-02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2693,7 +2693,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2736,7 +2736,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI04-12.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/KITTI04-12.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2780,7 +2780,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH01.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH01.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2825,7 +2825,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2871,7 +2871,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2917,7 +2917,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH04.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH04.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -2963,7 +2963,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH05.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_MH05.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3009,7 +3009,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V101.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V101.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3054,7 +3054,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V102.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V102.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3100,7 +3100,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V103.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V103.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3146,7 +3146,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V201.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V201.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3191,7 +3191,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V202.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V202.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3237,7 +3237,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V203.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/MultiSession/EuRoC_V203.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3282,7 +3282,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3328,7 +3328,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3372,7 +3372,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3415,7 +3415,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/TUM1.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/TUM1.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3459,7 +3459,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/TUM2.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/TUM2.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3503,7 +3503,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Monocular/TUM3.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Monocular/TUM3.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3546,7 +3546,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/RGB-D-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/RGB-D-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3600,7 +3600,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/RGB-D/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/RGB-D/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3654,7 +3654,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM1.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM1.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3701,7 +3701,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM2.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM2.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3748,7 +3748,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM3.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/RGB-D/TUM3.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3793,7 +3793,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/ROS/ORB_SLAM3/Asus.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/ROS/ORB_SLAM3/Asus.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3839,7 +3839,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3904,7 +3904,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH01.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH01.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -3970,7 +3970,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4037,7 +4037,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4104,7 +4104,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH04.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH04.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4171,7 +4171,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH05.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_MH05.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4238,7 +4238,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V101.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V101.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4304,7 +4304,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V102.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V102.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4371,7 +4371,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V103.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V103.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4438,7 +4438,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V201.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V201.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4504,7 +4504,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V202.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V202.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4571,7 +4571,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V203.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/MultiSession/EuRoC_V203.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4637,7 +4637,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4699,7 +4699,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4766,7 +4766,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4832,7 +4832,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 遠い点は位置が狂いやすいので、一定より遠い点は使いません。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/TUM-VI_far.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo-Inertial/TUM-VI_far.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4897,7 +4897,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/EuRoC.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/EuRoC.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -4956,7 +4956,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI00-02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI00-02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5002,7 +5002,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5047,7 +5047,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI04-12.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/KITTI04-12.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5094,7 +5094,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH01.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH01.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5154,7 +5154,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH02.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH02.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5215,7 +5215,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH03.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH03.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5276,7 +5276,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH04.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH04.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5337,7 +5337,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH05.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_MH05.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5398,7 +5398,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V101.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V101.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5458,7 +5458,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V102.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V102.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5519,7 +5519,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V103.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V103.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5580,7 +5580,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V201.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V201.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5640,7 +5640,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V202.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V202.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5701,7 +5701,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 前に保存した地図を読み、その続きとして追跡します。部屋をあとから足していくような使い方です。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V203.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/MultiSession/EuRoC_V203.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5761,7 +5761,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/RealSense_D435i.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/RealSense_D435i.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5816,7 +5816,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/RealSense_T265.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/RealSense_T265.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|
@@ -5875,7 +5875,7 @@ ORB-SLAM3 本体の実行時 YAML と、このリポジトリで追跡に使っ�
 - 書き方は古いサンプルと同じです。焦点距離の名前が Camera.fx のように短くなっています。
 
 
-フルパス: `/home/takuya/work/drone/slam/third_party/ORB_SLAM3/Examples_old/Stereo/TUM-VI.yaml`
+フルパス: `/home/takuya/work/drone/third_party/ORB_SLAM3/Examples_old/Stereo/TUM-VI.yaml`
 
 | id | 変数名 | 初期値 | 変数の意味 | 初期値の意味 |
 |---|---|---|---|---|

@@ -2,16 +2,16 @@
 
 ## 目的
 
-RC-N1 経由で Pixel 8a に届き、`Mini3Bridge` が PC へ送っている圧縮映像を PC 上でデコードし、ORB-SLAM3 の単眼モードでカメラ軌跡と疎な地図を出す。
+RC-N1 経由で Pixel 8a に届き、`mini3_bridge` が PC へ送っている圧縮映像を PC 上でデコードし、ORB-SLAM3 の単眼モードでカメラ軌跡と疎な地図を出す。
 
 v1 の成果物は、任意スケールのカメラ軌跡（EuRoC 形式）と Pangolin のビューアである。メートル単位への合わせは、軌跡が安定してから GPS と高度で行う。
 
 ## 制約
 
-- 画像源は `Mini3Bridge` の下り映像とする。`ICameraStreamManager.addReceiveStreamListener` のバイト列を、既存 TCP メッセージのまま PC で受ける。
+- 画像源は `mini3_bridge` の下り映像とする。`ICameraStreamManager.addReceiveStreamListener` のバイト列を、既存 TCP メッセージのまま PC で受ける。
 - 電話側でデコードも再エンコードもしない。ORB-SLAM3 は PC プロセスにする。
-- 公式ツリー `Mobile-SDK-Android-V5/` は変更しない。
-- v1 では `Mini3Bridge` の Android 側も変更しない。転送プロトコル（type `1` コーデック、type `2` チャンク）をそのまま読む。
+- 公式ツリー `third_party/Mobile-SDK-Android-V5/` は変更しない。
+- v1 では `mini3_bridge` の Android 側も変更しない。転送プロトコル（type `1` コーデック、type `2` チャンク）をそのまま読む。
 - 機体は単眼である。ステレオと RGB-D は対象外とする。
 - ORB-SLAM3 は GPLv3 である。Android アプリにはリンクせず、`slam/` の PC プロセスとして分離する。
 - 推定するのはジンバルカメラの姿勢である。機体ボディ姿勢への変換は、ジンバル角を別メッセージで送る次の作業で行う。
@@ -45,7 +45,7 @@ gcc 13 と OpenCV 4.6 では、上流 ORB-SLAM3 が `std::random_shuffle` や `u
 ```
 Mini 3
   → RC-N1 → Pixel 8a
-  → Mini3Bridge ReceiveStreamListener
+  → mini3_bridge ReceiveStreamListener
   → TCP（既存。uint32 長、type 1 / type 2）
   → slam 受信
   → FFmpeg でデコード（-f h264 または hevc）
@@ -96,13 +96,13 @@ Mini 3 の公称は対角画角 82.1°、35mm 換算 24mm、f/1.7、ピント 1 
 
 ## 作るもの
 
-上流 ORB-SLAM3 は `slam/third_party/ORB_SLAM3` に固定コミットで置く。語彙ファイル `ORBvoc.txt` はリポジトリ付属のものを使う。
+上流 ORB-SLAM3 は `third_party/ORB_SLAM3` に固定コミットで置く。語彙ファイル `ORBvoc.txt` はリポジトリ付属のものを使う。
 
 | パス | 役割 |
 |---|---|
-| `slam/third_party/ORB_SLAM3` | 固定コミット。パッチ適用後にビルド |
+| `third_party/ORB_SLAM3` | 固定コミット。パッチ適用後にビルド |
 | `slam/patches/` | gcc 13 / OpenCV 4.6 向けの差分 |
-| `slam/third_party/Pangolin` | ビューア依存。まず 0.8。コンパイル不能なら 0.6 に固定 |
+| `third_party/Pangolin` | ビューア依存。まず 0.8。コンパイル不能なら 0.6 に固定 |
 | `slam/CMakeLists.txt` | `libORB_SLAM3.so` をリンクする自前ターゲット |
 | `slam/config/mini3_mono.yaml` | 上記カメラと ORB 設定 |
 | `slam/src/tcp_stream.cpp` | 既存 TCP の type 1 / 2 を読む。`recv_play.py` と同じ並び |

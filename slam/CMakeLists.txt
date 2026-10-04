@@ -11,7 +11,9 @@ find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Pangolin REQUIRED)
 
-set(ORB_ROOT ${CMAKE_SOURCE_DIR}/third_party/ORB_SLAM3)
+get_filename_component(REPO_ROOT "${CMAKE_SOURCE_DIR}/.." ABSOLUTE)
+set(THIRD_PARTY_ROOT ${REPO_ROOT}/third_party)
+set(ORB_ROOT ${THIRD_PARTY_ROOT}/ORB_SLAM3)
 
 add_executable(offline_mono src/offline_mono.cpp)
 target_compile_options(offline_mono PRIVATE -include ${CMAKE_SOURCE_DIR}/patches/pangolin_gcc13.h)
@@ -34,13 +36,13 @@ target_link_libraries(offline_mono PRIVATE
 )
 
 set(_slam_rpath
-  "$ORIGIN/third_party/ORB_SLAM3/lib"
-  "$ORIGIN/third_party/ORB_SLAM3/Thirdparty/DBoW2/lib"
-  "$ORIGIN/third_party/ORB_SLAM3/Thirdparty/g2o/lib"
-  "$ORIGIN/third_party/pangolin-install/lib"
+  "$ORIGIN/../third_party/ORB_SLAM3/lib"
+  "$ORIGIN/../third_party/ORB_SLAM3/Thirdparty/DBoW2/lib"
+  "$ORIGIN/../third_party/ORB_SLAM3/Thirdparty/g2o/lib"
+  "$ORIGIN/../third_party/pangolin-install/lib"
 )
 set_target_properties(offline_mono PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
-  BUILD_RPATH "${ORB_ROOT}/lib;${ORB_ROOT}/Thirdparty/DBoW2/lib;${ORB_ROOT}/Thirdparty/g2o/lib;${CMAKE_SOURCE_DIR}/third_party/pangolin-install/lib"
+  BUILD_RPATH "${ORB_ROOT}/lib;${ORB_ROOT}/Thirdparty/DBoW2/lib;${ORB_ROOT}/Thirdparty/g2o/lib;${THIRD_PARTY_ROOT}/pangolin-install/lib"
   INSTALL_RPATH "${_slam_rpath}"
 )
