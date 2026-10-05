@@ -7,10 +7,11 @@
 3. 映像を PC に保存する。
 4. 円パターンでカメラを校正する。
 5. ORB-SLAM3 で追跡し、結果を見る。
+6. Depth Anything 3 で同じ映像に深度を重ねる。
 
 # 環境設定
 
-このリポジトリに入るのは、mini3_bridge、校正、追跡の自前コードと手順だけである。次の場所は別途用意する。`third_party/` のうち Git に入るのは `README.md` だけである。
+このリポジトリに入るのは、mini3_bridge、校正、追跡、深度の重ね表示の自前コードと手順だけである。次の場所は別途用意する。`third_party/` のうち Git に入るのは `README.md` と `depth_anything3/overlay.py` だけである。
 
 | 場所 | 内容 | この環境の固定 |
 | --- | --- | --- |
@@ -18,11 +19,13 @@
 | `third_party/ORB_SLAM3/` | 追跡ライブラリ。地図点と姿勢の書き出しは、このリポジトリのパッチを当てた差分である | `master` の `4452a3c4` |
 | `third_party/Pangolin/` | ORB-SLAM3 をビルドするためのビューアライブラリ。v0.6 | `dd801d24` |
 | `third_party/pangolin-install/` | Pangolin のインストール先。Git リポジトリではない | 下の cmake install |
+| `third_party/depth_anything3/` | 保存した映像へ Depth Anything 3 の深度と箱を重ねる自前スクリプト。モデル本体は Hugging Face の `depth-anything/DA3-SMALL` | `overlay.py` だけ Git に入る。ライブラリは `3d835ec1` |
+| `.venv-da3/` | そのスクリプトを CPU で動かす Python 3.12 の仮想環境。Git リポジトリではない | 下の `uv venv` |
 | `~/work/Android/Sdk/` | Android のコマンドライン SDK。Android Studio は使わない | platform 35、build-tools 35.0.0 |
 | `/opt/ros/jazzy/` | rviz2。Ubuntu のパッケージ | ROS 2 Jazzy desktop |
 | `.secrets/dji_secrets` | DJI の App Key とアカウント | 手元で書く |
 
-実行してできる次のものも Git に入らない。`mini3_bridge/pc/recordings/`、`mini3_calib/out/`、`slam/out/`、`slam/build/`、`slam/offline_mono`。
+実行してできる次のものも Git に入らない。`mini3_bridge/pc/recordings/`、`mini3_calib/out/`、`slam/out/`、`slam/build/`、`slam/offline_mono`、`.venv-da3/`。
 
 OS はこの環境と同じ Ubuntu 24.04 を想定する。コマンドはリポジトリのルートで実行する。
 
@@ -179,6 +182,35 @@ DJI_PASSWORD=DJI アカウントのパスワード
 ```
 
 パッケージ名は `com.fsr.djibridge`。この PC の debug 署名 SHA1 は `BC:FB:ED:B4:CE:1C:49:3E:C8:30:2E:27:80:F4:8B:E0:D2:EC:41:D5`。DJI 開発者サイトで、このパッケージ名と SHA1 に対して App Key を発行しておく。
+
+## 10. Depth Anything 3 の仮想環境を作る
+
+`third_party/depth_anything3/overlay.py` は、このリポジトリに入っている。モデルとライブラリは入っていない。このカーネルには NVIDIA のドライバモジュールが無いので、CPU 版の PyTorch と `DA3-SMALL` を使う。上流の依存をそのまま入れると CUDA 向けの `xformers` まで来るので、ライブラリだけ固定コミットで入れ、重ね表示に要るものだけ足す。
+
+`uv` が無いときは先に入れる。入った `uv` は `~/.local/bin/uv` である。
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+仮想環境はリポジトリのルートに作る。Python は 3.12。
+
+```bash
+uv venv .venv-da3 --python 3.12
+uv pip install --python .venv-da3/bin/python torch torchvision \
+  --index-url https://download.pytorch.org/whl/cpu
+uv pip install --python .venv-da3/bin/python --no-deps \
+  "depth-anything-3 @ git+https://github.com/ByteDance-Seed/Depth-Anything-3.git@3d835ec1a5802d64a8b8b15f817a1ab54809bfe4"
+uv pip install --python .venv-da3/bin/python \
+  einops huggingface_hub omegaconf safetensors pillow imageio \
+  opencv-python-headless evo "moviepy==1.0.3"
+```
+
+次が `import ok` と出れば、重ね表示に使える。モデルの重みは、最初の実行で Hugging Face から `~/.cache/huggingface` へ落ちる。リポジトリには置かない。
+
+```bash
+.venv-da3/bin/python -c 'from depth_anything_3.api import DepthAnything3; print("import ok")'
+```
 
 # 機体とつなぐ
 
@@ -463,3 +495,30 @@ scripts/orb_slam3/show_rviz.sh
 ```
 
 点と姿勢のファイル、箱の分割数は `scripts/orb_slam3/show_rviz.sh` 冒頭の `USER_SETTINGS` で変える。Fixed Frame は `map` のままにする。別の枠にすると原点がずれる。止めるのは Ctrl-C。
+
+# Depth Anything 3 で同じ映像に深度を重ねる
+
+ORB の箱とは別に、Depth Anything 3 の深度を同じ映像へ重ねる。近いところは赤、遠いところは青で、濃さは箱の重ねと同じ 0.75 である。使うのは手順 10 の `.venv-da3` と、`third_party/depth_anything3/overlay.py` である。CPU で `DA3-SMALL` を動かす。モデルは Hugging Face の `depth-anything/DA3-SMALL` で、このリポジトリには入れない。初回は `~/.cache/huggingface` へ重みを取る。仮想環境 `.venv-da3` も Git に入らない。
+
+```bash
+.venv-da3/bin/python third_party/depth_anything3/overlay.py \
+  mini3_bridge/pc/recordings/20261002_001816.mp4
+```
+
+できたファイルは入力と同じフォルダの `20261002_001816_da3.mp4` である。推論は `third_party/depth_anything3/overlay.py` 冒頭の `SAMPLE_FPS` 枚/秒で、間のフレームは近い時刻の深度を使う。
+
+同じ深度を箱にして重ねるときは `--voxels` を付ける。箱の一辺は、そのフレームの点群の対角長さを `VOXEL_DIV` で割った長さである。深度はフレームごとに別々に出しているので、箱もそのフレームのカメラ座標である。
+
+```bash
+.venv-da3/bin/python third_party/depth_anything3/overlay.py \
+  mini3_bridge/pc/recordings/20261002_001816.mp4 \
+  --voxels
+```
+
+80 のとき、出力は `20261002_001816_da3_div_080.mp4` である。
+
+# 座標指定の室内巡回プロトタイプ
+
+`patrol/` に、既存ORB-SLAM3出力からの画像特徴地図、PnP位置推定、YAMLの3D障害物地図、A*経路計画、停止条件付き速度制御、動画デモを追加した。Androidに指令受信を追加し、初期状態の実機出力は無効。実機の自律巡回、実寸の自動障害物地図、現在の障害物知覚は未検証／未完成である。
+
+設計・実行・検証結果・残作業は [patrol/README.md](patrol/README.md)。目的座標と障害物は `patrol/maps/demo.yaml` を編集する。この地図は合成部屋である。

@@ -1,0 +1,32 @@
+version: 1
+units: m
+frame: local_xyz_z_up
+source: synthetic_room_manually_defined
+metric_alignment_verified: false
+camera_body_calibrated: false
+resolution_m: 0.2
+clearance_m: 0.35
+bounds:
+  min: [0, 0, 0]
+  max: [8, 6, 3]
+verified_free:
+  - min: [0, 0, 0]
+    max: [8, 6, 3]
+    source: simulation_ground_truth_only
+objects:
+  - id: cabinet
+    kind: box
+    min: [3.0, 0.7, 0]
+    max: [4.0, 3.6, 2.8]
+    obstacle: true
+  - id: table
+    kind: box
+    min: [5.3, 3.3, 0]
+    max: [6.7, 4.5, 1.0]
+    obstacle: true
+start: [1, 1, 1.4]
+patrol_goals:
+  - [6.9, 1.2, 1.4]
+  - [6.9, 4.9, 1.4]
+  - [1.0, 4.9, 1.4]
+  - [1.0, 1.0, 1.4]

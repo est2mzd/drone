@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -58,6 +61,26 @@
         android:layout_marginTop="8dp"
         android:text="@string/start" />
 
+    <EditText
+        android:id="@+id/patrolTokenInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="巡回受信: 64桁hexトークン"
+        android:inputType="textPassword"
+        android:maxLines="1" />
+
+    <Button
+        android:id="@+id/patrolButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="巡回指令のDry-run受信" />
+
+    <TextView
+        android:id="@+id/patrolStatusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="STOPPED / 実機出力は無効" />
+
     <TextView
         android:id="@+id/statsText"
         android:layout_width="match_parent"
@@ -66,3 +89,5 @@
         android:textSize="14sp"
         android:typeface="monospace" />
 </LinearLayout>
+
+</ScrollView>

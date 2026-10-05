@@ -1,0 +1,2233 @@
+schema: paper_verify_v1
+frames: 28
+detections: 102
+quadricslam:
+  citation: Nicholson, Milford, Suenderhauf, RA-L 2019
+  two_view_pairs: 18
+  boxes_with_axes: 102
+  thickness_median: 0.2387
+  planar_boxes: 40
+  volumetric_boxes: 62
+liao2020:
+  citation: Liao, Wang, Qi, Zhang, Sensors 2020
+  frames_with_support_plane: 7
+  boxes_touching_support: 25
+cubeslam:
+  citation: Yang, Scherer, TRO 2019
+  frames_with_vanishing_point: 22
+  frames_with_two_vanishing_points: 16
+kimera:
+  citation: Rosinol et al., IJRR 2021
+  frames_with_structure_plane: 28
+  boxes_on_structure: 43
+frames_detail:
+- source: mini3_bridge/pc/recordings/20261002_001816.mp4
+  frame_index: 428
+  vanishing_points: 2
+  planes:
+  - angle_deg: 17.2
+    coverage: 0.3857
+    support: false
+    structure: true
+  - angle_deg: 86.87
+    coverage: 0.4285
+    support: false
+    structure: true
+  - angle_deg: 12.91
+    coverage: 0.2184
+    support: false
+    structure: true
+  detections:
+  - class_name: tv
+    bbox_xyxy:
+    - 306.5
+    - 5.5
+    - 1166.4
+    - 430.5
+    inner_xyxy:
+    - 349
+    - 26
+    - 1124
+    - 410
+    our_ratio: 0.8261
+    support_ratio: 0.0
+    structure_iou: 0.8629
+    on_structure: true
+    axis_ratio: 0.0805
+    planar: true
+  - class_name: keyboard
+    bbox_xyxy:
+    - 1.6
+    - 459.8
+    - 341.1
+    - 590.7
+    inner_xyxy:
+    - 18
+    - 466
+    - 325
+    - 585
+    our_ratio: 0.8576
+    support_ratio: 0.0
+    structure_iou: 0.8729
+    on_structure: true
+    axis_ratio: 0.1462
+    planar: true
+  - class_name: tv
+    bbox_xyxy:
+    - 0.3
+    - 74.9
+    - 125.8
+    - 474.6
+    inner_xyxy:
+    - 6
+    - 94
+    - 120
+    - 455
+    our_ratio: 0.9883
+    support_ratio: 0.0
+    structure_iou: 0.2542
+    on_structure: false
+    axis_ratio: 0.1655
+    planar: true
+  - class_name: mouse
+    bbox_xyxy:
+    - 491.5
+    - 465.0
+    - 812.2
+    - 715.2
+    inner_xyxy:
+    - 507
+    - 477
+    - 797
+    - 703
+    our_ratio: 0.857
+    support_ratio: 0.0
+    structure_iou: 0.0834
+    on_structure: false
+    axis_ratio: 0.4319
+    planar: false
+  - class_name: keyboard
+    bbox_xyxy:
+    - 69.7
+    - 462.9
+    - 335.0
+    - 552.1
+    inner_xyxy:
+    - 82
+    - 467
+    - 322
+    - 548
+    our_ratio: 0.891
+    support_ratio: 0.0
+    structure_iou: 0.8809
+    on_structure: true
+    axis_ratio: 0.0475
+    planar: true
+  - class_name: cell phone
+    bbox_xyxy:
+    - 342.9
+    - 329.8
+    - 570.4
+    - 551.7
+    inner_xyxy:
+    - 354
+    - 340
+    - 560
+    - 541
+    our_ratio: 0.8917
+    support_ratio: 0.0
+    structure_iou: 0.8153
+    on_structure: true
+    axis_ratio: 0.2409
+    planar: false
+  - class_name: cup
+    bbox_xyxy:
+    - 833.3
+    - 301.2
+    - 942.1
+    - 456.4
+    inner_xyxy:
+    - 838
+    - 308
+    - 937
+    - 449
+    our_ratio: 0.9862
+    support_ratio: 0.0
+    structure_iou: 0.3973
+    on_structure: false
+    axis_ratio: 0.2939
+    planar: false
+- source: mini3_bridge/pc/recordings/20261002_001816.mp4
+  frame_index: 1286
+  vanishing_points: 2
+  planes:
+  - angle_deg: 89.57
+    coverage: 0.6297
+    support: false
+    structure: true
+  - angle_deg: 81.45
+    coverage: 0.2017
+    support: false
+    structure: true
+  - angle_deg: 39.84
+    coverage: 0.1715
+    support: false
+    structure: true
+  detections:
+  - class_name: tv
+    bbox_xyxy:
+    - 0.6
+    - 227.3
+    - 359.3
+    - 460.0
+    inner_xyxy:
+    - 18
+    - 238
+    - 342
+    - 449
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.984
+    on_structure: true
+    axis_ratio: 0.1365
+    planar: true
+  - class_name: tv
+    bbox_xyxy:
+    - 632.6
+    - 350.0
+    - 1278.4
+    - 715.5
+    inner_xyxy:
+    - 664
+    - 368
+    - 1247
+    - 698
+    our_ratio: 0.7499
+    support_ratio: 0.0
+    structure_iou: 0.6449
+    on_structure: false
+    axis_ratio: 0.0661
+    planar: true
+- source: object_map/videos/001_7faZ9Blu_OI.mp4
+  frame_index: 90
+  vanishing_points: 1
+  planes:
+  - angle_deg: 88.59
+    coverage: 0.4945
+    support: false
+    structure: true
+  - angle_deg: 15.57
+    coverage: 0.2423
+    support: false
+    structure: true
+  - angle_deg: 85.35
+    coverage: 0.2473
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 153.1
+    - 213.4
+    - 259.3
+    - 357.9
+    inner_xyxy:
+    - 158
+    - 220
+    - 254
+    - 351
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.8986
+    on_structure: true
+    axis_ratio: 0.3226
+    planar: false
+  - class_name: refrigerator
+    bbox_xyxy:
+    - 413.1
+    - 105.6
+    - 579.5
+    - 325.8
+    inner_xyxy:
+    - 421
+    - 116
+    - 572
+    - 315
+    our_ratio: 0.9959
+    support_ratio: 0.0
+    structure_iou: 0.9958
+    on_structure: true
+    axis_ratio: 0.1555
+    planar: true
+  - class_name: chair
+    bbox_xyxy:
+    - 77.1
+    - 209.4
+    - 160.5
+    - 351.8
+    inner_xyxy:
+    - 81
+    - 216
+    - 157
+    - 345
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.8311
+    on_structure: true
+    axis_ratio: 0.3153
+    planar: false
+  - class_name: microwave
+    bbox_xyxy:
+    - 614.2
+    - 81.1
+    - 639.7
+    - 156.5
+    inner_xyxy:
+    - 615
+    - 84
+    - 639
+    - 153
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.3835
+    on_structure: false
+    axis_ratio: 0.0726
+    planar: true
+  - class_name: refrigerator
+    bbox_xyxy:
+    - 0.1
+    - 133.5
+    - 88.8
+    - 352.9
+    inner_xyxy:
+    - 4
+    - 144
+    - 85
+    - 342
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.4781
+    on_structure: false
+    axis_ratio: 0.1532
+    planar: true
+- source: object_map/videos/001_7faZ9Blu_OI.mp4
+  frame_index: 269
+  vanishing_points: 0
+  planes:
+  - angle_deg: 63.35
+    coverage: 0.3939
+    support: false
+    structure: true
+  - angle_deg: 52.29
+    coverage: 0.1852
+    support: false
+    structure: true
+  - angle_deg: 56.28
+    coverage: 0.2599
+    support: false
+    structure: true
+  detections:
+  - class_name: vase
+    bbox_xyxy:
+    - 259.5
+    - 115.0
+    - 432.0
+    - 309.0
+    inner_xyxy:
+    - 268
+    - 124
+    - 424
+    - 300
+    our_ratio: 0.9399
+    support_ratio: 0.0
+    structure_iou: 0.8037
+    on_structure: true
+    axis_ratio: 0.2788
+    planar: false
+  - class_name: potted plant
+    bbox_xyxy:
+    - 218.5
+    - 1.2
+    - 549.3
+    - 315.3
+    inner_xyxy:
+    - 235
+    - 16
+    - 533
+    - 300
+    our_ratio: 0.5697
+    support_ratio: 0.0
+    structure_iou: 0.5876
+    on_structure: false
+    axis_ratio: 0.3727
+    planar: false
+- source: object_map/videos/003_HtFq9C_vbOc.mp4
+  frame_index: 90
+  vanishing_points: 2
+  planes:
+  - angle_deg: 8.78
+    coverage: 0.5411
+    support: true
+    structure: true
+  - angle_deg: 3.5
+    coverage: 0.3333
+    support: true
+    structure: true
+  - angle_deg: 9.17
+    coverage: 0.2363
+    support: true
+    structure: true
+  detections:
+  - class_name: traffic light
+    bbox_xyxy:
+    - 509.9
+    - 321.7
+    - 542.4
+    - 409.7
+    inner_xyxy:
+    - 511
+    - 326
+    - 541
+    - 406
+    our_ratio: 1.0
+    support_ratio: 1.0
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.1882
+    planar: true
+- source: object_map/videos/003_HtFq9C_vbOc.mp4
+  frame_index: 269
+  vanishing_points: 0
+  planes:
+  - angle_deg: 87.18
+    coverage: 0.6097
+    support: false
+    structure: true
+  - angle_deg: 80.47
+    coverage: 0.2428
+    support: false
+    structure: true
+  - angle_deg: 88.62
+    coverage: 0.2189
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 166.9
+    - 2.6
+    - 336.1
+    - 437.8
+    inner_xyxy:
+    - 175
+    - 24
+    - 328
+    - 417
+    our_ratio: 0.8488
+    support_ratio: 0.0
+    structure_iou: 0.6664
+    on_structure: false
+    axis_ratio: 0.3224
+    planar: false
+- source: object_map/videos/004_8lz3Qs23cMg.mp4
+  frame_index: 90
+  vanishing_points: 2
+  planes:
+  - angle_deg: 89.88
+    coverage: 0.6172
+    support: false
+    structure: true
+  - angle_deg: 26.47
+    coverage: 0.3576
+    support: false
+    structure: true
+  - angle_deg: 75.3
+    coverage: 0.4001
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 45.4
+    - 319.0
+    - 202.0
+    - 359.5
+    inner_xyxy:
+    - 53
+    - 321
+    - 195
+    - 358
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.6355
+    on_structure: false
+    axis_ratio: 0.1439
+    planar: true
+  - class_name: book
+    bbox_xyxy:
+    - 478.9
+    - 35.8
+    - 495.6
+    - 93.9
+    inner_xyxy:
+    - 479
+    - 38
+    - 495
+    - 91
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.0566
+    planar: true
+  - class_name: microwave
+    bbox_xyxy:
+    - 344.6
+    - 91.7
+    - 581.1
+    - 220.5
+    inner_xyxy:
+    - 356
+    - 98
+    - 570
+    - 215
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.9924
+    on_structure: true
+    axis_ratio: 0.1294
+    planar: true
+- source: object_map/videos/004_8lz3Qs23cMg.mp4
+  frame_index: 269
+  vanishing_points: 2
+  planes:
+  - angle_deg: 84.5
+    coverage: 0.5629
+    support: false
+    structure: true
+  - angle_deg: 17.43
+    coverage: 0.3778
+    support: false
+    structure: true
+  - angle_deg: 3.25
+    coverage: 0.3012
+    support: true
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 267.2
+    - 189.9
+    - 401.4
+    - 315.3
+    inner_xyxy:
+    - 273
+    - 196
+    - 395
+    - 310
+    our_ratio: 0.8365
+    support_ratio: 0.571
+    structure_iou: 0.7176
+    on_structure: true
+    axis_ratio: 0.548
+    planar: false
+  - class_name: tv
+    bbox_xyxy:
+    - 206.3
+    - 107.9
+    - 331.2
+    - 203.0
+    inner_xyxy:
+    - 212
+    - 112
+    - 325
+    - 199
+    our_ratio: 1.0
+    support_ratio: 0.378
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.1031
+    planar: true
+  - class_name: potted plant
+    bbox_xyxy:
+    - 39.8
+    - 76.1
+    - 100.7
+    - 198.9
+    inner_xyxy:
+    - 42
+    - 82
+    - 98
+    - 193
+    our_ratio: 1.0
+    support_ratio: 0.3127
+    structure_iou: 0.9429
+    on_structure: true
+    axis_ratio: 0.257
+    planar: false
+  - class_name: couch
+    bbox_xyxy:
+    - 0.3
+    - 194.4
+    - 148.5
+    - 276.6
+    inner_xyxy:
+    - 7
+    - 198
+    - 142
+    - 273
+    our_ratio: 0.5712
+    support_ratio: 0.9612
+    structure_iou: 0.5924
+    on_structure: false
+    axis_ratio: 0.1125
+    planar: true
+  - class_name: potted plant
+    bbox_xyxy:
+    - 158.6
+    - 231.2
+    - 268.7
+    - 320.8
+    inner_xyxy:
+    - 164
+    - 235
+    - 264
+    - 317
+    our_ratio: 0.5551
+    support_ratio: 0.1985
+    structure_iou: 0.7811
+    on_structure: true
+    axis_ratio: 0.1684
+    planar: true
+  - class_name: couch
+    bbox_xyxy:
+    - 465.9
+    - 191.9
+    - 639.9
+    - 314.3
+    inner_xyxy:
+    - 474
+    - 198
+    - 632
+    - 309
+    our_ratio: 0.995
+    support_ratio: 0.5301
+    structure_iou: 0.8777
+    on_structure: true
+    axis_ratio: 0.6345
+    planar: false
+  - class_name: remote
+    bbox_xyxy:
+    - 254.1
+    - 334.1
+    - 306.4
+    - 359.4
+    inner_xyxy:
+    - 256
+    - 335
+    - 304
+    - 359
+    our_ratio: 0.7986
+    support_ratio: 0.0
+    structure_iou: 0.9055
+    on_structure: true
+    axis_ratio: 0.1152
+    planar: true
+  - class_name: potted plant
+    bbox_xyxy:
+    - 393.7
+    - 87.9
+    - 421.2
+    - 110.9
+    inner_xyxy:
+    - 395
+    - 89
+    - 420
+    - 110
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.2973
+    planar: false
+  - class_name: tv
+    bbox_xyxy:
+    - 248.7
+    - 108.2
+    - 330.8
+    - 203.6
+    inner_xyxy:
+    - 252
+    - 112
+    - 327
+    - 199
+    our_ratio: 1.0
+    support_ratio: 0.3608
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.0973
+    planar: true
+  - class_name: couch
+    bbox_xyxy:
+    - 0.3
+    - 261.0
+    - 171.4
+    - 356.6
+    inner_xyxy:
+    - 8
+    - 265
+    - 163
+    - 352
+    our_ratio: 0.9587
+    support_ratio: 0.3519
+    structure_iou: 0.9609
+    on_structure: true
+    axis_ratio: 0.273
+    planar: false
+- source: object_map/videos/005_7P5KWUDd4UM.mp4
+  frame_index: 90
+  vanishing_points: 1
+  planes:
+  - angle_deg: 81.71
+    coverage: 0.3224
+    support: false
+    structure: true
+  - angle_deg: 80.46
+    coverage: 0.18
+    support: false
+    structure: true
+  - angle_deg: 83.31
+    coverage: 0.1753
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 800.5
+    - 292.3
+    - 1153.9
+    - 716.1
+    inner_xyxy:
+    - 818
+    - 313
+    - 1137
+    - 695
+    our_ratio: 0.5247
+    support_ratio: 0.0
+    structure_iou: 0.6788
+    on_structure: false
+    axis_ratio: 0.3977
+    planar: false
+- source: object_map/videos/005_7P5KWUDd4UM.mp4
+  frame_index: 269
+  vanishing_points: 1
+  planes:
+  - angle_deg: 70.51
+    coverage: 0.5331
+    support: false
+    structure: true
+  - angle_deg: 30.65
+    coverage: 0.3847
+    support: false
+    structure: true
+  - angle_deg: 77.89
+    coverage: 0.2236
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 0.5
+    - 262.1
+    - 386.4
+    - 713.5
+    inner_xyxy:
+    - 19
+    - 284
+    - 368
+    - 691
+    our_ratio: 0.6436
+    support_ratio: 0.0
+    structure_iou: 0.5499
+    on_structure: false
+    axis_ratio: 0.3777
+    planar: false
+  - class_name: bed
+    bbox_xyxy:
+    - 651.9
+    - 405.5
+    - 1278.3
+    - 708.9
+    inner_xyxy:
+    - 683
+    - 420
+    - 1247
+    - 694
+    our_ratio: 0.918
+    support_ratio: 0.0
+    structure_iou: 0.8133
+    on_structure: true
+    axis_ratio: 0.1208
+    planar: true
+  - class_name: bed
+    bbox_xyxy:
+    - 652.6
+    - 258.0
+    - 1279.6
+    - 711.3
+    inner_xyxy:
+    - 683
+    - 280
+    - 1249
+    - 689
+    our_ratio: 0.6126
+    support_ratio: 0.0
+    structure_iou: 0.5979
+    on_structure: false
+    axis_ratio: 0.1224
+    planar: true
+- source: object_map/videos/008_IXc2JJGk3oE.mp4
+  frame_index: 72
+  vanishing_points: 2
+  planes:
+  - angle_deg: 84.95
+    coverage: 0.4058
+    support: false
+    structure: true
+  - angle_deg: 84.47
+    coverage: 0.2529
+    support: false
+    structure: true
+  - angle_deg: 75.14
+    coverage: 0.0842
+    support: false
+    structure: false
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 245.6
+    - 99.0
+    - 449.9
+    - 474.7
+    inner_xyxy:
+    - 255
+    - 117
+    - 440
+    - 456
+    our_ratio: 0.4439
+    support_ratio: 0.0
+    structure_iou: 0.0579
+    on_structure: false
+    axis_ratio: 0.2085
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 475.3
+    - 272.3
+    - 536.2
+    - 407.5
+    inner_xyxy:
+    - 478
+    - 279
+    - 534
+    - 401
+    our_ratio: 0.936
+    support_ratio: 0.0
+    structure_iou: 0.3922
+    on_structure: false
+    axis_ratio: 0.2124
+    planar: false
+- source: object_map/videos/008_IXc2JJGk3oE.mp4
+  frame_index: 215
+  vanishing_points: 2
+  planes:
+  - angle_deg: 32.53
+    coverage: 0.4595
+    support: false
+    structure: true
+  - angle_deg: 87.48
+    coverage: 0.3
+    support: false
+    structure: true
+  - angle_deg: 30.2
+    coverage: 0.2393
+    support: false
+    structure: true
+  detections:
+  - class_name: dog
+    bbox_xyxy:
+    - 299.9
+    - 168.0
+    - 501.4
+    - 448.5
+    inner_xyxy:
+    - 309
+    - 182
+    - 492
+    - 435
+    our_ratio: 0.8165
+    support_ratio: 0.0
+    structure_iou: 0.2012
+    on_structure: false
+    axis_ratio: 0.4663
+    planar: false
+  - class_name: couch
+    bbox_xyxy:
+    - 5.7
+    - 161.8
+    - 738.3
+    - 478.3
+    inner_xyxy:
+    - 42
+    - 177
+    - 702
+    - 463
+    our_ratio: 0.598
+    support_ratio: 0.0
+    structure_iou: 0.3532
+    on_structure: false
+    axis_ratio: 0.2815
+    planar: false
+  - class_name: book
+    bbox_xyxy:
+    - 714.6
+    - 318.7
+    - 835.6
+    - 362.1
+    inner_xyxy:
+    - 720
+    - 320
+    - 830
+    - 360
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.3541
+    on_structure: false
+    axis_ratio: 0.0968
+    planar: true
+- source: object_map/videos/009_0M7AJOC3zT4.mp4
+  frame_index: 72
+  vanishing_points: 1
+  planes:
+  - angle_deg: 23.26
+    coverage: 0.3724
+    support: false
+    structure: true
+  - angle_deg: 39.58
+    coverage: 0.2425
+    support: false
+    structure: true
+  - angle_deg: 84.83
+    coverage: 0.3219
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 496.8
+    - 31.6
+    - 1205.0
+    - 712.6
+    inner_xyxy:
+    - 532
+    - 65
+    - 1170
+    - 679
+    our_ratio: 0.6961
+    support_ratio: 0.0
+    structure_iou: 0.4747
+    on_structure: false
+    axis_ratio: 0.2414
+    planar: false
+  - class_name: tv
+    bbox_xyxy:
+    - 236.8
+    - 129.8
+    - 479.9
+    - 293.1
+    inner_xyxy:
+    - 248
+    - 137
+    - 468
+    - 285
+    our_ratio: 0.9915
+    support_ratio: 0.0
+    structure_iou: 0.8946
+    on_structure: true
+    axis_ratio: 0.2051
+    planar: false
+- source: object_map/videos/009_0M7AJOC3zT4.mp4
+  frame_index: 215
+  vanishing_points: 2
+  planes:
+  - angle_deg: 51.02
+    coverage: 0.2805
+    support: false
+    structure: true
+  - angle_deg: 86.28
+    coverage: 0.2639
+    support: false
+    structure: true
+  - angle_deg: 65.96
+    coverage: 0.2648
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 1.0
+    - 4.0
+    - 619.6
+    - 710.9
+    inner_xyxy:
+    - 31
+    - 39
+    - 589
+    - 676
+    our_ratio: 0.5445
+    support_ratio: 0.0
+    structure_iou: 0.564
+    on_structure: false
+    axis_ratio: 0.2681
+    planar: false
+  - class_name: person
+    bbox_xyxy:
+    - 781.7
+    - 3.1
+    - 1279.1
+    - 709.0
+    inner_xyxy:
+    - 806
+    - 38
+    - 1255
+    - 674
+    our_ratio: 0.52
+    support_ratio: 0.0
+    structure_iou: 0.6943
+    on_structure: false
+    axis_ratio: 0.1974
+    planar: true
+  - class_name: chair
+    bbox_xyxy:
+    - 917.8
+    - 341.3
+    - 1279.3
+    - 714.9
+    inner_xyxy:
+    - 935
+    - 359
+    - 1262
+    - 697
+    our_ratio: 0.9658
+    support_ratio: 0.0
+    structure_iou: 0.7662
+    on_structure: true
+    axis_ratio: 0.2954
+    planar: false
+  - class_name: cell phone
+    bbox_xyxy:
+    - 779.4
+    - 236.2
+    - 875.2
+    - 321.3
+    inner_xyxy:
+    - 784
+    - 240
+    - 871
+    - 318
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.0
+    on_structure: false
+    axis_ratio: 0.1273
+    planar: true
+  - class_name: cup
+    bbox_xyxy:
+    - 773.5
+    - 322.7
+    - 879.9
+    - 422.9
+    inner_xyxy:
+    - 778
+    - 327
+    - 875
+    - 418
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.0
+    on_structure: false
+    axis_ratio: 0.1065
+    planar: true
+  - class_name: laptop
+    bbox_xyxy:
+    - 539.0
+    - 199.0
+    - 743.8
+    - 405.2
+    inner_xyxy:
+    - 549
+    - 209
+    - 734
+    - 395
+    our_ratio: 0.9767
+    support_ratio: 0.0
+    structure_iou: 0.9164
+    on_structure: true
+    axis_ratio: 0.4806
+    planar: false
+  - class_name: cell phone
+    bbox_xyxy:
+    - 393.9
+    - 202.9
+    - 545.2
+    - 371.1
+    inner_xyxy:
+    - 401
+    - 211
+    - 538
+    - 363
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.619
+    on_structure: false
+    axis_ratio: 0.5044
+    planar: false
+- source: object_map/videos/011_pexels.mp4
+  frame_index: 48
+  vanishing_points: 0
+  planes:
+  - angle_deg: 88.93
+    coverage: 0.6075
+    support: false
+    structure: true
+  - angle_deg: 89.48
+    coverage: 0.4341
+    support: false
+    structure: true
+  - angle_deg: 2.64
+    coverage: 0.1656
+    support: true
+    structure: true
+  detections: []
+- source: object_map/videos/011_pexels.mp4
+  frame_index: 143
+  vanishing_points: 2
+  planes:
+  - angle_deg: 89.47
+    coverage: 0.5467
+    support: false
+    structure: true
+  - angle_deg: 72.49
+    coverage: 0.3432
+    support: false
+    structure: true
+  - angle_deg: 34.46
+    coverage: 0.1937
+    support: false
+    structure: true
+  detections:
+  - class_name: couch
+    bbox_xyxy:
+    - 0.0
+    - 406.0
+    - 364.8
+    - 650.4
+    inner_xyxy:
+    - 18
+    - 418
+    - 347
+    - 639
+    our_ratio: 0.7327
+    support_ratio: 0.0
+    structure_iou: 0.6106
+    on_structure: false
+    axis_ratio: 0.2152
+    planar: false
+  - class_name: book
+    bbox_xyxy:
+    - 352.0
+    - 528.0
+    - 406.0
+    - 576.5
+    inner_xyxy:
+    - 354
+    - 530
+    - 404
+    - 575
+    our_ratio: 0.992
+    support_ratio: 0.0
+    structure_iou: 0.5927
+    on_structure: false
+    axis_ratio: 0.1647
+    planar: true
+  - class_name: dining table
+    bbox_xyxy:
+    - 1.2
+    - 538.5
+    - 157.1
+    - 719.3
+    inner_xyxy:
+    - 8
+    - 547
+    - 150
+    - 711
+    our_ratio: 0.4352
+    support_ratio: 0.0
+    structure_iou: 0.1184
+    on_structure: false
+    axis_ratio: 0.219
+    planar: false
+- source: object_map/videos/012_pexels.mp4
+  frame_index: 50
+  vanishing_points: 1
+  planes:
+  - angle_deg: 89.86
+    coverage: 0.3096
+    support: false
+    structure: true
+  - angle_deg: 86.37
+    coverage: 0.2913
+    support: false
+    structure: true
+  - angle_deg: 84.87
+    coverage: 0.3046
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 447.3
+    - 126.0
+    - 935.5
+    - 714.4
+    inner_xyxy:
+    - 471
+    - 155
+    - 912
+    - 685
+    our_ratio: 0.6814
+    support_ratio: 0.0
+    structure_iou: 0.4922
+    on_structure: false
+    axis_ratio: 0.4118
+    planar: false
+- source: object_map/videos/012_pexels.mp4
+  frame_index: 149
+  vanishing_points: 1
+  planes:
+  - angle_deg: 82.48
+    coverage: 0.3681
+    support: false
+    structure: true
+  - angle_deg: 85.53
+    coverage: 0.2726
+    support: false
+    structure: true
+  - angle_deg: 89.47
+    coverage: 0.1777
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 405.2
+    - 100.9
+    - 873.7
+    - 713.8
+    inner_xyxy:
+    - 428
+    - 131
+    - 851
+    - 684
+    our_ratio: 0.7032
+    support_ratio: 0.0
+    structure_iou: 0.4707
+    on_structure: false
+    axis_ratio: 0.4184
+    planar: false
+- source: object_map/videos/013_pexels.mp4
+  frame_index: 50
+  vanishing_points: 0
+  planes:
+  - angle_deg: 87.51
+    coverage: 0.5755
+    support: false
+    structure: true
+  - angle_deg: 72.53
+    coverage: 0.5439
+    support: false
+    structure: true
+  - angle_deg: 79.68
+    coverage: 0.3549
+    support: false
+    structure: true
+  detections:
+  - class_name: couch
+    bbox_xyxy:
+    - 2.2
+    - 421.6
+    - 403.9
+    - 646.3
+    inner_xyxy:
+    - 22
+    - 432
+    - 384
+    - 636
+    our_ratio: 0.9897
+    support_ratio: 0.0
+    structure_iou: 0.9743
+    on_structure: true
+    axis_ratio: 0.0999
+    planar: true
+  - class_name: person
+    bbox_xyxy:
+    - 116.3
+    - 232.4
+    - 203.9
+    - 430.6
+    inner_xyxy:
+    - 120
+    - 242
+    - 200
+    - 421
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.9842
+    on_structure: true
+    axis_ratio: 0.4062
+    planar: false
+- source: object_map/videos/013_pexels.mp4
+  frame_index: 149
+  vanishing_points: 0
+  planes:
+  - angle_deg: 88.12
+    coverage: 0.5912
+    support: false
+    structure: true
+  - angle_deg: 62.32
+    coverage: 0.4597
+    support: false
+    structure: true
+  - angle_deg: 88.55
+    coverage: 0.2387
+    support: false
+    structure: true
+  detections:
+  - class_name: couch
+    bbox_xyxy:
+    - 1.5
+    - 432.3
+    - 402.8
+    - 657.0
+    inner_xyxy:
+    - 21
+    - 443
+    - 383
+    - 646
+    our_ratio: 0.9875
+    support_ratio: 0.0
+    structure_iou: 0.947
+    on_structure: true
+    axis_ratio: 0.1164
+    planar: true
+  - class_name: person
+    bbox_xyxy:
+    - 226.7
+    - 233.7
+    - 320.4
+    - 438.8
+    inner_xyxy:
+    - 231
+    - 243
+    - 316
+    - 429
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.7345
+    on_structure: true
+    axis_ratio: 0.4051
+    planar: false
+- source: object_map/videos/014_pexels.mp4
+  frame_index: 50
+  vanishing_points: 2
+  planes:
+  - angle_deg: 18.14
+    coverage: 0.3414
+    support: false
+    structure: true
+  - angle_deg: 14.96
+    coverage: 0.2708
+    support: false
+    structure: true
+  - angle_deg: 18.76
+    coverage: 0.1305
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 569.8
+    - 361.1
+    - 727.5
+    - 615.4
+    inner_xyxy:
+    - 577
+    - 373
+    - 720
+    - 603
+    our_ratio: 0.922
+    support_ratio: 0.0
+    structure_iou: 0.7145
+    on_structure: true
+    axis_ratio: 0.3905
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 488.8
+    - 291.2
+    - 809.3
+    - 551.9
+    inner_xyxy:
+    - 504
+    - 304
+    - 794
+    - 539
+    our_ratio: 0.5174
+    support_ratio: 0.0
+    structure_iou: 0.5685
+    on_structure: false
+    axis_ratio: 0.4685
+    planar: false
+  - class_name: refrigerator
+    bbox_xyxy:
+    - 602.3
+    - 141.3
+    - 678.8
+    - 297.4
+    inner_xyxy:
+    - 606
+    - 149
+    - 675
+    - 290
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.8786
+    on_structure: true
+    axis_ratio: 0.2109
+    planar: false
+  - class_name: couch
+    bbox_xyxy:
+    - 1.1
+    - 541.0
+    - 320.3
+    - 712.6
+    inner_xyxy:
+    - 17
+    - 549
+    - 305
+    - 705
+    our_ratio: 0.9776
+    support_ratio: 0.0
+    structure_iou: 0.9553
+    on_structure: true
+    axis_ratio: 0.1966
+    planar: true
+  - class_name: couch
+    bbox_xyxy:
+    - 0.4
+    - 447.1
+    - 322.4
+    - 715.1
+    inner_xyxy:
+    - 16
+    - 460
+    - 307
+    - 702
+    our_ratio: 0.6157
+    support_ratio: 0.0
+    structure_iou: 0.7159
+    on_structure: true
+    axis_ratio: 0.1966
+    planar: true
+- source: object_map/videos/014_pexels.mp4
+  frame_index: 149
+  vanishing_points: 2
+  planes:
+  - angle_deg: 73.03
+    coverage: 0.2977
+    support: false
+    structure: true
+  - angle_deg: 88.47
+    coverage: 0.2302
+    support: false
+    structure: true
+  - angle_deg: 12.77
+    coverage: 0.2798
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 572.2
+    - 495.4
+    - 737.0
+    - 719.0
+    inner_xyxy:
+    - 580
+    - 506
+    - 729
+    - 708
+    our_ratio: 0.8497
+    support_ratio: 0.0
+    structure_iou: 0.4124
+    on_structure: false
+    axis_ratio: 0.305
+    planar: false
+  - class_name: refrigerator
+    bbox_xyxy:
+    - 603.7
+    - 268.5
+    - 679.7
+    - 423.7
+    inner_xyxy:
+    - 607
+    - 276
+    - 676
+    - 416
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.5038
+    on_structure: false
+    axis_ratio: 0.3375
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 482.0
+    - 423.5
+    - 824.3
+    - 701.8
+    inner_xyxy:
+    - 499
+    - 437
+    - 808
+    - 688
+    our_ratio: 0.392
+    support_ratio: 0.0
+    structure_iou: 0.0956
+    on_structure: false
+    axis_ratio: 0.5556
+    planar: false
+  - class_name: oven
+    bbox_xyxy:
+    - 360.1
+    - 357.4
+    - 496.6
+    - 539.3
+    inner_xyxy:
+    - 366
+    - 366
+    - 490
+    - 531
+    our_ratio: 0.7466
+    support_ratio: 0.0
+    structure_iou: 0.6917
+    on_structure: false
+    axis_ratio: 0.1961
+    planar: true
+- source: object_map/videos/015_pexels.mp4
+  frame_index: 60
+  vanishing_points: 2
+  planes:
+  - angle_deg: 19.54
+    coverage: 0.2989
+    support: false
+    structure: true
+  - angle_deg: 13.32
+    coverage: 0.29
+    support: false
+    structure: true
+  - angle_deg: 8.05
+    coverage: 0.2685
+    support: true
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 518.1
+    - 479.6
+    - 721.4
+    - 720.0
+    inner_xyxy:
+    - 528
+    - 491
+    - 712
+    - 708
+    our_ratio: 0.5574
+    support_ratio: 0.3821
+    structure_iou: 0.5193
+    on_structure: false
+    axis_ratio: 0.3903
+    planar: false
+  - class_name: oven
+    bbox_xyxy:
+    - 939.3
+    - 357.7
+    - 1089.8
+    - 554.6
+    inner_xyxy:
+    - 946
+    - 367
+    - 1083
+    - 545
+    our_ratio: 0.7841
+    support_ratio: 0.4785
+    structure_iou: 0.7388
+    on_structure: true
+    axis_ratio: 0.3195
+    planar: false
+  - class_name: microwave
+    bbox_xyxy:
+    - 949.4
+    - 259.1
+    - 1079.1
+    - 328.0
+    inner_xyxy:
+    - 955
+    - 262
+    - 1073
+    - 325
+    our_ratio: 1.0
+    support_ratio: 0.5498
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.0356
+    planar: true
+  - class_name: chair
+    bbox_xyxy:
+    - 130.7
+    - 647.2
+    - 399.2
+    - 717.0
+    inner_xyxy:
+    - 144
+    - 650
+    - 386
+    - 714
+    our_ratio: 0.9856
+    support_ratio: 0.0707
+    structure_iou: 0.0583
+    on_structure: false
+    axis_ratio: 0.1692
+    planar: true
+  - class_name: potted plant
+    bbox_xyxy:
+    - 325.1
+    - 348.5
+    - 489.2
+    - 531.9
+    inner_xyxy:
+    - 333
+    - 357
+    - 481
+    - 523
+    our_ratio: 0.5944
+    support_ratio: 0.3769
+    structure_iou: 0.3027
+    on_structure: false
+    axis_ratio: 0.3324
+    planar: false
+  - class_name: vase
+    bbox_xyxy:
+    - 352.1
+    - 439.8
+    - 423.7
+    - 534.8
+    inner_xyxy:
+    - 355
+    - 444
+    - 421
+    - 531
+    our_ratio: 0.9979
+    support_ratio: 0.4244
+    structure_iou: 0.7259
+    on_structure: true
+    axis_ratio: 0.2179
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 185.8
+    - 485.0
+    - 599.6
+    - 640.7
+    inner_xyxy:
+    - 206
+    - 492
+    - 579
+    - 633
+    our_ratio: 0.6862
+    support_ratio: 0.8003
+    structure_iou: 0.6868
+    on_structure: false
+    axis_ratio: 0.2488
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 187.0
+    - 486.3
+    - 599.8
+    - 710.4
+    inner_xyxy:
+    - 207
+    - 497
+    - 580
+    - 700
+    our_ratio: 0.6084
+    support_ratio: 0.707
+    structure_iou: 0.4661
+    on_structure: false
+    axis_ratio: 0.4074
+    planar: false
+  - class_name: microwave
+    bbox_xyxy:
+    - 1164.4
+    - 236.8
+    - 1273.4
+    - 327.6
+    inner_xyxy:
+    - 1169
+    - 241
+    - 1268
+    - 324
+    our_ratio: 1.0
+    support_ratio: 0.4253
+    structure_iou: 0.4255
+    on_structure: false
+    axis_ratio: 0.0858
+    planar: true
+  - class_name: vase
+    bbox_xyxy:
+    - 349.3
+    - 434.7
+    - 384.7
+    - 531.1
+    inner_xyxy:
+    - 351
+    - 439
+    - 383
+    - 527
+    our_ratio: 0.9357
+    support_ratio: 0.4801
+    structure_iou: 0.8614
+    on_structure: true
+    axis_ratio: 0.055
+    planar: true
+  - class_name: chair
+    bbox_xyxy:
+    - 125.3
+    - 650.2
+    - 512.1
+    - 719.0
+    inner_xyxy:
+    - 144
+    - 653
+    - 493
+    - 716
+    our_ratio: 0.7106
+    support_ratio: 0.0739
+    structure_iou: 0.0936
+    on_structure: false
+    axis_ratio: 0.195
+    planar: true
+- source: object_map/videos/015_pexels.mp4
+  frame_index: 179
+  vanishing_points: 2
+  planes:
+  - angle_deg: 28.02
+    coverage: 0.2419
+    support: false
+    structure: true
+  - angle_deg: 6.05
+    coverage: 0.2395
+    support: true
+    structure: true
+  - angle_deg: 14.27
+    coverage: 0.2534
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 520.6
+    - 475.9
+    - 714.4
+    - 718.6
+    inner_xyxy:
+    - 530
+    - 488
+    - 705
+    - 707
+    our_ratio: 0.6028
+    support_ratio: 0.0
+    structure_iou: 0.5062
+    on_structure: false
+    axis_ratio: 0.3622
+    planar: false
+  - class_name: microwave
+    bbox_xyxy:
+    - 934.7
+    - 264.5
+    - 1062.0
+    - 334.2
+    inner_xyxy:
+    - 941
+    - 267
+    - 1056
+    - 331
+    our_ratio: 1.0
+    support_ratio: 0.3643
+    structure_iou: 0.3643
+    on_structure: false
+    axis_ratio: 0.0579
+    planar: true
+  - class_name: oven
+    bbox_xyxy:
+    - 930.2
+    - 357.9
+    - 1072.1
+    - 549.1
+    inner_xyxy:
+    - 937
+    - 367
+    - 1066
+    - 540
+    our_ratio: 0.8424
+    support_ratio: 0.0
+    structure_iou: 0.7281
+    on_structure: true
+    axis_ratio: 0.3712
+    planar: false
+  - class_name: potted plant
+    bbox_xyxy:
+    - 354.0
+    - 358.7
+    - 479.9
+    - 526.1
+    inner_xyxy:
+    - 360
+    - 367
+    - 474
+    - 518
+    our_ratio: 0.8492
+    support_ratio: 0.0
+    structure_iou: 0.615
+    on_structure: false
+    axis_ratio: 0.3582
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 194.1
+    - 617.8
+    - 432.9
+    - 716.6
+    inner_xyxy:
+    - 206
+    - 622
+    - 421
+    - 712
+    our_ratio: 0.9991
+    support_ratio: 0.0
+    structure_iou: 0.7393
+    on_structure: true
+    axis_ratio: 0.341
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 117.0
+    - 474.2
+    - 602.8
+    - 713.2
+    inner_xyxy:
+    - 141
+    - 486
+    - 579
+    - 702
+    our_ratio: 0.651
+    support_ratio: 0.0
+    structure_iou: 0.2508
+    on_structure: false
+    axis_ratio: 0.4017
+    planar: false
+  - class_name: vase
+    bbox_xyxy:
+    - 370.6
+    - 444.2
+    - 437.6
+    - 525.7
+    inner_xyxy:
+    - 373
+    - 448
+    - 435
+    - 522
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.2387
+    planar: false
+  - class_name: refrigerator
+    bbox_xyxy:
+    - 1231.7
+    - 0.0
+    - 1279.9
+    - 712.4
+    inner_xyxy:
+    - 1234
+    - 35
+    - 1278
+    - 677
+    our_ratio: 0.6295
+    support_ratio: 0.0
+    structure_iou: 0.0
+    on_structure: false
+    axis_ratio: 0.0454
+    planar: true
+  - class_name: vase
+    bbox_xyxy:
+    - 364.8
+    - 437.1
+    - 402.2
+    - 520.2
+    inner_xyxy:
+    - 366
+    - 441
+    - 401
+    - 517
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 1.0
+    on_structure: true
+    axis_ratio: 0.0577
+    planar: true
+  - class_name: microwave
+    bbox_xyxy:
+    - 1146.0
+    - 253.4
+    - 1233.8
+    - 331.6
+    inner_xyxy:
+    - 1150
+    - 257
+    - 1230
+    - 328
+    our_ratio: 1.0
+    support_ratio: 0.0
+    structure_iou: 0.0
+    on_structure: false
+    axis_ratio: 0.0886
+    planar: true
+- source: object_map/videos/016_pexels.mp4
+  frame_index: 36
+  vanishing_points: 2
+  planes:
+  - angle_deg: 1.62
+    coverage: 0.444
+    support: true
+    structure: true
+  - angle_deg: 4.43
+    coverage: 0.2986
+    support: true
+    structure: true
+  - angle_deg: 23.25
+    coverage: 0.1474
+    support: false
+    structure: true
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 106.7
+    - 469.1
+    - 174.6
+    - 588.7
+    inner_xyxy:
+    - 110
+    - 475
+    - 172
+    - 583
+    our_ratio: 1.0
+    support_ratio: 0.5309
+    structure_iou: 0.8348
+    on_structure: true
+    axis_ratio: 0.6115
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 179.3
+    - 423.6
+    - 219.0
+    - 532.7
+    inner_xyxy:
+    - 181
+    - 429
+    - 218
+    - 528
+    our_ratio: 0.7128
+    support_ratio: 0.4412
+    structure_iou: 0.6932
+    on_structure: false
+    axis_ratio: 0.2068
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 73.2
+    - 422.8
+    - 215.0
+    - 535.9
+    inner_xyxy:
+    - 80
+    - 428
+    - 208
+    - 531
+    our_ratio: 0.8491
+    support_ratio: 0.232
+    structure_iou: 0.5603
+    on_structure: false
+    axis_ratio: 0.7196
+    planar: false
+  - class_name: oven
+    bbox_xyxy:
+    - 250.2
+    - 373.3
+    - 404.2
+    - 545.0
+    inner_xyxy:
+    - 257
+    - 381
+    - 397
+    - 537
+    our_ratio: 0.9054
+    support_ratio: 0.2471
+    structure_iou: 0.6342
+    on_structure: false
+    axis_ratio: 0.5048
+    planar: false
+- source: object_map/videos/016_pexels.mp4
+  frame_index: 106
+  vanishing_points: 2
+  planes:
+  - angle_deg: 0.74
+    coverage: 0.4319
+    support: true
+    structure: true
+  - angle_deg: 0.72
+    coverage: 0.2907
+    support: true
+    structure: true
+  - angle_deg: 89.68
+    coverage: 0.085
+    support: false
+    structure: false
+  detections:
+  - class_name: chair
+    bbox_xyxy:
+    - 0.1
+    - 478.4
+    - 42.5
+    - 606.3
+    inner_xyxy:
+    - 2
+    - 484
+    - 41
+    - 600
+    our_ratio: 1.0
+    support_ratio: 0.4043
+    structure_iou: 0.4043
+    on_structure: false
+    axis_ratio: 0.2088
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 50.8
+    - 427.2
+    - 97.4
+    - 538.7
+    inner_xyxy:
+    - 53
+    - 432
+    - 96
+    - 534
+    our_ratio: 0.7855
+    support_ratio: 0.4357
+    structure_iou: 0.3317
+    on_structure: false
+    axis_ratio: 0.2301
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 162.6
+    - 431.2
+    - 215.2
+    - 535.7
+    inner_xyxy:
+    - 165
+    - 436
+    - 213
+    - 531
+    our_ratio: 1.0
+    support_ratio: 0.2818
+    structure_iou: 0.2818
+    on_structure: false
+    axis_ratio: 0.2118
+    planar: false
+  - class_name: dining table
+    bbox_xyxy:
+    - 0.4
+    - 426.7
+    - 95.6
+    - 548.6
+    inner_xyxy:
+    - 5
+    - 432
+    - 91
+    - 543
+    our_ratio: 0.6525
+    support_ratio: 0.1926
+    structure_iou: 0.0762
+    on_structure: false
+    axis_ratio: 0.5325
+    planar: false
+- source: object_map/videos/017_pexels.mp4
+  frame_index: 48
+  vanishing_points: 0
+  planes:
+  - angle_deg: 89.99
+    coverage: 0.242
+    support: false
+    structure: true
+  - angle_deg: 81.75
+    coverage: 0.2539
+    support: false
+    structure: true
+  - angle_deg: 86.45
+    coverage: 0.2789
+    support: false
+    structure: true
+  detections:
+  - class_name: person
+    bbox_xyxy:
+    - 45.8
+    - 33.8
+    - 375.7
+    - 718.7
+    inner_xyxy:
+    - 62
+    - 68
+    - 360
+    - 685
+    our_ratio: 0.5502
+    support_ratio: 0.0
+    structure_iou: 0.5726
+    on_structure: false
+    axis_ratio: 0.1719
+    planar: true
+- source: object_map/videos/017_pexels.mp4
+  frame_index: 143
+  vanishing_points: 2
+  planes:
+  - angle_deg: 83.0
+    coverage: 0.398
+    support: false
+    structure: true
+  - angle_deg: 17.19
+    coverage: 0.2245
+    support: false
+    structure: true
+  - angle_deg: 71.34
+    coverage: 0.1613
+    support: false
+    structure: true
+  detections:
+  - class_name: potted plant
+    bbox_xyxy:
+    - 0.0
+    - 347.0
+    - 166.3
+    - 615.9
+    inner_xyxy:
+    - 8
+    - 360
+    - 158
+    - 603
+    our_ratio: 0.6523
+    support_ratio: 0.0
+    structure_iou: 0.4517
+    on_structure: false
+    axis_ratio: 0.2607
+    planar: false
+  - class_name: person
+    bbox_xyxy:
+    - 239.0
+    - 252.1
+    - 398.7
+    - 639.1
+    inner_xyxy:
+    - 246
+    - 271
+    - 391
+    - 620
+    our_ratio: 0.75
+    support_ratio: 0.0
+    structure_iou: 0.4872
+    on_structure: false
+    axis_ratio: 0.27
+    planar: false
+  - class_name: chair
+    bbox_xyxy:
+    - 284.2
+    - 425.2
+    - 406.0
+    - 679.0
+    inner_xyxy:
+    - 290
+    - 437
+    - 400
+    - 667
+    our_ratio: 0.8839
+    support_ratio: 0.0
+    structure_iou: 0.6633
+    on_structure: false
+    axis_ratio: 0.2796
+    planar: false
+  - class_name: tv
+    bbox_xyxy:
+    - 95.5
+    - 175.5
+    - 270.9
+    - 319.6
+    inner_xyxy:
+    - 104
+    - 182
+    - 263
+    - 313
+    our_ratio: 0.9996
+    support_ratio: 0.0
+    structure_iou: 0.9578
+    on_structure: true
+    axis_ratio: 0.2903
+    planar: false
+  - class_name: laptop
+    bbox_xyxy:
+    - 211.0
+    - 322.5
+    - 270.7
+    - 395.1
+    inner_xyxy:
+    - 213
+    - 326
+    - 268
+    - 392
+    our_ratio: 0.9446
+    support_ratio: 0.0
+    structure_iou: 0.1557
+    on_structure: false
+    axis_ratio: 0.435
+    planar: false

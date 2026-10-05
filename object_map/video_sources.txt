@@ -1,0 +1,15 @@
+# 残した室内映像。図面だけの 010 と、看板の接写 018 は除いた。
+# youtube は見て部屋が写っている秒、pexels はページの先頭8秒。
+youtube 001_7faZ9Blu_OI 0-12 https://www.youtube.com/watch?v=7faZ9Blu_OI
+youtube 003_HtFq9C_vbOc 0-12 https://www.youtube.com/watch?v=HtFq9C_vbOc
+youtube 004_8lz3Qs23cMg 0-12 https://www.youtube.com/watch?v=8lz3Qs23cMg
+youtube 005_7P5KWUDd4UM 80-92 https://www.youtube.com/watch?v=7P5KWUDd4UM
+youtube 008_IXc2JJGk3oE 0-12 https://www.youtube.com/watch?v=IXc2JJGk3oE
+youtube 009_0M7AJOC3zT4 40-52 https://www.youtube.com/watch?v=0M7AJOC3zT4
+pexels 011_pexels 0-8 https://www.pexels.com/video/video-of-a-living-room-5823579/
+pexels 012_pexels 0-8 https://www.pexels.com/video/a-man-walking-in-the-hallway-7252270/
+pexels 013_pexels 0-8 https://www.pexels.com/video/a-woman-using-a-laptop-while-walking-behind-a-couch-8788564/
+pexels 014_pexels 0-8 https://www.pexels.com/video/the-kitchen-and-dining-area-of-a-small-apartment-27975847/
+pexels 015_pexels 0-8 https://www.pexels.com/video/modern-kitchen-with-wooden-cabinets-and-dining-area-36906907/
+pexels 016_pexels 0-8 https://www.pexels.com/video/modern-black-and-white-kitchen-and-dining-room-34237004/
+pexels 017_pexels 0-8 https://www.pexels.com/video/cozy-home-office-setup-with-modern-decor-38055594/

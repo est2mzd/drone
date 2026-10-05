@@ -1,9 +1,16 @@
 .secrets/
 third_party/*
 !third_party/README.md
+!third_party/depth_anything3/
+!third_party/depth_anything3/overlay.py
 slam/build/
 slam/out/
 mini3_calib/out/
 slam/offline_mono
 **/__pycache__/
+.venv-da3/
+object_map/videos/
+object_map/out/
+object_map/weights/
 
+patrol/out/

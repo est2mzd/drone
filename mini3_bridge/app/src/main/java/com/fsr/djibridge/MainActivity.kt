@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var usbButton: Button
     private lateinit var forwarder: StreamForwarder
     private val main = Handler(Looper.getMainLooper())
+    private lateinit var patrol: PatrolCommandBridge
     private var autoStart = false
     private var autoStarted = false
     private var loginPrompted = false
@@ -99,6 +100,31 @@ class MainActivity : AppCompatActivity() {
             }
             render()
         }
+        val patrolStatus = findViewById<TextView>(R.id.patrolStatusText)
+        val patrolToken = findViewById<EditText>(R.id.patrolTokenInput)
+        val patrolButton = findViewById<Button>(R.id.patrolButton)
+        patrol = PatrolCommandBridge { message -> main.post { patrolStatus.text = message } }
+        patrolButton.setOnClickListener {
+            if (patrol.isRunning) {
+                patrol.stop()
+            } else if (PatrolCommandBridge.LIVE_OUTPUT_ENABLED) {
+                val state = BridgeApplication.instance.state
+                if (!state.registered || !state.fcConnected || state.productType != "DJI_MINI_3") {
+                    patrolStatus.text = "Mini 3の接続を確認してください"
+                } else {
+                    androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setMessage("実機への速度指令を有効にします。尺度・ジンバル固定・機体座標軸・障害物観測の実機検証が完了していますか？")
+                        .setPositiveButton("検証済み・有効化") { _, _ ->
+                            try { patrol.start(patrolToken.text.toString().trim()) }
+                            catch (e: IllegalArgumentException) { patrolStatus.text = e.message }
+                        }
+                        .setNegativeButton("キャンセル", null).show()
+                }
+            } else {
+                try { patrol.start(patrolToken.text.toString().trim()) }
+                catch (e: IllegalArgumentException) { patrolStatus.text = e.message }
+            }
+        }
         BridgeApplication.instance.state.observe(onState)
         ensurePermissions()
     }
@@ -110,6 +136,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
+        if (::patrol.isInitialized) patrol.stop()
         main.removeCallbacks(refresh)
         super.onPause()
     }
