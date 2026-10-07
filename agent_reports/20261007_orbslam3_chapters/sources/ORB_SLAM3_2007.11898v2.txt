@@ -1,0 +1,1488 @@
+                                                               This paper has been accepted for publication in IEEE Transactions and Robotics.
+
+
+                                                                                       DOI: 10.1109/TRO.2021.3075644
+
+
+
+
+                                           ©2021 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any
+                                         current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new
+                                         collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other
+                                         works.
+arXiv:2007.11898v2 [cs.RO] 23 Apr 2021
+                                                                                                                                                  2
+
+
+
+
+    ORB-SLAM3: An Accurate Open-Source Library
+    for Visual, Visual-Inertial and Multi-Map SLAM
+        Carlos Campos∗ , Richard Elvira∗ , Juan J. Gómez Rodrı́guez, José M.M. Montiel and Juan D. Tardós
+
+
+
+
+   Abstract—This paper presents ORB-SLAM3, the first system                         on-board a mobile agent to build a map of the environment
+able to perform visual, visual-inertial and multi-map SLAM                          and compute in real-time the pose of the agent in that map.
+with monocular, stereo and RGB-D cameras, using pin-hole and                        In contrast, VO systems put their focus on computing the
+fisheye lens models.
+   The first main novelty is a feature-based tightly-integrated                     agent’s ego-motion, not on building a map. The big advantage
+visual-inertial SLAM system that fully relies on Maximum-a-                         of a SLAM map is that it allows matching and using in
+Posteriori (MAP) estimation, even during the IMU initialization                     BA previous observations performing three types of data
+phase. The result is a system that operates robustly in real time,                  association (extending the terminology used in [1]):
+in small and large, indoor and outdoor environments, and is two
+to ten times more accurate than previous approaches.                                  • Short-term data association, matching map elements
+   The second main novelty is a multiple map system that relies                         obtained during the last few seconds. This is the only
+on a new place recognition method with improved recall. Thanks                          data association type used by most VO systems, that
+to it, ORB-SLAM3 is able to survive to long periods of poor                             forget environment elements once they get out of view,
+visual information: when it gets lost, it starts a new map that
+will be seamlessly merged with previous maps when revisiting                            resulting in continuous estimation drift even when the
+mapped areas. Compared with visual odometry systems that                                system moves in the same area.
+only use information from the last few seconds, ORB-SLAM3                             • Mid-term data association, matching map elements that
+is the first system able to reuse in all the algorithm stages all                       are close to the camera whose accumulated drift is still
+previous information. This allows to include in bundle adjustment                       small. These can be matched and used in BA in the same
+co-visible keyframes, that provide high parallax observations
+boosting accuracy, even if they are widely separated in time or                         way than short-term observations and allow to reach zero
+if they come from a previous mapping session.                                           drift when the systems moves in mapped areas. They are
+   Our experiments show that, in all sensor configurations, ORB-                        the key of the better accuracy obtained by our system
+SLAM3 is as robust as the best systems available in the literature,                     compared against VO systems with loop detection.
+and significantly more accurate. Notably, our stereo-inertial                         • Long-term data association, matching observations with
+SLAM achieves an average accuracy of 3.5 cm in the EuRoC
+drone and 9 mm under quick hand-held motions in the room of                             elements in previously visited areas using a place recog-
+TUM-VI dataset, a setting representative of AR/VR scenarios.                            nition technique, regardless of the accumulated drift (loop
+For the benefit of the community we make public the source                              detection), the current area being previously mapped
+code.                                                                                   in a disconnected map (map merging), or the tracking
+                                                                                        being lost (relocalization). Long-term matching allows to
+                           I. I NTRODUCTION                                             reset the drift and to correct the map using pose-graph
+                                                                                        (PG) optimization, or more accurately, using BA. This is
+   Intense research on Visual Simultaneous Localization and                             the key of SLAM accuracy in medium and large loopy
+Mapping systems (SLAM) and Visual Odometry (VO), using                                  environments.
+cameras either alone or in combination with inertial sensors,
+has produced during the last two decades excellent systems,                            In this work we build on ORB-SLAM [2], [3] and ORB-
+with increasing accuracy and robustness. Modern systems rely                        SLAM Visual-Inertial [4], the first visual and visual-inertial
+on Maximum a Posteriori (MAP) estimation, which in the                              systems able to take full profit of short-term, mid-term and
+case of visual sensors corresponds to Bundle Adjustment (BA),                       long-term data association, reaching zero drift in mapped
+either geometric BA that minimizes feature reprojection error,                      areas. Here we go one step further providing multi-map data
+in feature-based methods, or photometric BA that minimizes                          association, which allows us to match and use in BA map
+the photometric error of a set of selected pixels, in direct                        elements coming from previous mapping sessions, achieving
+methods.                                                                            the true goal of a SLAM system: building a map that can be
+   With the recent emergence of VO systems that integrate                           used later to provide accurate localization.
+loop closing techniques, the frontier between VO and SLAM                              This is essentially a system paper, whose most important
+is more diffuse. The goal of Visual SLAM is to use the sensors                      contribution is the ORB-SLAM3 library itself [5], the most
+                                                                                    complete and accurate visual, visual-inertial and multi-map
+   ∗ Both authors contributed equally to this work.
+                                                                                    SLAM system to date (see table I). The main novelties of
+   The authors are with the Instituto de Investigación en Ingenierı́a de Aragón
+(I3A), Universidad de Zaragoza, Marı́a de Luna 1, 50018 Zaragoza, Spain.            ORB-SLAM3 are:
+E-mail: {campos, richard, jjgomez, josemari, tardos}@unizar.es.                       •   A monocular and stereo visual-inertial SLAM system
+   This work was supported in part by the Spanish government under grants
+PGC2018-096367-B-I00 and DPI2017-91104-EXP, and by Aragón govern-                        that fully relies on Maximum-a-Posteriori (MAP) estima-
+ment under grant DGA T45-17R.                                                             tion, even during the IMU (Inertial Measurement Unit)
+                                                                                                                                  3
+
+
+
+      initialization phase. The initialization method proposed     A. Visual SLAM
+      was previously presented in [6]. Here we add its integra-
+      tion with ORB-SLAM visual-inertial [4], the extension           Monocular SLAM was first solved in MonoSLAM [13],
+      to stereo-inertial SLAM, and a thorough evaluation in        [14], [52] using an Extended Kalman Filter (EKF) and Shi-
+      public datasets. Our results show that the monocular         Tomasi points that were tracked in subsequent images doing
+      and stereo visual-inertial systems are extremely robust      a guided search by correlation. Mid-term data association was
+      and significantly more accurate than other visual-inertial   significantly improved using techniques that guarantee that
+      approaches, even in sequences without loops.                 the feature matches used are consistent, achieving hand-held
+  • Improved-recall place recognition. Many recent vi-             visual SLAM [53], [54].
+      sual SLAM and VO systems [2], [7], [8] solve place
+                                                                      In contrast, keyframe-based approaches estimate the map
+      recognition using the DBoW2 bag of words library
+                                                                   using only a few selected frames, discarding the information
+      [9]. DBoW2 requires temporal consistency, matching
+                                                                   coming from intermediate frames. This allows to perform the
+      three consecutive keyframes to the same area, before
+                                                                   more costly, but more accurate, BA optimization at keyframe
+      checking geometric consistency, boosting precision at the
+                                                                   rate. The most representative system was PTAM [16], that
+      expense of recall. As a result, the system is too slow at
+                                                                   split camera tracking and mapping in two parallel threads.
+      closing loops and reusing previously mapped areas. We
+                                                                   Keyframe-based techniques are more accurate than filtering for
+      propose a novel place recognition algorithm, in which
+                                                                   the same computational cost [55], becoming the gold standard
+      candidate keyframes are first checked for geometrical
+                                                                   in visual SLAM and VO. Large scale monocular SLAM was
+      consistency, and then for local consistency with three
+                                                                   achieved in [56] using sliding-window BA, and in [57] using
+      covisible keyframes, that in most occasions are already
+                                                                   a double-window optimization and a covisibility graph.
+      in the map. This strategy increases recall and densifies
+      data association improving map accuracy, at the expense         Building on these ideas, ORB-SLAM [2], [3] uses ORB
+      of a slightly higher computational cost.                     features, whose descriptor provides short-term and mid-term
+  • ORB-SLAM Atlas, the first complete multi-map SLAM              data association, builds a covisibility graph to limit the com-
+      system able to handle visual and visual-inertial systems,    plexity of tracking and mapping, and performs loop closing
+      in monocular and stereo configurations. The Atlas can        and relocalization using the bag-of-words library DBoW2 [9],
+      represent a set of disconnected maps, and apply to them      achieving long-term data association. To date is the only visual
+      all the mapping operations smoothly: place recognition,      SLAM system integrating the three types of data association,
+      camera relocalization, loop closure and accurate seamless    which we believe is the key of its excellent accuracy. In this
+      map merging. This allows to automatically use and com-       work we improve its robustness in pure visual SLAM with
+      bine maps built at different times, performing incremental   the new Atlas system that starts a new map when tracking is
+      multi-session SLAM. A preliminary version of ORB-            lost, and its accuracy in loopy scenarios with the new place
+      SLAM Atlas for visual sensors was presented in [10].         recognition method with improved recall.
+      Here we add the new place recognition system, the visual-       Direct methods do not extract features, but use directly
+      inertial multi-map system and its evaluation on public       the pixel intensities in the images, and estimate motion and
+      datasets.                                                    structure by minimizing a photometric error. LSD-SLAM [20]
+  • An abstract camera representation making the SLAM              was able to build large scale semi-dense maps using high
+      code agnostic of the camera model used, and allow-           gradient pixels. However, map estimation was reduced to pose-
+      ing to add new models by providing their projection,         graph (PG) optimization, achieving lower accuracy than PTAM
+      unprojection and Jacobian functions. We provide the          and ORB-SLAM [2]. The hybrid system SVO [23], [24]
+      implementations of pin-hole [11] and fisheye [12] models.    extracts FAST features, uses a direct method to track features
+  All these novelties, together with a few code improvements       and any pixel with nonzero intensity gradient from frame to
+make ORB-SLAM3 the new reference visual and visual-                frame, and optimizes camera trajectory and 3D structure using
+inertial open-source SLAM library, being as robust as the          reprojection error. SVO is extremely efficient but, being a
+best systems available in the literature, and significantly more   pure VO method, it only performs short-term data association,
+accurate, as shown by our experimental results in section          which limits its accuracy. Direct Sparse Odometry DSO [27]
+VII. We also provide comparisons between monocular, stereo,        is able to compute accurate camera poses in situations where
+monocular-inertial and stereo-inertial SLAM results that can       point detectors perform poorly, enhancing robustness in low
+be of interest for practitioners.                                  textured areas or against blurred images. It introduces local
+                                                                   photometric BA that simultaneously optimizes a window of
+                                                                   seven recent keyframes and the inverse depth of the points.
+                     II. R ELATED W ORK
+                                                                   Extensions of this work include stereo [29], loop closing using
+   Table I presents a summary of the most representative visual    features and DBoW2 [58] [59], and visual-inertial odometry
+and visual-inertial systems, showing the main techniques used      [46]. Direct Sparse Mapping DSM [31] introduces the idea
+for estimation and data association. The qualitative accuracy      of map reusing in direct methods, showing the importance of
+and robustness ratings included in the table are based on the      mid-term data association. In all cases, the lack of integration
+results presented in section VII, and the comparison between       of short, mid, and long-term data association results in lower
+PTAM, LSD-SLAM and ORB-SLAM reported in [2].                       accuracy than our proposal (see section VII).
+                                                                                                                                                                                                             4
+
+
+
+    Table I: Summary of the most representative visual (top) and visual-inertial (bottom) systems, in chronological order.
+
+
+
+
+                                                                                                                                                                                               Open source
+                                                                                                     Multi Maps
+
+
+
+
+                                                                                                                                             Stereo IMU
+                                                                                                                                  Mono IMU
+
+
+
+
+                                                                                                                                                                                 Robustness
+                                              association
+
+
+
+                                                             Estimation
+
+
+
+
+                                                                                                                                                                     Accuracy
+                                                                            Relocali-
+
+
+
+
+                                                                                                                                                          Fisheye
+                                                                                           closing
+                     SLAM
+                     or VO
+
+
+
+
+                                                                                                                         Stereo
+                                                                            zation
+                                Pixels
+
+
+
+
+                                                                                                                  Mono
+                                                                                           Loop
+                                              Data
+                                used
+ Mono-SLAM                       Shi
+                    SLAM                   Correlation      EKF                -             -          -         X       -        -           -            -       Fair        Fair          [15]1
+  [13], [14]                   Tomasi
+ PTAM                                       Pyramid                                                                                                                 Very
+                    SLAM        FAST                         BA           Thumbnail          -          -         X       -        -           -            -                   Fair          [19]
+  [16]–[18]                                  SSD                                                                                                                    Good
+ LSD-SLAM                                                                                FABMAP
+                    SLAM       Edgelets      Direct          PG                -                        -         X      X         -           -            -       Good        Fair          [22]
+  [20], [21]                                                                               PG
+                               FAST+                        Local                                                                                                   Very        Very
+ SVO [23], [24]       VO                     Direct                            -             -          -         X      X         -           -          X                                   [25]2
+                               Hi.grad.                      BA                                                                                                     Good        Good
+ ORB-SLAM2                                                  Local                         DBoW2                                                                                 Very
+                    SLAM        ORB        Descriptor                      DBoW2                        -         X      X         -           -            -       Exc.                      [26]
+ [2], [3]                                                    BA                           PG+BA                                                                                 Good
+                                High                        Local                                                                                                               Very
+ DSO [27]–[29]        VO                     Direct                            -             -          -         X      X         -           -          X         Fair                      [30]
+                                grad.                        BA                                                                                                                 Good
+                                High                        Local                                                                                                   Very        Very
+ DSM [31]           SLAM                     Direct                            -             -          -         X       -        -           -            -                                 [32]
+                                grad.                        BA                                                                                                     Good        Good
+ MSCKF                           Shi         Cross                                                                                                                              Very
+                      VO                                    EKF                -             -          -         X       -       X          X              -       Fair                      [37]3
+  [33]–[36]                    Tomasi      correlation                                                                                                                          Good
+ OKVIS                                                      Local                                                                                                               Very
+                      VO       BRISK       Descriptor                          -             -          -         -       -       X          X            X         Good                      [40]
+  [38], [39]                                                 BA                                                                                                                 Good
+ ROVIO                           Shi                                                                                                                                            Very
+                      VO                     Direct         EKF                -             -          -         -       -       X          X            X         Good                      [43]
+  [41], [42]                   Tomasi                                                                                                                                           Good
+ ORBSLAM-VI                                                 Local                         DBoW2                                                                     Very        Very
+                    SLAM        ORB        Descriptor                      DBoW2                        -         X       -       X            -            -                                     -
+  [4]                                                        BA                           PG+BA                                                                     Good        Good
+ VINS-Fusion                     Shi                        Local                         DBoW2
+                      VO                      KLT                          DBoW2                     X            -      X        X          X            X         Good        Exc.          [45]
+  [7], [44]                    Tomasi                        BA                             PG
+                                High                        Local                                                                                                   Very
+ VI-DSO [46]          VO                     Direct                            -             -          -         -       -       X            -            -                   Exc.              -
+                                grad.                        BA                                                                                                     Good
+ BASALT                                       KLT           Local                          ORB                                                                      Very
+                      VO        FAST                                           -                        -         -       -        -         X            X                     Exc.          [48]
+  [47]                                       (LSSD)          BA                             BA                                                                      Good
+                                 Shi                        Local                         DBoW2
+ Kimera [8]           VO                      KLT                              -                        -         -       -        -         X              -       Good        Exc.          [49]
+                               Tomasi                        BA                             PG
+ ORB-SLAM3                                                  Local                         DBoW2
+                    SLAM        ORB        Descriptor                      DBoW2                     X            X      X        X          X            X         Exc.        Exc.           [5]
+ (ours)                                                      BA                           PG+BA
+ 1 Last source code provided by a different author. Original software is available at [50].
+ 2 Source code available only for the first version, SVO 2.0 is not open source.
+ 3 MSCKF is patented [51], only a re-implementation by a different author is available as open source.
+
+
+
+
+B. Visual-Inertial SLAM                                                                 as visual features depth. Crucially, they ignore IMU noise
+                                                                                        properties, and minimize the 3D error of points in space,
+   The combination of visual and inertial sensors provide                               and not their reprojection errors, that is the gold standard in
+robustness to poor texture, motion blur and occlusions, and                             feature-based computer vision. Our previous work [64] shows
+in the case of monocular systems, make scale observable.                                that this results in large unpredictable errors.
+   Research in tightly coupled approaches can be traced back                               VINS-Mono [7] is a very accurate and robust monocular-
+to MSCKF [33] where the EKF quadratic cost in the number                                inertial odometry system, with loop closing that uses DBoW2
+of features is avoided by feature marginalization. The initial                          and 4 DoF pose-graph optimization, and map-merging. Fea-
+system was perfected in [34] and extended to stereo in [35],                            ture tracking is performed with Lucas-Kanade tracker, being
+[36]. The first tightly coupled visual odometry system based                            slightly more robust than descriptor matching. In VINS-Fusion
+on keyframes and bundle adjustment was OKVIS [38], [39]                                 [44] it has been extended to stereo and stereo-inertial.
+that is also able to use monocular and stereo vision. While                                VI-DSO [46] extends DSO to visual-inertial odometry,
+these systems rely on features, ROVIO [41], [42] feeds an                               proposing a bundle adjustment that combines inertial obser-
+EFK with photometric error using direct data association.                               vations with the photometric error of selected high gradient
+   ORB-SLAM-VI [4] presented for the first time a visual-                               pixels, what renders very good accuracy. As the information
+inertial SLAM system able to reuse a map with short-term,                               from high gradient pixels is successfully exploited, the robust-
+mid-term and long-term data association, using them in an                               ness in scene regions with poor texture is also boosted. Their
+accurate local visual-inertial BA based on IMU preintegration                           initialization method relies on visual-inertial BA and takes 20-
+[60], [61]. However, its IMU initialization technique was                               30 seconds to converge within 1% scale error.
+too slow, taking 15 seconds, which harmed robustness and                                   The recent BASALT [47] is a stereo-inertial odometry
+accuracy. Faster initialization techniques were proposed in                             system that extracts non-linear factors from visual-inertial
+[62], [63], based on a closed-form solution to jointly retrieve                         odometry to use them in BA, and closes loops matching ORB
+scale, gravity, accelerometer bias and initial velocity, as well                        features, achieving very good to excellent accuracy. Kimera [8]
+                                                                                                                                                                                  5
+
+
+
+is a novel outstanding metric-semantic mapping system, but                                      TRACKING
+                                                                                                   Extract        Initial Pose Estimation
+                                                                                    Frame
+its metric part consists in stereo-inertial odometry plus loop                                      ORB               from last frame,         Track     New KeyFrame
+                                                                                                                     Relocalization or       Local Map     Decision
+closing with DBoW2 and pose-graph optimization, achieving                            IMU
+                                                                                                      IMU
+                                                                                                                        Map creation
+                                                                                                  integration
+similar accuracy to VINS-Fusion.
+   In this work we build on ORB-SLAM-VI and extend it to                                                     ATLAS                Non-active              KeyFrame
+
+                                                                                                             Active Map             Map
+                                                                                                                                      Map
+stereo-inertial SLAM. We propose a novel fast initialization                        DBoW2                                                   Map
+                                                                                    KEYFRAME                                      MapPoints
+method based on Maximum-a-Posteriori (MAP) estimation                               DATABASE                    MapPoints
+                                                                                                                                   MapPoints
+                                                                                                                                    MapPoints
+                                                                                                                                                          KeyFrame
+                                                                                                                                                          Insertion
+that properly takes into account visual and inertial sensor                            Visual
+                                                                                                                                  KeyFrames                Recent
+                                                                                     Vocabulary                                    KeyFrames
+
+
+
+
+                                                                                                                                                                          LOCAL MAPPING
+uncertainties, and estimates the true scale with 5% error in                                                 KeyFrames              KeyFrames             MapPoints
+                                                                                                                                                           Culling
+                                                                                     Recognition                                  Covisibility
+2 seconds, converging to 1% scale error in 15 seconds. All                            Database
+                                                                                                                Covisibility        Graph
+                                                                                                                                                          New Points
+                                                                                                                  Graph
+other systems discussed above are visual-inertial odometry                                                                         Spanning
+                                                                                                                                      Tree
+                                                                                                                                                           Creation
+                                                                                                                 Spanning          Spanning...
+                                                                                                                                     Spanning...
+methods, some of them extended with loop closing, and lack                                                         Tree                                    Local BA
+
+the capability of using mid-term data associations. We believe                        Loop Correction
+                                                                                                                                                              IMU
+                                                                                                                        Place recognition                Initialization
+that this, together with our fast and precise initialization, is                             Optimize
+                                                                    Map      Full                             Loop                                           Local
+the key of the better accuracy consistently obtained by our        Update    BA
+                                                                                             Essential
+                                                                                                             Fusion                                       KeyFrames
+                                                                                              Graph                                                         Culling
+                                                                                                                            Compute     Database
+system, even in sequences without loops.                           FULL BA
+                                                                                           Optimize                         Sim3/SE3     Query             IMU Scale
+                                                                                                             Merge
+                                                                                           Essential Welding                                              Reﬁnement
+                                                                                                       BA    Maps
+                                                                                            Graph
+
+C. Multi-Map SLAM                                                                     Map Merging                    LOOP & MAP MERGING
+
+   The idea of adding robustness to tracking losses during
+exploration by means of map creation and fusion was first                Figure 1: Main system components of ORB-SLAM3.
+proposed in [65] within a filtering approach. One of the first
+keyframe-based multi-map systems was [66], but the map
+initialization was manual, and the system was not able to          with monocular, stereo or RGB-D sensors, using pin-hole
+merge or relate the different sub-maps. Multi-map capability       and fisheye camera models. Figure 1 shows the main system
+has been researched as a component of collaborative mapping        components, that are parallel to those of ORB-SLAM2 with
+systems, with several mapping agents and a central server that     some significant novelties, that are summarized next:
+only receives information [67] or with bidirectional informa-        • Atlas is a multi-map representation composed of a set
+tion flow as in C2TAM [68]. MOARSLAM [69] proposed                     of disconnected maps. There is an active map where
+a robust stateless client-server architecture for collaborative        the tracking thread localizes the incoming frames, and is
+multi-device SLAM, but the main focus was the software                 continuously optimized and grown with new keyframes
+architecture and did not report accuracy results.                      by the local mapping thread. We refer to the other maps
+   More recently, CCM-SLAM [70], [71] proposes a dis-                  in the Atlas as the non-active maps. The system builds
+tributed multi-map system for multiple drones with bidirec-            a unique DBoW2 database of keyframes that is used for
+tional information flow, built on top of ORB-SLAM. Their               relocalization, loop closing and map merging.
+focus is on overcoming the challenges of limited bandwidth           • Tracking thread processes sensor information and com-
+and distributed processing, while ours is on accuracy and              putes the pose of the current frame with respect to the
+robustness, achieving significantly better results on the EuRoC        active map in real-time, minimizing the reprojection error
+dataset. SLAMM [72] also proposes a multi-map extension of             of the matched map features. It also decides whether
+ORB-SLAM2, but keeps sub-maps as separated entities, while             the current frame becomes a keyframe. In visual-inertial
+we perform seamless map merging, building a more accurate              mode, the body velocity and IMU biases are estimated by
+global map.                                                            including the inertial residuals in the optimization. When
+   VINS-Mono [7] is a visual odometry system with loop                 tracking is lost, the tracking thread tries to relocalize
+closing and multi-map capabilities that rely on the place              the current frame in all the Atlas’ maps. If relocalized,
+recognition library DBoW2 [9]. Our experiments show that               tracking is resumed, switching the active map if needed.
+ORB-SLAM3 is 2.6 times more accurate than VINS-Mono                    Otherwise, after a certain time, the active map is stored
+in monocular-inertial single-session operation on the EuRoc            as non-active, and a new active map is initialized from
+dataset, thanks to the ability to use mid-term data association.       scratch.
+Our Atlas system also builds on DBoW2, but proposes a novel          • Local mapping thread adds keyframes and points to
+higher-recall place recognition technique, and performs more           the active map, removes the redundant ones, and refines
+detailed and accurate map merging using local BA, increasing           the map using visual or visual-inertial bundle adjustment,
+the advantage to 3.2 times better accuracy than VINS-Mono              operating in a local window of keyframes close to the
+in multi-session operation on EuRoC.                                   current frame. Additionally, in the inertial case, the IMU
+                                                                       parameters are initialized and refined by the mapping
+                  III. S YSTEM OVERVIEW                                thread using our novel MAP-estimation technique.
+  ORB-SLAM3 is built on ORB-SLAM2 [3] and ORB-                       • Loop and map merging thread detects common regions
+SLAM-VI [4]. It is a full multi-map and multi-session sys-             between the active map and the whole Atlas at keyframe
+tem able to work in pure visual or visual-inertial modes               rate. If the common area belongs to the active map, it
+                                                                                                                                  6
+
+
+
+     performs loop correction; if it belongs to a different map,    rectifying a divergent stereo pair, or a stereo fisheye camera
+     both maps are seamlessly merged into a single one, that        would require severe image cropping, loosing the advantages
+     becomes the active map. After a loop correction, a full        of a large FOV.
+     BA is launched in an independent thread to further refine         For that reason, our system does not rely on image rectifi-
+     the map without affecting real-time performance.               cation, considering the stereo rig as two monocular cameras
+                                                                    having:
+                    IV. C AMERA M ODEL                                1) a constant relative SE(3) transformation between them,
+   ORB-SLAM assumed in all system components a pin-hole                  and
+camera model. Our goal is to abstract the camera model                2) optionally, a common image region that observes the
+from the whole SLAM pipeline by extracting all properties                same portion of the scene.
+and functions related to the camera model (projection and
+                                                                       These constrains allow us to effectively estimate the scale
+unprojection functions, Jacobian, etc.) into separate modules.
+                                                                    of the map by introducing that information when triangulating
+This allows our system to use any camera model by providing
+                                                                    new landmarks and in the bundle adjustment optimization.
+the corresponding camera module. In ORB-SLAM3 library,
+                                                                    Following up with this idea, our SLAM pipeline estimates a 6
+apart from the pin-hole model, we provide the Kannala-Brandt
+                                                                    DoF rigid body pose, whose reference system can be located
+[12] fisheye model.
+                                                                    in one of the cameras or in the IMU sensor, and represents
+   As most popular computer vision algorithms assume a
+                                                                    the cameras with respect to the rigid body pose.
+pin-hole camera model, many SLAM systems rectify either
+                                                                       If both cameras have an overlapping area in which we have
+the whole image, or the feature coordinates, to work in an
+                                                                    stereo observations, we can triangulate true scale landmarks
+ideal planar retina. However, this approach is problematic
+                                                                    the first time they are seen. The rest of both images still
+for fisheye lenses, that can reach or surpass a field of view
+                                                                    has a lot of relevant information that is used as monocular
+(FOV) of 180 degrees. Image rectification is not an option as
+                                                                    information in the SLAM pipeline. Features first seen in these
+objects in the periphery get enlarged and objects in the center
+                                                                    areas are triangulated from multiple views, as in the monocular
+loose resolution, hindering feature matching. Rectifying the
+                                                                    case.
+feature coordinates requires using less than 180 degrees FOV
+and causes trouble to many computer vision algorithms that
+assume uniform reprojection error along the image, which
+is far from true in rectified fisheye images. This forces to                       V. V ISUAL -I NERTIAL SLAM
+crop-out the outer parts of the image, losing the advantages
+of large FOV: faster mapping of the environment and better             ORB-SLAM-VI [4] was the first true visual-inertial SLAM
+robustness to occlusions. Next, we discuss how to overcome          system capable of map reusing. However, it was limited to
+these difficulties.                                                 pin-hole monocular cameras, and its initialization was too
+                                                                    slow, failing in some challenging scenarios. In this work, we
+                                                                    build on ORB-SLAM-VI providing a fast an accurate IMU
+A. Relocalization
+                                                                    initialization technique, and an open-source SLAM library
+   A robust SLAM system needs the capability of relocal-            capable of monocular-inertial and stereo-inertial SLAM, with
+izing the camera when tracking fails. ORB-SLAM solves               pin-hole and fisheye cameras.
+the relocalization problem by setting a Perspective-n-Points
+solver based on the ePnP algorithm [73], which assumes a
+calibrated pin-hole camera along all its formulation. To follow
+                                                                    A. Fundamentals
+up with our approach, we need a PnP algorithm that works
+independently of the camera model used. For that reason,                While in pure visual SLAM, the estimated state only
+we have adopted Maximum Likelihood Perspective-n-Point              includes the current camera pose, in visual-inertial SLAM,
+algorithm (MLPnP) [74] that is completely decoupled from the        additional variables need to be computed. These are the body
+camera model as it uses projective rays as input. The camera        pose Ti = [Ri , pi ] ∈ SE(3) and velocity vi in the world
+model just needs to provide an unprojection function passing        frame, and the gyroscope and accelerometer biases, bgi and
+from pixels to projection rays, to be able to use relocalization.   bai , which are assumed to evolve according to a Brownian
+                                                                    motion. This leads to the state vector:
+B. Non-rectified Stereo SLAM
+                                                                                           .
+   Most stereo SLAM systems assume that stereo frames                                   Si = {Ti , vi , bgi , bai }             (1)
+are rectified, i.e. both images are transformed to pin-hole
+projections using the same focal length, with image planes            For visual-inertial SLAM, we preintegrate IMU measure-
+co-planar, and are aligned with horizontal epipolar lines, such     ments between consecutive visual frames, i and i+1, following
+that a feature in one image can be easily matched by looking        the theory developed in [60], and formulated on manifolds in
+at the same row in the other image. However the assumption          [61]. We obtain preintegrated rotation, velocity and position
+of rectified stereo images is very restrictive and, in many         measurements, denoted as ∆Ri,i+1 , ∆vi,i+1 and ∆pi,i+1 , as
+applications, is neither suitable nor feasible. For example,        well a covariance matrix ΣIi,i+1 for the whole measurement
+                                                                                                                                         7
+
+
+
+vector. Given these preintegrated terms and states Si and Si+1 ,       •   Ignoring sensor uncertainties during IMU initialization
+we adopt the definition of inertial residual rIi,i+1 from [61]:            produces large unpredictable errors [64].
+  rIi,i+1 = [r∆Ri,i+1 , r∆vi,i+1 , r∆pi,i+1 ]                           So, taking properly into account sensor uncertainties, we
+                                                                     state the IMU initialization as a MAP estimation problem,
+ r∆Ri,i+1 = Log ∆RTi,i+1 RTi Ri+1
+                                      
+                                                                     split in three steps:
+ r∆vi,i+1 = RTi (vi+1 − vi − g∆ti,i+1 ) − ∆vi,i+1                       1) Vision-only MAP Estimation: We initialize pure
+                                              
+                                         1                                  monocular SLAM [2] and run it during 2 seconds,
+ r∆pi,i+1 = RTi pj − pi − vi ∆ti,i+1 − g∆t2 − ∆pi,i+1                       inserting keyframes at 4Hz. After this period, we have an
+                                         2
+                                                    (2)                     up-to-scale map composed of k = 10 camera poses and
+                                                                            hundreds of points, that is optimized using visual-only
+where Log : SO(3) → R3 maps from the Lie group to the
+                                                                            BA (figure 2b). These poses are transformed to body ref-
+vector space. Together with inertial residuals, we also use
+                                                                            erence, obtaining the trajectory T̄0:k = [R, p̄]0:k where
+reprojection errors rij between frame i and 3D point j at
+                                                                            the bar denotes up-to-scale variables in the monocular
+position xj :
+                                                                            case.
+               rij = uij − Π TCB T−1
+                                            
+                                    i ⊕ xj              (3)             2) Inertial-only MAP Estimation: In this step we aim to
+                                                                            obtain the optimal estimation of the inertial variables,
+where Π : R3 → Rn is the projection function for the corre-
+                                                                            in the sense of MAP estimation, using only T̄0:k and
+sponding camera model, uij is the observation of point j at
+                                                                            inertial measurements between these keyframes. These
+image i, having a covariance matrix Σij , TCB ∈ SE(3) stands
+                                                                            inertial variables may be stacked in the inertial-only state
+for the rigid transformation from body-IMU to camera (left
+                                                                            vector:
+or right), known from calibration, and ⊕ is the transformation
+                                                                                              Yk = {s, Rwg , b, v̄0:k }              (5)
+operation of SE(3) group over R3 elements.
+   Combining inertial and visual residual terms, visual-inertial           where s ∈ R+ is the scale factor of the vision-only
+SLAM can be posed as a keyframe-based minimization prob-                   solution; Rwg ∈ SO(3) is a rotation matrix, used to
+lem [39]. Given a set of k + 1 keyframes and its state                     compute gravity vector g in the world reference as
+      .
+S̄k = {S0 . . . Sk }, and a set of l 3D points and its state               g = Rwg gI , where gI = (0, 0, G)T and G is the gravity
+    .
+X = {x0 . . . xl−1 }, the visual-inertial optimization problem             magnitude; b = (ba , bg ) ∈ R6 are the accelerometer
+can be stated as:                                                          and gyroscope biases assumed to be constant during
+                                                                           initialization; and v̄0:k ∈ R3 is the up-to-scale body
+                                                           
+            k                    l−1 X                   
+          X            2         X
+   min        rIi−1,i Σ−1    +            ρHub krij kΣ−1                 velocities from first to last keyframe, initially estimated
+  S̄k ,X                  Ii,i+1                         ij
+           i=1                      j=0 i∈Kj                               from T̄0:k . At this point, we are only considering the
+                                                            (4)                                                 .
+                                                                           set of inertial measurements I0:k = {I0,1 . . . Ik−1,k }.
+where Kj is the set of keyframes observing 3D point j.                     Thus, we can state a MAP estimation problem, where
+This optimization may be outlined as the factor-graph shown                the posterior distribution to be maximized is:
+in figure 2a. Note that for reprojection error we use a ro-
+bust Huber kernel ρHub to reduce the influence of spurious                                p(Yk |I0:k ) ∝ p(I0:k |Yk )p(Yk )            (6)
+matchings, while for inertial residuals it is not needed, since            where p(I0:k |Yk ) stands for likelihood and p(Yk ) for
+miss-associations do not exist. This optimization needs to                 prior. Considering independence of measurements, the
+be adapted for efficiency during tracking and mapping, but                 inertial-only MAP estimation problem can be written
+more importantly, it requires good initial seeds to converge to            as:
+accurate solutions.                                                                               Yk
+                                                                                                                                         !
+                                                                             ∗
+                                                                           Yk = arg max p(Yk )        p(Ii−1,i |s, Rwg , b, v̄i−1 , v̄i )
+B. IMU Initialization                                                                Yk              i=1
+   The goal of this step is to obtain good initial values for                                                                      (7)
+the inertial variables: body velocities, gravity direction, and            Taking negative logarithm and assuming Gaussian error
+IMU biases. Some systems like VI-DSO [46] try to solve from                for IMU preintegration and prior distribution, this finally
+scratch visual-inertial BA, sidestepping a specific initialization         results in the optimization problem:
+process, obtaining slow convergence for inertial parameters (up                                           k
+                                                                                                                              !
+                                                                                                         X
+to 30 seconds).                                                              Yk∗ = arg min kbk2Σ−1 +         krIi−1,i k2Σ−1        (8)
+                                                                                       Yk             b                       Ii−1,i
+   In this work we propose a fast and accurate initialization                                               i=1
+method based on three key insights:                                        This optimization, represented in figure 2c, differs from
+   • Pure monocular SLAM can provide very accurate initial                 equation 4 in not including visual residuals, as the up-
+     maps [2], whose main problem is that scale is unknown.                to-scale trajectory estimated by visual SLAM is taken
+     Solving first the vision-only problem will enhance IMU                as constant, and adding a prior residual that forces
+     initialization.                                                       IMU biases to be close to zero. Covariance matrix Σb
+   • As shown in [56], scale converges much faster when it is              represents prior knowledge about the range of values
+     explicitly represented as an optimization variable, instead           IMU biases may take. Details for preintegration of IMU
+     of using the implicit representation of BA.                           covariance ΣIi−1,i can be found at [61].
+                                                                                                                                             8
+
+
+
+
+         Map Points
+                                                                                                                          Up-to-scale
+                                                                                                                          parameters
+                                     Map Points                          ...                                             Inertial residual
+                                                                                                                          Random Walk
+                                                                                                    ...
+                                                                                                                             residual
+                                                                                                                         Reproj. residual
+
+                                                                                                                          Prior residual
+
+                                                                                                                        Fixed parameters
+
+    (a) Visual-Inertial           (b) Visual-Only            (c) Inertial-Only        (d) Scale and Gravity
+                          Figure 2: Factor graph representation for different optimizations along the system
+
+
+      As we are optimizing in a manifold we need to define             scale refinement technique, based on a modified inertial-only
+      a retraction [61] to update Rwg during the optimization.         optimization, where all inserted keyframes are included but
+      Since rotation around gravity direction does not suppose         scale and gravity direction are the only parameters to be
+      a change in gravity, this update is parameterized with           estimated (figure 2d). Notice that in that case, the assumption
+      two angles (δαg , δβg ):                                         of constant biases would not be correct. Instead, we use the
+                                                                       values estimated from mapping, and we fix them. This opti-
+                      Rnew   old
+                       wg = Rwg Exp(δαg , δβg , 0)              (9)    mization, which is very computationally efficient, is performed
+      being Exp(.) the exponential map from R3 to SO(3).               in the Local Mapping thread every ten seconds, until the map
+      To guarantee that scale factor remains positive during           has more than 100 keyframes, or more than 75 seconds have
+      optimization we define its update as:                            passed since initialization.
+                                                                          Finally, we have easily extended our monocular-inertial
+                            snew = sold exp (δs)               (10)    initialization to stereo-inertial by fixing the scale factor to one
+       Once the inertial-only optimization is finished, the frame      and taking it out from the inertial-only optimization variables,
+       poses and velocities and the 3D map points are scaled           enhancing its convergence.
+       with the estimated scale factor and rotated to align the
+       z axis with the estimated gravity direction. Biases are         C. Tracking and Mapping
+       updated and IMU preintegration is repeated, aiming to              For tracking and mapping we adopt the schemes proposed
+       reduce future linearization errors.                             in [4]. Tracking solves a simplified visual-inertial optimization
+   3) Visual-Inertial MAP Estimation: Once we have a good              where only the states of the last two frames are optimized,
+       estimation for inertial and visual parameters, we can           while map points remain fixed.
+       perform a joint visual-inertial optimization for further           For mapping, trying to solve the whole optimization from
+       refining the solution. This optimization may be repre-          equation 4 would be intractable for large maps. We use as
+       sented as figure 2a but having common biases for all            optimizable variables a sliding window of keyframes and
+       keyframes and including the same prior information for          their points, including also observations to these points from
+       biases than in the inertial-only step.                          covisible keyframes but keeping their pose fixed.
+   Our exhaustive initialization experiments on the EuRoC
+dataset [6] show that this initialization is very efficient, achiev-
+                                                                       D. Robustness to tracking loss
+ing 5% scale error with trajectories of 2 seconds. To improve
+the initial estimation, visual-inertial BA is performed 5 and             In pure visual SLAM or VO systems, temporal camera
+15 seconds after initialization, converging to 1% scale error as       occlusion and fast motions result in losing track of visual
+shown in section VII. After these BAs, we say that the map             elements, getting the system lost. ORB-SLAM pioneered the
+is mature, meaning that scale, IMU parameters and gravity              use of fast relocalization techniques based on bag-of-words
+directions are already accurately estimated.                           place recognition, but they proved insufficient to solve difficult
+   Our initialization is much more accurate than joint initializa-     sequences in the EuRoC dataset [3]. Our visual-inertial system
+tion methods that solve a set of algebraic equations [62]–[64],        enters into visually lost state when less than 15 point maps are
+and much faster than the initialization used in ORB-SLAM-              tracked, and achieves robustness in two stages:
+VI [4] that needed 15 seconds to get the first scale estimation,          • Short-term lost: the current body state is estimated from
+or that used in VI-DSO [46], that starts with a huge scale                  IMU readings, and map points are projected in the
+error and requires 20-30 seconds to converge to 1% error.                   estimated camera pose and searched for matches within a
+Comparisons between different initialization methods may be                 large image window. The resulting matches are included
+found at [6].                                                               in visual-inertial optimization. In most cases this allows
+   In some specific cases, when slow motion does not provide                to recover visual tracking. Otherwise, after 5 seconds, we
+good observability of the inertial parameters, initialization               pass to the next stage.
+may fail to converge to accurate solutions in just 15 seconds.            • Long-term lost: A new visual-inertial map is initialized
+To get robustness against this situation, we propose a novel                as explained above, and it becomes the active map.
+                                                                                                                                  9
+
+
+
+If the system gets lost within 15 seconds after IMU initial-       distance ratio to the second-closest match [76]. The steps of
+ization, the map is discarded. This prevents to accumulate         our place recognition algorithm are:
+inaccurate and meaningless maps.
+                                                                     1) DBoW2 candidate keyframes. We query the Atlas
+         VI. M AP M ERGING AND L OOP C LOSING                           DBoW2 database with the active keyframe Ka to
+   Short-term and mid-term data-associations between a frame            retrieve the three most similar keyframes, excluding
+and the active map are routinely found by the tracking and              keyframes covisible with Ka . We refer to each matching
+mapping threads by projecting map points into the estimated             candidate for place recognition as Km .
+camera pose and searching for matches in an image window             2) Local window. For each Km we define a local window
+of just a few pixels. To achieve long-term data association             that includes Km , its best covisible keyframes, and
+for relocalization and loop detection, ORB-SLAM uses the                the map points observed by all of them. The DBoW2
+DBoW2 bag-of-words place recognition system [9], [75]. This             direct index provides a set of putative matches between
+method has been also adopted by most recent VO and SLAM                 keypoints in Ka and in the local window keyframes. For
+systems that implement loop closures (Table I).                         each of these 2D-2D matches we have also available the
+   Unlike tracking, place recognition does not start from an            3D-3D match between their corresponding map points.
+initial guess for camera pose. Instead, DBoW2 builds a               3) 3D aligning transformation. We compute using
+database of keyframes with their bag-of-words vectors, and              RANSAC the transformation Tam that better aligns the
+given a query image is able to efficiently provide the most             map points in Km local window with those of Ka .
+similar keyframes according to their bag-of-words. Using only           In pure monocular, or in monocular-inertial when the
+the first candidate, raw DBoW2 queries achieve precision and            map is still not mature, we compute Tam ∈ Sim(3),
+recall in the order of 50-80% [9]. To avoid false positives             otherwise Tam ∈ SE(3). In both cases we use Horn
+that would corrupt the map, DBoW2 implements temporal                   algorithm [77] using a minimal set of three 3D-3D
+and geometric consistency checks moving the working point               matches to find each hypothesis for Tam . The putative
+to 100% precision and 30-40% recall [9], [75]. Crucially, the           matches that, after transforming the map point in Ka
+temporal consistency check delays place recognition at least            by Tam , achieve a reprojection error in Ka below a
+during 3 keyframes. When trying to use it in our Atlas system,          threshold, give a positive vote to the hypothesis. The
+we found that this delay and the low recall resulted too often          hypothesis with more votes is selected, provided the
+in duplicated areas in the same or in different maps.                   number is over a threshold.
+   In this work we propose a new place recognition algorithm         4) Guided matching refinement. All the map points in the
+with improved recall for long-term and multi-map data associ-           local window are transformed with Tam to find more
+ation. Whenever the mapping thread creates a new keyframe,              matches with the keypoints in Ka . The search is also
+place recognition is launched trying to detect matches with             reversed, finding matches for Ka map points in all the
+any of the keyframes already in the Atlas. If the matching              keyframes of the local window. Using all the matchings
+keyframe found belongs to the active map, a loop closure is             found, Tam is refined by non-linear optimization, where
+performed. Otherwise, it is a multi-map data association, then,         the goal function is the bidirectional reprojection error,
+the active and the matching maps are merged. As a second                using Huber influence function to provide robustness
+novelty in our approach, once the relative pose between the             to spurious matches. If the number of inliers after the
+new keyframe and the matching map is estimated, we define a             optimization is over a threshold, a second iteration of
+local window with the matching keyframe and its neighbours              guided matching and non-linear refinement is launched,
+in the covisibility graph. In this window we intensively search         using a smaller image search window.
+for mid-term data associations, improving the accuracy of            5) Verification in three covisible keyframes. To avoid
+loop closing and map merging. These two novelties explain               false positives, DBoW2 waited for place recognition to
+the better accuracy obtained by ORB-SLAM3 compared with                 fire in three consecutive keyframes, delaying or missing
+ORB-SLAM2 in the EuRoC experiments. The details of the                  place recognition. Our crucial insight is that, most of the
+different operations are explained next.                                time, the information required for verification is already
+                                                                        in the map. To verify place recognition, we search in
+                                                                        the active part of the map two keyframes covisible with
+A. Place Recognition                                                    Ka where the number of matches with points in the
+   To achieve higher recall, for every new active keyframe              local window is over a threshold. If they are not found,
+we query the DBoW2 database for several similar keyframes               the validation is further tried with the new incoming
+in the Atlas. To achieve 100 % precision, each of these                 keyframes, without requiring the bag-of-words to fire
+candidates goes through several steps of geometric verification.        again. The validation continues until three keyframes
+The elementary operation of all the geometrical verification            verify Tam , or two consecutive new keyframes fail to
+steps consists in checking whether there is an ORB keypoint             verify it.
+inside an image window whose descriptor matches the ORB              6) VI Gravity direction verification. In the visual-inertial
+descriptor of a map point, using a threshold for the Hamming            case, if the active map is mature, we have estimated
+distance between them. If there are several candidates in the           Tam ∈ SE(3). We further check whether the pitch and
+search window, to discard ambiguous matches, we check the               roll angles are below a threshold to definitively accept
+                                                                                                                                  10
+
+
+
+      the place recognition hypothesis.                                                         Stored Map
+
+
+
+
+                                                                                                               {
+B. Visual Map Merging
+                                                                                                    ...
+                                                                                                    ...
+   When a successful place recognition produces multi-map
+data association between keyframe Ka in the active map
+                                                                      Keyframes from
+                                                                                                    Map Points
+Ma , and a matching keyframe Km from a different map
+stored in the Atlas Mm , with an aligning transformation
+                                                                    observing local MapPoints
+                                                                                                   ...
+Tam , we launch a map merging operation. In the process,                                           ...
+
+
+
+
+                                                                                                                        {
+special care must be taken to ensure that the information in                                     Active Map
+Mm can be promptly reused by the tracking thread to avoid
+map duplication. For this, we propose to bring the Ma map
+                                                                                           (a) Visual welding BA
+into Mm reference. As Ma may contain many elements and
+
+
+
+
+                                                                                                             {
+merging them might take a long time, merging is split in
+two steps. First, the merge is performed in a welding window
+                                                                          Stored Map
+defined by the neighbours of Ka and Km in the covisibility
+graph, and in a second stage, the correction is propagated to
+the rest of the merged map by a pose-graph optimization. The
+detailed steps of the merging algorithm are:
+   1) Welding window assembly. The welding window in-               Keyframes from
+                                                                    and      observing
+                                                                                                  Map Points
+      cludes Ka and its covisible keyframes, Km and its
+                                                                     local MapPoints
+
+
+
+
+                                                                                                                            {
+      covisible keyframes, and all the map point observed by
+      them. Before their inclusion in the welding window,
+                                                                           Active Map
+      the keyframes and map points belonging to Ma are
+      transformed by Tma to align them with respect to Mm .
+   2) Merging maps. Maps Ma and Mm are fused together
+      to become the new active map. To remove duplicated
+      points, matches are actively searched for Ma points in                           (b) Visual-Inertial welding BA
+      the Mm keyframes. For each match, the point from Ma           Figure 3: Factor graph representation for the welding BA, with
+      is removed, and the point in Mm is kept accumulating all      reprojection error terms (blue squares), IMU preintegration
+      the observations of the removed point. The covisibility       terms (yellow squares) and bias random walk (purple squares).
+      and essential graphs [2] are updated by the addition of
+      edges connecting keyframes from Mm and Ma thanks
+      to the new mid-term point associations found.                      map is not mature, we align Ma using the available
+   3) Welding bundle adjustment. A local BA is performed                 Tma ∈ Sim(3).
+      optimizing all the keyframes from Ma and Mm in the              2) VI welding bundle adjustment: Poses, velocities and
+      welding window along with the map points which are                 biases of keyframes Ka and Km and their five last
+      observed by them (Fig. 3a). To fix gauge freedom, the              temporal keyframes are included as optimizable. These
+      keyframes of Mm not belonging to the welding window                variables are related by IMU preintegration terms, as
+      but observing any of the local map points are included             shown in Figure 3b. For Mm , the keyframe immediately
+      in the BA with their poses fixed. Once the optimization            before the local window is included but fixed, while
+      finishes, all the keyframes included in the welding area           for Ma the similar keyframe is included but its pose
+      can be used for camera tracking, achieving fast and                remains optimizable. All map points seen by the above
+      accurate reuse of map Mm .                                         mentioned keyframes are optimized, together with poses
+   4) Essential-graph optimization. A pose-graph optimiza-               from Km and Ka covisible keyframes. All keyframes
+      tion is performed using the essential graph of the whole           and points are related by means of reprojection error.
+      merged map, keeping fixed the keyframes in the welding
+      area. This optimization propagates corrections from the       D. Loop Closing
+      welding window to the rest of the map.                           Loop closing correction algorithm is analogous to map
+                                                                    merging, but in a situation where both keyframes matched
+                                                                    by place recognition belong to the active map. A welding
+C. Visual-Inertial Map Merging
+                                                                    window is assembled from the matched keyframes, and point
+   The visual-inertial merging algorithm follows similar steps      duplicates are detected and fused creating new links in the
+than the pure visual case. Steps 1) and 3) are modified to better   covisibility and essential graphs. The next step is a pose-
+exploit the inertial information:                                   graph optimization to propagate the loop correction to the rest
+   1) VI welding window assembly: If the active map is              of the map. The final step is a global BA to find the MAP
+      mature, we apply the available Tma ∈ SE(3) to map Ma          estimate after considering the loop closure mid-term and long-
+      before its inclusion in the welding window. If the active     term matches. In the visual-inertial case, the global BA is only
+                                                                                                                                     11
+
+
+
+                                                                      and more than doubles the accuracy of VI-DSO and VINS-
+                                                                      Mono, showing again the advantages of mid-term and long-
+                 MH01
+                 MH02
+                 MH03
+                 MH04
+                 MH05
+
+
+
+
+                                                   MH01
+                                                   MH02
+                                                   MH03
+                                                   MH04
+                                                   MH05
+                 V101
+                 V102
+                 V103
+                 V201
+                 V202
+                 V203
+
+
+
+
+                                                   V101
+                                                   V102
+                                                   V103
+                                                   V201
+                                                   V202
+                                                   V203
+                                                           0.50
+                                                           0.45       term data association. Compared with ORB-SLAM VI, our
+             2                                 2
+                                                           0.40       novel fast IMU initialization allows ORB-SLAM3 to calibrate
+                                                           0.35
+             4                                 4
+
+
+
+
+                            Mono-Inertial
+                                                           0.30       the inertial sensor in a few seconds and use it from the very
+Monocular
+
+
+
+
+                                                           0.25
+             6                                 6
+                                                           0.20       beginning, being able to complete all EuRoC sequences, and
+                                                           0.15
+             8                                 8                      obtaining better accuracy.
+                                                           0.10
+                                                           0.05
+            10                                10
+                                                           0.00          In stereo-inertial configuration, ORB-SLAM3 is three to
+                                                                      four times more accurate than and Kimera and VINS-Fusion.
+             2                                 2                      It’s accuracy is only approached by the recent BASALT that,
+             4                                 4
+                                                                      being a native stereo-inertial system, was not able to complete
+                            Stereo-Inertial
+
+
+
+
+                                                                      sequence V203, where some frames from one of the cameras
+Stereo
+
+
+
+
+             6                                 6
+                                                                      are missing. Comparing our monocular-inertial and stereo-
+             8                                 8
+                                                                      inertial systems, the latter performs better in most cases. Only
+            10                                10
+                                                                      for two Machine Hall (MH) sequences a lower accuracy is
+                                                                      obtained. We hypothesize that greater depth scene for MH
+  Figure 4: Colored squares represent the RMS ATE for ten             sequences may lead to less accurate stereo triangulation and
+  different execution in each sequence of the EuRoC dataset.          hence a less precise scale.
+                                                                         To summarize performance, we have presented the median
+                                                                      of ten executions for each sensor configuration. For a robust
+  performed if the number of keyframes is below a threshold to
+                                                                      system, the median represents accurately the behavior of the
+  avoid a huge computational cost.
+                                                                      system. But a non-robust system will show high variance in
+                                                                      its results. This can be analyzed using figure 4 that shows
+                   VII. E XPERIMENTAL R ESULTS                        with colors the error obtained in each of the ten executions.
+     The evaluation of the whole system is split in:                  Comparison with the figures for DSO, ROVIO and VI-DSO
+     • Single session experiments in EuRoC [79]: each of              published in [46] confirms the superiority of our method.
+       the 11 sequences is processed to produce a map, with              In pure visual configurations, the multi-map system adds
+       the four sensor configurations: Monocular, Monocular-          some robustness to fast motions by creating a new map when
+       Inertial, Stereo and Stereo-Inertial.                          tracking is lost, that is merged later with the global map. This
+     • Performance of monocular and stereo visual-inertial            can be seen in sequences V103 monocular and V203 stereo
+       SLAM with fisheye cameras, in the challenging TUM              that could not be solved by ORB-SLAM2 and are successfully
+       VI Benchmark [80].                                             solved by our system in most executions. As expected, stereo
+     • Multi-session experiments in both datasets.                    is more robust than monocular thanks to its faster feature
+  As usual in the field, we measure accuracy with RMS ATE             initialization, with the additional advantage that the real scale
+  [81], aligning the estimated trajectory with ground-truth using     is estimated.
+  a Sim(3) transformation in the pure monocular case, and a              However, the big leap in robustness is obtained by our
+  SE(3) transformation in the rest of sensor configurations. Scale    novel visual-inertial SLAM system, both in monocular and
+  error is computed using s from Sim(3) alignment, as |1 − s|.        stereo configurations. The stereo-inertial system has a very
+  All experiments have been run on an Intel Core i7-7700 CPU,         slight advantage over monocular-inertial, particularly in the
+  at 3.6GHz, with 32 GB memory, using only CPU.                       most challenging V203 sequence.
+                                                                         We can conclude that inertial integration not only boosts
+                                                                      accuracy, reducing the median ATE error compared to pure
+  A. Single-session SLAM on EuRoC                                     visual solutions, but it also endows the system with excellent
+     Table II compares the performance of ORB-SLAM3 using             robustness, having a much more stable performance.
+  its four sensor configurations with the most relevant systems
+  in the state-of-the-art. Our reported values are the median after
+  10 executions. As shown in the table, ORB-SLAM3 achieves            B. Visual-Inertial SLAM on TUM-VI Benchmark
+  in all sensor configurations more accurate result than the best        The TUM-VI dataset [80] consists of 28 sequences in 6
+  systems available in the literature, in most cases by a wide        different environments, recorded using a hand-held fisheye
+  margin.                                                             stereo-inertial rig. Ground-truth for the trajectory is only
+     In monocular and stereo configurations our system is more        available at the beginning and at the end of the sequences,
+  precise than ORB-SLAM2 due to the better place recognition          which for most of them represents a very small portion of
+  algorithm that closes loops earlier and provides more mid-          the whole trajectory. Many sequences in the dataset do not
+  term matches. Interestingly, the next best results are obtained     contain loops. Even if the starting and ending point are in
+  by DSM that also uses mid-term matches, even though it does         the same room, point of view directions are opposite and
+  not close loops.                                                    place recognition cannot detect any common region. Using
+     In monocular-inertial configuration, ORB-SLAM3 is five to        this ground-truth for evaluation amounts to measuring the
+  ten times more accurate than MCSKF, OKVIS and ROVIO,                accumulated drift along the whole trajectory.
+                                                                                                                                                                      12
+
+
+
+Table II: Performance comparison in the EuRoC dataset (RMS ATE in m., scale error in %). Except where noted, we show
+results reported by the authors of each system, for all the frames in the trajectory, comparing with the processed GT.
+                                                       MH01     MH02     MH03      MH04     MH05       V101     V102    V103       V201      V202    V203    Avg1
+                     ORB-SLAM
+                                         ATE2,3         0.071   0.067    0.071      0.082   0.060      0.015    0.020      -      0.021      0.018     -     0.047*
+                         [4]
+                        DSO
+                                          ATE           0.046   0.046    0.172      3.810   0.110      0.089    0.107   0.903     0.044      0.132   1.152   0.601
+                        [27]
+                        SVO
+      Monocular                           ATE           0.100   0.120    0.410      0.430   0.300      0.070    0.210      -      0.110      0.110   1.080   0.294*
+                        [24]
+                        DSM
+                                          ATE           0.039   0.036    0.055      0.057   0.067      0.095    0.059   0.076     0.056      0.057   0.784   0.126
+                        [31]
+                     ORB-SLAM3
+                                          ATE           0.016   0.027    0.028      0.138   0.072      0.033    0.015   0.033     0.023      0.029     -     0.041*
+                       (ours)
+                     ORB-SLAM2
+                                          ATE           0.035   0.018    0.028      0.119   0.060      0.035    0.020   0.048     0.037      0.035     -     0.044*
+                          [3]
+                     VINS-Fusion
+                                          ATE           0.540   0.460    0.330      0.780   0.500      0.550    0.230      -      0.230      0.200     -     0.424*
+                         [44]
+          Stereo
+                         SVO
+                                          ATE           0.040   0.070    0.270      0.170   0.120      0.040    0.040   0.070     0.050      0.090   0.790   0.159
+                         [24]
+                     ORB-SLAM3
+                                          ATE           0.029   0.019    0.024      0.085   0.052      0.035    0.025   0.061     0.041      0.028   0.521   0.084
+                        (ours)
+                       MCSKF
+                                          ATE5          0.420   0.450    0.230      0.370   0.480      0.340    0.200   0.670     0.100      0.160   1.130   0.414
+                          [33]
+                        OKVIS                   5
+                                          ATE           0.160   0.220    0.240      0.340   0.470      0.090    0.200   0.240     0.130      0.160   0.290   0.231
+                          [39]
+                        ROVIO                   5
+                                          ATE           0.210   0.250    0.250      0.490   0.520      0.100    0.100   0.140     0.120      0.140   0.140   0.224
+                          [42]
+      Monocular      ORBSLAM-VI          ATE2,3         0.075   0.084    0.087      0.217   0.082      0.027    0.028      -      0.032      0.041   0.074   0.075*
+       Inertial            [4]        scale error2,3     0.5     0.8      1.5        3.5     0.5        0.9      0.8       -       0.2        1.4     0.7     1.1*
+                      VINS-Mono
+                                          ATE4          0.084   0.105    0.074      0.122   0.147      0.047    0.066   0.180     0.056      0.090   0.244   0.110
+                           [7]
+                       VI-DSO             ATE           0.062   0.044    0.117      0.132   0.121      0.059    0.067   0.096     0.040      0.062   0.174   0.089
+                          [46]         scale error       1.1     0.5      0.4        0.2     0.8        1.1      1.1     0.8       1.2        0.3     0.4     0.7
+                     ORB-SLAM3            ATE           0.062   0.037    0.046      0.075   0.057      0.049    0.015   0.037     0.042      0.021   0.027   0.043
+                         (ours)        scale error       1.4     0.3      0.8        0.5     0.3        2.0      0.6     2.2       0.7        0.4     1.0     0.9
+                     VINS-Fusion
+                                          ATE4          0.166   0.152    0.125      0.280   0.284      0.076    0.069   0.114     0.066      0.091   0.096   0.138
+                         [44]
+                      BASALT                    3
+                                          ATE           0.080   0.060    0.050      0.100   0.080      0.040    0.020   0.030     0.030      0.020     -     0.051*
+          Stereo         [47]
+          Inertial     Kimera
+                                          ATE           0.080   0.090    0.110      0.150   0.240      0.050    0.110   0.120     0.070      0.100   0.190   0.119
+                          [8]
+                     ORB-SLAM3            ATE           0.036   0.033    0.035      0.051   0.082      0.038    0.014   0.024     0.032      0.014   0.024   0.035
+                        (ours)         scale error       0.6     0.2      0.6        0.2     0.9        0.8      0.6     0.8       1.1        0.2     0.2     0.6
+
+      1
+        Average error of the successful sequences. Systems that did no complete all sequences are denoted by * and are not marked in bold.
+      2
+        Errors reported with raw GT instead of processed GT.
+      3
+        Errors reported with keyframe trajectory instead of full trajectory.
+      4
+        Errors obtained by ourselves, running the code with its default configuration.
+      5
+        Errors reported at [78].
+
+
+
+   We extract 1500 ORB points per image in monocular-                                 revisiting and reusing previously mapped regions, which is one
+inertial setup, and 1000 points per image in stereo-inertial,                         of the main strengths of ORB-SLAM3. Also, tracked points
+after applying CLAHE equalization to address under and over                           are typically closer than 5 m, what makes easier to estimate
+exposure found in the dataset. For outdoors sequences, our                            inertial parameters, preventing them from diverging.
+system struggles with very far points coming from the cloudy                             In magistrale indoors sequences, that are up to 900 m long,
+sky, that is very visible in fisheye cameras. These points may                        most tracked points are relatively close, and ORB-SLAM3
+have slow motion that can introduce drift in the camera pose.                         obtains errors around 1 m except in one sequence that goes
+For preventing this, we discard points further than 20 meters                         close to 5 m. In contrast, in some long outdoors sequences, the
+from the current camera pose, only for outdoors sequences.                            scarcity of close visual features may cause drift of the inertial
+A more sophisticated solution would be to use an image                                parameters, notably scale and accelerometer bias, which leads
+segmentation algorithm to detect and discard the sky.                                 to errors in the order of 10 to 70 meters. Even though,
+   The results obtained are compared with the most relevant                           ORB-SLAM3 is the best performing system in the outdoor
+systems in the literature in table III, that clearly shows                            sequences.
+the superiority of ORB-SLAM3 both in monocular-inertial                                  This dataset also contains three really challenging slides
+and stereo-inertial. The closest systems are VINS-Mono and                            sequences, where the user descends though a dark tubular slide
+BASALT, that are essentially visual-inertial odometry systems                         with almost total lack of visual features. In this situation, a
+with loop closures, and miss mid-term data associations.                              pure visual system would be lost, but our visual-inertial system
+   Analyzing more in detail the performance of our system, it                         is able to process the whole sequence with competitive error,
+gets lowest error in small and medium indoor environments,                            even if no loop-closures can be detected. Interestingly, VINS-
+room and corridor sequences, with errors below 10 cm for                              Mono and BASALT, that track features using Lukas-Kanade,
+most of them. In these trajectories, the system is continuously                       obtain in some of these sequences better accuracy than ORB-
+                                                                                                                                                         13
+
+
+
+Table III: TUM VI Benchmark [80]: RMS ATE (m) for regions                      Table V: Multi-session RMS ATE (m) on the EuRoC dataset.
+with available ground-truth data.                                              For CCM-SLAM and VINS we show results reported by
+                 Mono-Inertial               Stereo-Inertial
+                                                                               the authors of each system. Our values are the median of 5
+     Seq.
+                VINS- ORB-
+                                  OKVIS ROVIO BASALT
+                                                              ORB- Length
+                                                                          LC
+                                                                               executions, aligning the trajectories with the processed GT.
+                Mono SLAM3                                   SLAM3   (m)
+   corridor1     0.63    0.04       0.33    0.47      0.34     0.03 305 X       Room                           Machine Hall  Vicon 1  Vicon 2
+   corridor2     0.95    0.02       0.47    0.75      0.42     0.02 322 X       Sequences                   MH01-03 MH01-05 V101-103 V201-203
+   corridor3     1.56    0.31       0.57    0.85      0.35     0.02 300 X
+   corridor4     0.25    0.17       0.26    0.13      0.21     0.21 114         ORB-SLAM3
+                                                                                                   ATE       0.030     0.058  0.058    0.284
+   corridor5     0.77    0.03       0.39    2.09      0.37     0.01 270 X           Mono
+  magistrale1 2.19       0.56       3.49    4.52      1.20     0.24 918 X       CCM-SLAM
+  magistrale2 3.11       0.52       2.73   13.43      1.11     0.52 561 X
+                                                                                                   ATE       0.077       -      -        -
+                                                                                 Mono [71]
+  magistrale3 0.40       4.89       1.22   14.80      0.74     1.86 566
+  magistrale4 5.12       0.13       0.77   39.73      1.58     0.16 688 X
+                                                                                ORB-SLAM3
+                                                                                                   ATE       0.028     0.040  0.027    0.163
+  magistrale5 0.85       1.03       1.62    3.47      0.60     1.13 458 X           Stereo
+  magistrale6 2.29       1.30       3.91      X       3.23     0.97 771         ORB-SLAM3          ATE       0.037     0.065  0.040    0.048
+   outdoors1 74.96 70.79             X     101.95 255.04      32.23 2656        Mono-Inertial Scale error     0.4       0.3    1.4      0.9
+   outdoors2 133.46 14.98          73.86 21.67       64.61    10.42 1601          VINS [7]
+   outdoors3 36.99 39.63* 32.38 26.10                38.26    54.77 1531                           ATE         -       0.210    -        -
+   outdoors4 16.46 25.26           19.51      X      17.53    11.61 928
+                                                                                Mono-Inertial
+   outdoors5 130.63 14.87          13.12 54.32        7.89     8.95 1168 X      ORB-SLAM3          ATE       0.041     0.047  0.031    0.046
+   outdoors6 133.60 16.84          96.51 149.14 65.50         10.70 2045        Stereo-Inertial Scale error   0.6       0.3    0.6      0.8
+   outdoors7 21.90 7.59            13.61 49.01        4.07     4.58 1748 X
+   outdoors8 83.36 27.88           16.31 36.03       13.53    11.02 986
+    room1        0.07    0.01       0.06    0.16      0.09     0.01 146 X
+    room2        0.07    0.02       0.11    0.33      0.07     0.01 142 X
+    room3        0.11    0.04       0.07    0.15      0.13     0.01 135 X
+                                                                               C. Multi-session SLAM
+    room4        0.04    0.01       0.03    0.09      0.05     0.01   68  X
+    room5        0.20    0.02       0.07    0.12      0.13     0.01 131 X         EuRoC dataset contains several sessions for each of its three
+    room6        0.08    0.01       0.04    0.05      0.02     0.01   67  X    environments: 5 in Machine Hall, 3 in Vicon1 and 3 in Vicon2.
+    slides1      0.68    0.97       0.86   13.73      0.32     0.41 289
+    slides2      0.84    1.06       2.15    0.81      0.32     0.49 299
+                                                                               To test the multi-session performance of ORB-SLAM3, we
+    slides3      0.69    0.69       2.58    4.68      0.89     0.47 383        process sequentially all the sessions corresponding to each
+  Ours are median of three executions.
+  For other systems, we provide values reported at [82]
+                                                                               environment. Each trajectory in the same environment has
+  * points out that one out of three runs has not been successful              ground-truth with the same world reference, which allows to
+  LC: Loop Closing may exist in that sequence
+                                                                               perform a single global alignment to compute ATE.
+                                                                                  The first sequence in each room provides an initial map.
+                                                                               Processing the following sequences starts with the creation of
+Table IV: RMS ATE (m) obtained by ORB-SLAM3 with four                          a new active map, that is quickly merged with the map of
+sensor configurations in the room sequences, representative of                 the previous sessions, and from that point on, ORB-SLAM3
+AR/VR scenarios (median of 3 executions).                                      profits from reusing the previous map.
+                                             Mono-       Stereo-                  Table V reports the global multi-session RMS ATE for
+              Seq.       Mono      Stereo
+                                             Inertial    Inertial              the four sensor configurations in the three rooms, comparing
+             room1       0.042     0.077      0.009       0.008
+             room2       0.026     0.055      0.018       0.012                with the two only published multi-session results in EuRoC
+             room3       0.028     0.076      0.008       0.011                dataset: CCM-SLAM [71] that reports pure monocular results
+             room4       0.046     0.071      0.009       0.008                in MH01-MH03, and VINS-Mono [7] in the five Machine
+             room5       0.046     0.066      0.014       0.010
+             room6       0.043     0.063      0.006       0.006                Hall sequences, using monocular-inertial. In both cases ORB-
+              Avg.       0.039     0.068      0.011       0.009                SLAM3 more than doubles the accuracy of competing meth-
+                                                                               ods. In the case of VINS-Mono, ORB-SLAM3 obtains 2.6
+                                                                               better accuracy in single-session, and the advantage goes up
+                                                                               to 3.2 times in multi-session, showing the superiority of our
+SLAM3, that matches ORB descriptors.                                           map merging operations.
+                                                                                  Comparing these multi-session performances with the
+   Finally, the room sequences can be representative of typical                single-session results reported in Table II the most notable
+AR/VR applications, where the user moves with a hand-held                      difference is that multi-sessions monocular and stereo SLAM
+or head-mounted device in a small environment. For these                       can robustly process the difficult sequences V103 and V203,
+sequences ground-truth is available for the entire trajectory.                 thanks to the exploitation of the previous map.
+Table III shows that ORB-SLAM3 is significantly more ac-                          We have also performed some multi-session experiments on
+curate that competing approaches. The results obtained using                   the TUM-VI dataset. Figure 5 shows the result after processing
+our four sensor configurations are compared in table IV. The                   several sequences inside the TUM building1 . In this case,
+better accuracy of pure monocular compared with stereo is                      the small room sequence provides loop closures that were
+only apparent: the monocular solution is up-to-scale and is                    missing in the longer sequences, bringing all errors to cen-
+aligned with ground-truth with 7 DoFs, while stereo provides                   timeter level. Although ground-truth is not available outside
+the true scale, and is aligned with 6 DoFs. Using monocular-                   the room, comparing the figure with the figures published
+inertial, we further reduce the average RMS ATE error close to                 in [82] clearly shows our point: our multi-session SLAM
+1 cm, also obtaining the true scale. Finally, our stereo-inertial
+SLAM brings error below 1 cm, making it an excellent choice                      1 Videos of this and other experiments can be found at https://www.youtube.
+for AR/VR applications.                                                        com/channel/UCXVt-kXG6T95Z4tVaYlU80Q
+                                                                                                                                   14
+
+
+
+
+                                              room1+magistrale1+magistrale5+slides1
+
+               20
+
+
+
+               10
+
+
+
+                 0
+
+
+
+               -10
+
+                                                                                                        room1
+                                                                                                        magistrale1
+               -20                                                                                      magistrale5
+                                                                                                        slides1
+
+               -30
+
+
+                     -20            0             20             40             60           80             100
+
+
+
+   Figure 5: Multi-session stereo-inertial result with several sequences from TUM-VI dataset (front, side and top views).
+
+
+                                                                      D. Computing Time
+                                                                         Table VI summarizes the running time of the main opera-
+                                                                      tions performed in the tracking and mapping threads, showing
+                                                                      that our system is able to run in real time at 30-40 frames and
+                                                                      at 3-6 keyframes per second. The inertial part takes negligible
+                                                                      time during tracking and, in fact can render the system more
+                                                                      efficient as the frame rate could be safely reduced. In the
+                                                                      mapping thread, the higher number of variables per keyframe
+                                                                      has been compensated with a smaller number of keyframes in
+                                                                      the inertial local BA, achieving better accuracy, with similar
+                                                                      running time. As the tracking and mapping threads work
+                                                                      always in the active map, multi-mapping does not introduce
+                                                                      significant overhead.
+                                                                         Table VII summarizes the running time of the main steps for
+                                                                      loop closing and map merging. The novel place recognition
+                                                                      method only takes 10 ms per keyframe. Times for merging
+                                                                      and loop closing remain below one second, running only a
+                                                                      pose-graph optimization. For loop closing, performing a full
+                                                                      bundle adjustment may increase times up to a few seconds,
+                                                                      depending on the size of the involved maps. In any case, as
+                                                                      both operations are executed in a separate thread (Fig. 1) they
+                                                                      do not interfere with the real time performance of the rest
+Figure 6: Multi-session stereo-inertial. In red, the trajectory       of the system. The visual-inertial systems perform just two
+estimated after single-session processing of outdoors1. In            map merges to join three sequences, while visual systems
+blue, multi-session processing of magistrale2 first, and then         perform some additional merges to recover from tracking
+outdoors1.                                                            losses. Thanks to their lower drift, visual-inertial systems
+                                                                      also perform less loop closing operations compared with pure
+                                                                      visual systems.
+                                                                         Although it would be interesting, we do not compare
+                                                                      running time against other systems, since this would require
+system obtains far better accuracy that existing visual-inertial      a significant effort that is beyond the scope of this work.
+odometry systems. This is further exemplified in Figure 6.
+Although ORB-SLAM3 ranks higher in stereo inertial single-                               VIII. C ONCLUSIONS
+session processing of outdoors1, there is still a significant           Building on [2]–[4], we have presented ORB-SLAM3, the
+drift (≈ 60 m). In contrast, if outdoors1 is processed after          most complete open-source library for visual, visual-inertial
+magistrale2 in a multi-session manner, this drift is significantly    and multi-session SLAM, with monocular, stereo, RGB-D,
+reduced, and the final map is much more accurate.                     pin-hole and fisheye cameras. Our main contributions, apart
+                                                                                                                                       15
+
+
+
+Table VI: Running time of the main parts of our tracking and mapping threads compared to ORB-SLAM2, on EuRoC V202
+(mean time and standard deviation in ms).
+                           System          ORB-SLAM2         ORB-SLAM3         ORB-SLAM3        ORB-SLAM3         ORB-SLAM3
+                           Sensor              Stereo         Monocular            Stereo       Mono-Inertial     Stereo-Inertial
+                           Resolution        752×480           752×480           752×480          752×480           752×480
+               Settings    Cam. FPS            20Hz              20Hz               20Hz            20Hz               20Hz
+                           IMU                    -                -                  -            200Hz              200HZ
+                           ORB Feat.           1200              1000               1200             1000              1200
+                           RMS ATE             0.035             0.029              0.028           0.021              0.014
+                           Stereo rect.     3.07±0.80              -             1.32±0.43             -            1.60±0.74
+                           ORB extract      11.20±2.00        12.40±5.10        15.68±4.74       11.98±4.78        15.22±4.37
+                           Stereo match     10.38±2.57             -             3.35±0.92             -            3.38±1.07
+                           IMU integr.            -                -                  -          0.18±0.11          0.22±0.20
+               Tracking
+                           Pose pred        2.20±0.72         1.87±0.68          2.69±0.85       0.09±0.41          0.15±0.71
+                           LM Track         9.89±4.95         4.98±1.65          6.31±2.85       8.22±2.52         11.51±3.33
+                           New KF dec       0.20±0.43         0.04±0.03          0.12±0.19       0.05±0.03          0.18±0.25
+                           Total            37.87±7.49        21.52±6.45        31.48±5.80      23.22±14.98        33.05±9.29
+                           KF Insert        8.72±3.60         9.25±4.62          8.03±2.96       13.17±7.43         8.53±2.17
+                           MP Culling       0.25±0.09         0.09±0.04          0.32±0.15       0.07±0.04          0.24±0.24
+                           MP Creation     36.88±14.53        22.78±8.80        18.23±9.84      30.19±12.95        23.88±9.97
+               Mapping
+                           LBA            139.61±124.92     216.95±188.77     134.60±136.28     121.09±44.81      152.70±38.37
+                           KF Culling       4.37±4.73       18.88±12.217         5.49±5.09      26.25±17.08        11.15±7.67
+                           Total          173.81±139.07     266.61±207.80     158.84±147.84     191.50±80.54      196.61±54.52
+                           KFs                  278               272                259              332               135
+               Map Size
+                           MPs                 14593             9686              14245            10306              9761
+
+Table VII: Running time of the main operations for loop closing and map merging for a multisesion experiment on sequences
+V201, V202 and V203 from EuRoC dataset (mean time and standard deviation in ms).
+                                Sensor                         Monocular            Stereo        Mono-Inertial      Stereo-Inertial
+                                Resolution                      752×480           752×480           752×480            752×480
+                                Cam. FPS                          20Hz              20Hz              20Hz                20Hz
+            Settings
+                                IMU                                 -                  -             200Hz               200HZ
+                                ORB Feat.                         1000              1200              1000                1200
+                                RMS ATE                           0.284             0.163             0.048               0.046
+                                Database query                 0.96±0.58         1.06±0.58         1.04±0.59           1.02±0.60
+            Place Recognition   Compute Sim3/SE3               3.61±2.81         5.26±3.79         2.98±2.26           5.71±3.54
+                                Total                          3.92±3.28         5.26±4.39         3.45±2.81           5.89±4.29
+                                Merge Maps                    152.03±45.85      68.56±13.56       129.08±8.26         91.07±5.56
+                                Welding BA                    52.09±14.08        35.57±7.94       103.14±6.08         58.15±4.84
+            Map Merging
+                                Opt. Essential Graph           5.82±3.01         10.98±9.79       52.83±17.81        36.08±17.95
+                                Total                         221.90±58.73      120.63±16.23      287.33±15.58       187.82±6.38
+                                # Detected merges                   5                 4                 2                   2
+            Merge info          Merge size (# keyframes)          31±1              31±3              25±1                25±0
+                                Merge size (# map points)      2476±207          2697±718           2425±88            4260±160
+                                Loop Fusion                  311.82±333.49      29.07±23.64             -                 25.67
+            Loop                Opt. Essential Graph          254.84±87.03      84.36±37.56             -                 95.13
+                                Total                        570.39±420.77      118.62±59.93            -                124.77
+                                # Detected loops                    3                 4                 0                   1
+            Loop info
+                                Loop size (# keyframes)          58±60              27±9                -                   60
+                                Full BA                     4010.14±1835.85    1118.54±563.75           -               1366.64
+                                Map Update                    124.80±6.07       13.65±12.86             -                163.06
+            Loop Full BA        Total                       4134.94±1829.78    1132.19±572.28           -               1529.69
+                                BA size (# keyframes)           345±147           220±110               -                  151
+                                BA size (# map points)        13511±3778        12297±4572              -                14397
+
+
+
+from the integrated library itself, are the fast and accurate IMU      marginalization for local BA, instead of assuming an outer set
+initialization technique, and the multi-session map-merging            of static keyframes as we do.
+functions, that rely on an new place recognition technique with           The main failure case of ORB-SLAM3 is low-texture en-
+improved recall.                                                       vironments. Direct methods are more robust to low-texture,
+   Our experimental results show that ORB-SLAM3 is the                 but are limited to short-term [27] and mid-term [31] data
+first visual and visual-inertial system capable of effectively         association. On the other hand, matching feature descriptors
+exploiting short-term, mid-term, long-term and multi-map data          successfully solves long-term and multi-map data association,
+associations, reaching an accuracy level that is beyond the            but seems to be less robust for tracking than Lucas-Kanade,
+reach of existing systems. Our results also suggest that,              that uses photometric information. An interesting line of
+regarding accuracy, the capability of using all these types            research could be developing photometric techniques adequate
+of data association overpowers other choices such as using             for the four data association problems. We are currently
+direct methods instead of features, or performing keyframe             exploring this idea for map building from endoscope images
+                                                                                                                                                            16
+
+
+
+inside the human body.                                                            [16] G. Klein and D. Murray, “Parallel tracking and mapping for small AR
+   About the four different sensor configurations, there is no                         workspaces,” in IEEE and ACM International Symposium on Mixed and
+                                                                                       Augmented Reality (ISMAR), Nara, Japan, 2007, pp. 225–234.
+question, stereo-inertial SLAM provides the most robust and                       [17] ——, “Improving the agility of keyframe-based SLAM,” in European
+accurate solution. Furthermore, the inertial sensor allows to                          Conference on Computer Vision (ECCV), 2008, pp. 802–815.
+estimate pose at IMU rate, which is orders of magnitude                           [18] ——, “Parallel tracking and mapping on a camera phone,” in 2009 8th
+                                                                                       IEEE International Symposium on Mixed and Augmented Reality, Oct
+higher than frame rate, being a key feature for some use                               2009, pp. 83–86.
+cases. For applications where a stereo camera is undesirable                      [19] ——, “PTAM-GPL,” https://github.com/Oxford-PTAM/PTAM-GPL,
+because of its higher bulk, cost, or processing requirements,                          2013.
+                                                                                  [20] J. Engel, T. Schöps, and D. Cremers, “LSD-SLAM: Large-scale di-
+you can use monocular-inertial without missing much in terms                           rect monocular SLAM,” in European Conference on Computer Vision
+of robustness and accuracy. Only keep in mind that pure                                (ECCV), 2014, pp. 834–849.
+rotations during exploration would not allow to estimate depth.                   [21] J. Engel, J. Stueckler, and D. Cremers, “Large-scale direct SLAM with
+                                                                                       stereo cameras,” in IEEE/RSJ International Conference on Intelligent
+   In applications with slow motions, or without roll and pitch                        Robots and Systems (IROS), 2015, pp. 141–148.
+rotations, such as a car in a flat area, IMU sensors can be                       [22] J. Engel, T. Schöps, and D. Cremers, “LSD-SLAM: Large-scale direct
+difficult to initialize. In those cases, if possible, use stereo                       monocular SLAM,” https://github.com/tum-vision/lsd slam.
+                                                                                  [23] C. Forster, M. Pizzoli, and D. Scaramuzza, “SVO: Fast semi-direct
+SLAM. Otherwise, recent advances on depth estimation from                              monocular visual odometry,” in Proc. IEEE Intl. Conf. on Robotics and
+a single image with CNNs offer good promise for reliable and                           Automation, 2014, pp. 15–22.
+true-scale monocular SLAM [83], at least in the same type of                      [24] C. Forster, Z. Zhang, M. Gassner, M. Werlberger, and D. Scaramuzza,
+environments where the CNN has been trained.                                           “SVO: Semidirect visual odometry for monocular and multicamera
+                                                                                       systems,” IEEE Transactions on Robotics, vol. 33, no. 2, pp. 249–265,
+                                                                                       2017.
+                                                                                  [25] C. Forster, M. Pizzoli, and D. Scaramuzza, “SVO,” https://github.com/
+                              R EFERENCES                                              uzh-rpg/rpg svo, 2014.
+ [1] C. Cadena, L. Carlone, H. Carrillo, Y. Latif, D. Scaramuzza, J. Neira,       [26] R. Mur-Artal, J. D. Tardós, J. M. M. Montiel, and D. Gálvez-López,
+     I. Reid, and J. J. Leonard, “Past, present, and future of simultaneous            “ORB-SLAM2,” https://github.com/raulmur/ORB SLAM2, 2016.
+     localization and mapping: Toward the robust-perception age,” IEEE            [27] J. Engel, V. Koltun, and D. Cremers, “Direct sparse odometry,” IEEE
+     Transactions on Robotics, vol. 32, no. 6, pp. 1309–1332, 2016.                    Transactions on Pattern Analysis and Machine Intelligence, vol. 40,
+ [2] R. Mur-Artal, J. M. M. Montiel, and J. D. Tardós, “ORB-SLAM: a                   no. 3, pp. 611–625, 2018.
+     versatile and accurate monocular SLAM system,” IEEE Transactions             [28] H. Matsuki, L. von Stumberg, V. Usenko, J. Stückler, and D. Cremers,
+     on Robotics, vol. 31, no. 5, pp. 1147–1163, 2015.                                 “Omnidirectional DSO: Direct sparse odometry with fisheye cameras,”
+ [3] R. Mur-Artal and J. D. Tardós, “ORB-SLAM2: An open-source SLAM                   IEEE Robotics and Automation Letters, vol. 3, no. 4, pp. 3693–3700,
+     system for monocular, stereo, and RGB-D cameras,” IEEE Transactions               2018.
+     on Robotics, vol. 33, no. 5, pp. 1255–1262, 2017.                            [29] R. Wang, M. Schworer, and D. Cremers, “Stereo DSO: Large-scale direct
+ [4] ——, “Visual-inertial monocular SLAM with map reuse,” IEEE Robotics                sparse visual odometry with stereo cameras,” in IEEE International
+     and Automation Letters, vol. 2, no. 2, pp. 796–803, 2017.                         Conference on Computer Vision, 2017, pp. 3903–3911.
+ [5] C. Campos, R. Elvira, J. J. Gómez Rodrı́guez, J. M. M. Montiel,             [30] J. Engel, V. Koltun, and D. Cremers, “DSO: Direct Sparse Odometry,”
+     and J. D. Tardós, “ORB-SLAM3: An accurate open-source library                    https://github.com/JakobEngel/dso, 2018.
+     for visual, visual-inertial and multi-map SLAM,” https://github.com/         [31] J. Zubizarreta, I. Aguinaga, and J. M. M. Montiel, “Direct sparse
+     UZ-SLAMLab/ORB SLAM3, 2020.                                                       mapping,” IEEE Transactions on Robotics, vol. 36, no. 4, pp. 1363–
+ [6] C. Campos, J. M. M. Montiel, and J. D. Tardós, “Inertial-only optimiza-          1370, 2020.
+     tion for visual-inertial initialization,” in IEEE International Conference   [32] J. Zubizarreta, I. Aguinaga, J. D. Tardós, and J. M. M. Montiel, “DSM:
+     on Robotics and Automation (ICRA), 2020, pp. 51–57.                               Direct Sparse Mapping,” https://github.com/jzubizarreta/dsm, 2019.
+ [7] T. Qin, P. Li, and S. Shen, “VINS-Mono: A robust and versatile monoc-        [33] A. I. Mourikis and S. I. Roumeliotis, “A multi-state constraint Kalman
+     ular visual-inertial state estimator,” IEEE Transactions on Robotics,             filter for vision-aided inertial navigation,” in IEEE International Con-
+     vol. 34, no. 4, pp. 1004–1020, 2018.                                              ference on Robotics and Automation (ICRA), 2007, pp. 3565–3572.
+ [8] A. Rosinol, M. Abate, Y. Chang, and L. Carlone, “Kimera: an open-            [34] M. Li and A. I. Mourikis, “High-precision, consistent EKF-based visual-
+     source library for real-time metric-semantic localization and mapping,”           inertial odometry,” The International Journal of Robotics Research,
+     in IEEE International Conference on Robotics and Automation (ICRA),               vol. 32, no. 6, pp. 690–711, 2013.
+     2020, pp. 1689–1696.                                                         [35] M. K. Paul, K. Wu, J. A. Hesch, E. D. Nerurkar, and S. I. Roumeliotis,
+ [9] D. Gálvez-López and J. D. Tardós, “Bags of binary words for fast               “A comparative analysis of tightly-coupled monocular, binocular, and
+     place recognition in image sequences,” IEEE Transactions on Robotics,             stereo VINS,” in Proc. IEEE Int. Conf. Robotics and Automation (ICRA),
+     vol. 28, no. 5, pp. 1188–1197, October 2012.                                      2017, pp. 165–172.
+[10] R. Elvira, J. D. Tardós, and J. M. M. Montiel, “ORBSLAM-atlas:              [36] M. K. Paul and S. I. Roumeliotis, “Alternating-stereo VINS: Observabil-
+     a robust and accurate multi-map system,” in IEEE/RSJ International                ity analysis and performance evaluation,” in Proceedings of the IEEE
+     Conference on Intelligent Robots and Systems (IROS), 2019, pp. 6253–              Conference on Computer Vision and Pattern Recognition, 2018, pp.
+     6259.                                                                             4729–4737.
+[11] R. Tsai, “A versatile camera calibration technique for high-accuracy 3d      [37] K. Chaney, “Monocular MSCKF,” https://github.com/daniilidis-group/
+     machine vision metrology using off-the-shelf TV cameras and lenses,”              msckf mono, 2018.
+     IEEE Journal on Robotics and Automation, vol. 3, no. 4, pp. 323–344,         [38] S. Leutenegger, P. Furgale, V. Rabaud, M. Chli, K. Konolige, and
+     1987.                                                                             R. Siegwart, “Keyframe-based visual-inertial SLAM using nonlinear
+[12] J. Kannala and S. S. Brandt, “A generic camera model and calibration              optimization,” Proceedings of Robotics Science and Systems (RSS),
+     method for conventional, wide-angle, and fish-eye lenses,” IEEE Trans-            2013.
+     actions on Pattern Analysis and Machine Intelligence, vol. 28, no. 8,        [39] S. Leutenegger, S. Lynen, M. Bosse, R. Siegwart, and P. Furgale,
+     pp. 1335–1340, 2006.                                                              “Keyframe-based visual–inertial odometry using nonlinear optimiza-
+[13] A. J. Davison, “Real-time simultaneous localisation and mapping with a            tion,” The International Journal of Robotics Research, vol. 34, no. 3,
+     single camera,” in Proc. IEEE Int. Conf. Computer Vision (ICCV), Oct              pp. 314–334, 2015.
+     2003, pp. 1403–1410, vol. 2.                                                 [40] S. Leutenegger, A. Forster, P. Furgale, P. Gohl, and S. Lynen, “OKVIS:
+[14] A. J. Davison, I. D. Reid, N. D. Molton, and O. Stasse, “MonoSLAM:                Open keyframe-based visual-inertial SLAM (ROS version),” https://
+     Real-time single camera SLAM,” IEEE Transactions on Pattern Analysis              github.com/ethz-asl/okvis ros, 2016.
+     and Machine Intelligence, vol. 29, no. 6, pp. 1052–1067, 2007.               [41] M. Bloesch, S. Omari, M. Hutter, and R. Siegwart, “Robust visual
+[15] H. Kim, “SceneLib2 - MonoSLAM open-source library,” https://github.               inertial odometry using a direct EKF-based approach,” in IEEE/RSJ
+     com/hanmekim/SceneLib2.                                                           Intelligent Robots and Systems (IROS), 2015, pp. 298–304.
+                                                                                                                                                              17
+
+
+
+[42] M. Bloesch, M. Burri, S. Omari, M. Hutter, and R. Siegwart, “Iterated          [68] L. Riazuelo, J. Civera, and J. M. M. Montiel, “C2TAM: A cloud frame-
+     extended Kalman filter based visual-inertial odometry using direct                  work for cooperative tracking and mapping,” Robotics and Autonomous
+     photometric feedback,” The International Journal of Robotics Research,              Systems, vol. 62, no. 4, pp. 401–413, 2014.
+     vol. 36, no. 10, pp. 1053–1072, 2017.                                          [69] J. G. Morrison, D. Gálvez-López, and G. Sibley, “MOARSLAM: Mul-
+[43] M. Bloesch, S. Omari, M. Hutter, and R. Siegwart, “ROVIO,” https:                   tiple operator augmented RSLAM,” in Distributed autonomous robotic
+     //github.com/ethz-asl/rovio, 2015.                                                  systems. Springer, 2016, pp. 119–132.
+[44] T. Qin, J. Pan, S. Cao, and S. Shen, “A general optimization-based             [70] P. Schmuck and M. Chli, “Multi-UAV collaborative monocular SLAM,”
+     framework for local odometry estimation with multiple sensors,” arXiv               in IEEE International Conference on Robotics and Automation (ICRA),
+     preprint arXiv:1901.03638, 2019.                                                    2017, pp. 3863–3870.
+[45] T. Qin, S. Cao, J. Pan, P. Li, and S. Shen, “VINS-Fusion: An                   [71] ——, “CCM-SLAM: Robust and efficient centralized collaborative
+     optimization-based multi-sensor state estimator,” https://github.com/               monocular simultaneous localization and mapping for robotic teams,”
+     HKUST-Aerial-Robotics/VINS-Fusion, 2019.                                            Journal of Field Robotics, vol. 36, no. 4, pp. 763–781, 2019.
+[46] L. von Stumberg, V. Usenko, and D. Cremers, “Direct sparse visual-             [72] H. A. Daoud, A. Q. M. Sabri, C. K. Loo, and A. M. Mansoor,
+     inertial odometry using dynamic marginalization,” in Proc. IEEE Int.                “SLAMM: Visual monocular SLAM with continuous mapping using
+     Conf. Robotics and Automation (ICRA), 2018, pp. 2510–2517.                          multiple maps,” PloS one, vol. 13, no. 4, 2018.
+[47] V. Usenko, N. Demmel, D. Schubert, J. Stückler, and D. Cremers,               [73] V. Lepetit, F. Moreno-Noguer, and P. Fua, “EPnP: An accurate O(n)
+     “Visual-inertial mapping with non-linear factor recovery,” IEEE Robotics            solution to the PnP problem,” International Journal of Computer Vision,
+     and Automation Letters, vol. 5, no. 2, pp. 422–429, April 2020.                     vol. 81, no. 2, pp. 155–166, 2009.
+[48] V. Usenko and N. Demmel, “BASALT,” https://gitlab.com/                         [74] S. Urban, J. Leitloff, and S. Hinz, “MLPnP - A Real-Time Maximum
+     VladyslavUsenko/basalt, 2019.                                                       Likelihood Solution to the Perspective-n-Point Problem,” ISPRS Annals
+[49] A. Rosinol, M. Abate, Y. Chang, and L. Carlone, “Kimera,” https://                  of Photogrammetry, Remote Sensing and Spatial Information Sciences,
+     github.com/MIT-SPARK/Kimera, 2019.                                                  pp. 131–138, 2016.
+[50] A. J. Davison, “SceneLib 1.0,” https://www.doc.ic.ac.uk/∼ajd/Scene/            [75] R. Mur-Artal and J. D. Tardós, “Fast relocalisation and loop closing
+     index.html.                                                                         in keyframe-based SLAM,” in Proc. IEEE Int. Conf. Robotics and
+[51] S. I. Roumeliotis and A. I. Mourikis, “Vision-aided inertial navigation,”           Automation (ICRA). IEEE, 2014, pp. 846–853.
+     Sep. 19 2017, US Patent 9,766,074.                                             [76] D. G. Lowe, “Distinctive image features from scale-invariant keypoints,”
+[52] J. Civera, A. J. Davison, and J. M. M. Montiel, “Inverse depth                      International Journal of Computer Vision, vol. 60, no. 2, pp. 91–110,
+     parametrization for monocular SLAM,” IEEE Transactions on Robotics,                 2004.
+     vol. 24, no. 5, pp. 932–945, 2008.                                             [77] B. K. Horn, “Closed-form solution of absolute orientation using unit
+[53] L. Clemente, A. J. Davison, I. D. Reid, J. Neira, and J. D. Tardós, “Map-          quaternions,” JOSA A, vol. 4, no. 4, pp. 629–642, 1987.
+     ping large loops with a single hand-held camera,” in Proc. Robotics:           [78] J. Delmerico and D. Scaramuzza, “A benchmark comparison of monoc-
+     Science and Systems, Atlanta, GA, USA, June 2007.                                   ular visual-inertial odometry algorithms for flying robots,” in IEEE
+                                                                                         International Conference on Robotics and Automation (ICRA), 2018,
+[54] J. Civera, O. G. Grasa, A. J. Davison, and J. M. M. Montiel, “1-
+                                                                                         pp. 2502–2509.
+     point RANSAC for extended Kalman filtering: Application to real-time
+                                                                                    [79] M. Burri, J. Nikolic, P. Gohl, T. Schneider, J. Rehder, S. Omari, M. W.
+     structure from motion and visual odometry,” Journal of field robotics,
+                                                                                         Achtelik, and R. Siegwart, “The EuRoC micro aerial vehicle datasets,”
+     vol. 27, no. 5, pp. 609–631, 2010.
+                                                                                         The International Journal of Robotics Research, vol. 35, no. 10, pp.
+[55] H. Strasdat, J. M. M. Montiel, and A. J. Davison, “Visual SLAM: Why
+                                                                                         1157–1163, 2016.
+     filter?” Image and Vision Computing, vol. 30, no. 2, pp. 65–77, 2012.
+                                                                                    [80] D. Schubert, T. Goll, N. Demmel, V. Usenko, J. Stückler, and D. Cre-
+[56] ——, “Scale drift-aware large scale monocular SLAM,” Robotics:                       mers, “The TUM VI benchmark for evaluating visual-inertial odometry,”
+     Science and Systems VI, vol. 2, 2010.                                               in IEEE/RSJ International Conference on Intelligent Robots and Systems
+[57] H. Strasdat, A. J. Davison, J. M. M. Montiel, and K. Konolige,                      (IROS), 2018, pp. 1680–1687.
+     “Double window optimisation for constant time visual SLAM,” in IEEE            [81] J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, “A
+     International Conference on Computer Vision (ICCV), 2011, pp. 2352–                 benchmark for the evaluation of RGB-D SLAM systems,” in IEEE/RSJ
+     2359.                                                                               International Conference on Intelligent Robots and Systems (IROS),
+[58] X. Gao, R. Wang, N. Demmel, and D. Cremers, “LDSO: Direct sparse                    2012, pp. 573–580.
+     odometry with loop closure,” in IEEE/RSJ International Conference on           [82] D. Schubert, T. Goll, N. Demmel, V. Usenko, J. Stückler, and D. Cre-
+     Intelligent Robots and Systems (IROS), 2018, pp. 2198–2204.                         mers, “The TUM VI benchmark for evaluating visual-inertial odometry,”
+[59] S. H. Lee and J. Civera, “Loosely-coupled semi-direct monocular                     arXiv preprint arXiv:1804.06120v3, March 2020.
+     SLAM,” IEEE Robotics and Automation Letters, vol. 4, no. 2, pp. 399–           [83] N. Yang, L. v. Stumberg, R. Wang, and D. Cremers, “D3VO: Deep
+     406, 2018.                                                                          depth, deep pose and deep uncertainty for monocular visual odometry,”
+[60] T. Lupton and S. Sukkarieh, “Visual-inertial-aided navigation for high-             in Proceedings of the IEEE/CVF Conference on Computer Vision and
+     dynamic motion in built environments without initial conditions,” IEEE              Pattern Recognition, 2020, pp. 1281–1292.
+     Transactions on Robotics, vol. 28, no. 1, pp. 61–76, 2012.
+[61] C. Forster, L. Carlone, F. Dellaert, and D. Scaramuzza, “On-manifold
+     preintegration for real-time visual–inertial odometry,” IEEE Transactions
+     on Robotics, vol. 33, no. 1, pp. 1–21, 2017.
+[62] A. Martinelli, “Closed-form solution of visual-inertial structure from
+     motion,” International Journal of Computer Vision, vol. 106, no. 2, pp.
+     138–152, 2014.
+[63] J. Kaiser, A. Martinelli, F. Fontana, and D. Scaramuzza, “Simultaneous
+     state initialization and gyroscope bias calibration in visual inertial aided
+     navigation,” IEEE Robotics and Automation Letters, vol. 2, no. 1, pp.                                   Carlos Campos received an Electronic Engineering
+     18–25, 2017.                                                                                            degree (mention in Signal Processing) from INP-
+[64] C. Campos, J. M. M. Montiel, and J. D. Tardós, “Fast and robust ini-                                   Toulouse and the Industrial Engineering Bachelor
+     tialization for visual-inertial SLAM,” in Proc. IEEE Int. Conf. Robotics                                and M.S. degree (mention in Robotics and Computer
+     and Automation (ICRA), 2019, pp. 1288–1294.                                                             Vision) from the University of Zaragoza. He is
+[65] E. Eade and T. Drummond, “Unified loop closing and recovery for                                         currently working towards the PhD. degree with the
+     real time monocular SLAM,” in Proc. 19th British Machine Vision                                         I3A Robotics, Perception and Real-Time Group. His
+     Conference (BMVC), Leeds, UK, September 2008.                                                           research interests include Visual-Inertial Localiza-
+[66] R. Castle, G. Klein, and D. W. Murray, “Video-rate localization in mul-                                 tion and Mapping for AR/VR applications.
+     tiple maps for wearable augmented reality,” in 12th IEEE International
+     Symposium on Wearable Computers, Sept 2008, pp. 15–22.
+[67] C. Forster, S. Lynen, L. Kneip, and D. Scaramuzza, “Collaborative
+     monocular SLAM with multiple micro aerial vehicles,” in IEEE/RSJ
+     International Conference on Intelligent Robots and Systems, 2013, pp.
+     3962–3970.
+                                                                                  18
+
+
+
+                         Richard Elvira received a Bachelor’s Degree in
+                         Informatics Engineering (mention in Computing)
+                         and Master’s in Biomedical Engineering (mention
+                         in Information and Communication Technologies
+                         in Biomedical Engineering) from Universidad de
+                         Zaragoza, where he is currently PhD. student in the
+                         I3A Robotics, Perception and Real-Time Group. His
+                         research interests are real-time visual SLAM and
+                         place recognition in rigid environments.
+
+
+
+
+                         Juan J. Gómez Rodrı́guez received a Bachelor’s
+                         Degree in Informatics Engineering (mention in Com-
+                         puting) and Master’s in Biomedical Engineering
+                         (mention in Information and Communication Tech-
+                         nologies in Biomedical Engineering) from Univer-
+                         sidad de Zaragoza, where he is currently working
+                         towards the PhD. degree with the I3A Robotics,
+                         Perception and Real-Time Group. His research in-
+                         terests are real-time visual SLAM for both rigid and
+                         deformable environments.
+
+
+
+
+                          J. M. Martı́nez Montiel (Arnedo, Spain, 1967)
+                          received the M.S. and PhD degrees in electrical
+                          engineering from Universidad de Zaragoza, Spain,
+                          in 1992 and 1996, respectively. He has been awarded
+                          several Spanish MEC grants to fund research with
+                          the University of Oxford, U.K., and Imperial College
+                          London, U.K.
+                             He is currently a full professor with the Depar-
+                          tamento de Informática e Ingenierı́a de Sistemas,
+                          Universidad de Zaragoza, where he is in charge of
+                          perception and computer vision research grants and
+courses. His interests include real-time visual SLAM for rigid and non-rigid
+environments, and the transference of this technology to robotic and non-
+robotic application domains. He has received several awards, including the
+2015 King-Sun Fu Memorial IEEE Transactions on Robotics Best Paper
+Award. Since 2020 he coordinates the EU FET EndoMapper grant to bring
+visual SLAM to intracorporeal medical scenes.
+
+
+
+
+                        Juan D. Tardós (Huesca, Spain, 1961) received the
+                        M.S. and Ph.D. degrees in electrical engineering
+                        from the University of Zaragoza, Spain, in 1985
+                        and 1991, respectively. He is Full Professor with
+                        the Departamento de Informática e Ingenierı́a de
+                        Sistemas, University of Zaragoza, where he is in
+                        charge of courses in robotics, computer vision, and
+                        artificial intelligence. His research interests include
+                        SLAM, perception and mobile robotics. He received
+                        the 2015 King-Sun Fu Memorial IEEE Transactions
+                        on Robotics Best Paper Award, for the paper de-
+scribing the monocular SLAM system ORB-SLAM.
+

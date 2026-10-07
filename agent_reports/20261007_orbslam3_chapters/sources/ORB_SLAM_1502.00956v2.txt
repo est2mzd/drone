@@ -1,0 +1,1495 @@
+                                                               This paper has been accepted for publication in IEEE Transactions on Robotics.
+
+
+                                                                                       DOI: 10.1109/TRO.2015.2463671
+                                                                IEEE Xplore: http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7219438
+
+
+
+                                            c 2015 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any
+                                         current or future media, including reprinting /republishing this material for advertising or promotional purposes, creating new
+                                         collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other
+                                         works.
+arXiv:1502.00956v2 [cs.RO] 18 Sep 2015
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                      1
+
+
+
+
+                     ORB-SLAM: a Versatile and Accurate
+                         Monocular SLAM System
+                 Raúl Mur-Artal*, J. M. M. Montiel, Member, IEEE, and Juan D. Tardós, Member, IEEE,
+
+
+
+   Abstract—This paper presents ORB-SLAM, a feature-based                              The first real time application of BA was the visual odome-
+monocular SLAM system that operates in real time, in small                          try work of Mouragon et. al. [3], followed by the ground break-
+and large, indoor and outdoor environments. The system is robust                    ing SLAM work of Klein and Murray [4], known as Parallel
+to severe motion clutter, allows wide baseline loop closing and
+relocalization, and includes full automatic initialization. Building                Tracking and Mapping (PTAM). This algorithm, while limited
+on excellent algorithms of recent years, we designed from scratch                   to small scale operation, provides simple but effective methods
+a novel system that uses the same features for all SLAM tasks:                      for keyframe selection, feature matching, point triangulation,
+tracking, mapping, relocalization, and loop closing. A survival                     camera localization for every frame, and relocalization after
+of the fittest strategy that selects the points and keyframes of                    tracking failure. Unfortunately several factors severely limit
+the reconstruction leads to excellent robustness and generates a
+compact and trackable map that only grows if the scene content                      its application: lack of loop closing and adequate handling of
+changes, allowing lifelong operation. We present an exhaustive                      occlusions, low invariance to viewpoint of the relocalization
+evaluation in 27 sequences from the most popular datasets. ORB-                     and the need of human intervention for map bootstrapping.
+SLAM achieves unprecedented performance with respect to other                          In this work we build on the main ideas of PTAM, the
+state-of-the-art monocular SLAM approaches. For the benefit of
+the community, we make the source code public.                                      place recognition work of Gálvez-López and Tardós [5], the
+                                                                                    scale-aware loop closing of Strasdat et. al [6] and the use of
+   Index Terms—Lifelong Mapping, Localization, Monocular Vi-                        covisibility information for large scale operation [7], [8], to
+sion, Recognition, SLAM
+                                                                                    design from scratch ORB-SLAM, a novel monocular SLAM
+                                                                                    system whose main contributions are:
+                      I. I NTRODUCTION
+                                                                                      • Use of the same features for all tasks: tracking, mapping,
+B     UNDLE ADJUSTMENT (BA) is known to provide ac-
+      curate estimates of camera localizations as well as a
+sparse geometrical reconstruction [1], [2], given that a strong
+                                                                                        relocalization and loop closing. This makes our system
+                                                                                        more efficient, simple and reliable. We use ORB features
+network of matches and good initial guesses are provided. For                           [9] which allow real-time performance without GPUs,
+long time this approach was considered unaffordable for real                            providing good invariance to changes in viewpoint and
+time applications such as Visual Simultaneous Localisation                              illumination.
+                                                                                      • Real time operation in large environments. Thanks to
+and Mapping (Visual SLAM). Visual SLAM has the goal
+of estimating the camera trajectory while reconstructing the                            the use of a covisibility graph, tracking and mapping is
+environment. Nowadays we know that to achieve accurate                                  focused in a local covisible area, independent of global
+results at non-prohibitive computational cost, a real time                              map size.
+                                                                                      • Real time loop closing based on the optimization of a
+SLAM algorithm has to provide BA with:
+                                                                                        pose graph that we call the Essential Graph. It is built
+   • Corresponding observations of scene features (map
+                                                                                        from a spanning tree maintained by the system, loop
+     points) among a subset of selected frames (keyframes).
+                                                                                        closure links and strong edges from the covisibility graph.
+   • As complexity grows with the number of keyframes, their
+                                                                                      • Real time camera relocalization with significant invari-
+     selection should avoid unnecessary redundancy.
+                                                                                        ance to viewpoint and illumination. This allows recovery
+   • A strong network configuration of keyframes and points
+                                                                                        from tracking failure and also enhances map reuse.
+     to produce accurate results, that is, a well spread set of
+                                                                                      • A new automatic and robust initialization procedure based
+     keyframes observing points with significant parallax and
+                                                                                        on model selection that permits to create an initial map
+     with plenty of loop closure matches.
+                                                                                        of planar and non-planar scenes.
+   • An initial estimation of the keyframe poses and point
+                                                                                      • A survival of the fittest approach to map point and
+     locations for the non-linear optimization.
+                                                                                        keyframe selection that is generous in the spawning but
+   • A local map in exploration where optimization is focused
+                                                                                        very restrictive in the culling. This policy improves track-
+     to achieve scalability.
+                                                                                        ing robustness, and enhances lifelong operation because
+   • The ability to perform fast global optimizations (e.g. pose
+                                                                                        redundant keyframes are discarded.
+     graph) to close loops in real-time.
+                                                                                       We present an extensive evaluation in popular public
+   This work was supported by the Dirección General de Investigación of
+Spain under Project DPI2012-32168, the Ministerio de Educación Scholarship         datasets from indoor and outdoor environments, including
+FPU13/04175 and Gobierno de Aragón Scholarship B121/13.                            hand-held, car and robot sequences. Notably, we achieve better
+   The authors are with the Instituto de Investigación en Ingenierı́a de Aragón   camera localization accuracy than the state of the art in direct
+(I3A), Universidad de Zaragoza, Marı́a de Luna 1, 50018 Zaragoza, Spain
+(e-mail: raulmur@unizar.es; josemari@unizar.es; tardos@unizar.es).                  methods [10], which optimize directly over pixel intensities
+   * Corresponding author.                                                          instead of feature reprojection errors. We include a discussion
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                       2
+
+
+
+in Section IX-B on the possible causes that can make feature-       from a homography using the method of Faugeras et. al [23],
+based methods more accurate than direct methods.                    or compute an essential matrix [24], [25] that models planar
+   The loop closing and relocalization methods here presented       and general scenes, using the five-point algorithm of Nister
+are based on our previous work [11]. A preliminary version          [26], which requires to deal with multiple solutions. Both
+of the system was presented in [12]. In the current paper we        reconstruction methods are not well constrained under low
+add the initialization method, the Essential Graph, and perfect     parallax and suffer from a twofold ambiguity solution if all
+all methods involved. We also describe in detail all building       points of a planar scene are closer to one of the camera centers
+blocks and perform an exhaustive experimental validation.           [27]. On the other hand if a non-planar scene is seen with
+   To the best of our knowledge, this is the most complete and      parallax a unique fundamental matrix can be computed with
+reliable solution to monocular SLAM, and for the benefit of         the eight-point algorithm [2] and the relative camera pose can
+the community we make the source code public. Demonstra-            be recovered without ambiguity.
+tion videos and the code can be found in our project webpage1 .        We present in Section IV a new automatic approach based
+                                                                    on model selection between a homography for planar scenes
+                         II. R ELATED W ORK                         and a fundamental matrix for non-planar scenes. A statistical
+A. Place Recognition                                                approach to model selection was proposed by Torr et al.
+                                                                    [28]. Under a similar rationale we have developed a heuristic
+   The survey by Williams et al. [13] compared several ap-          initialization algorithm that takes into account the risk of
+proaches for place recognition and concluded that techniques        selecting a fundamental matrix in close to degenerate cases
+based on appearance, that is image to image matching, scale         (i.e. planar, nearly planar, and low parallax), favoring the
+better in large environments than map to map or image to map        selection of the homography. In the planar case, for the sake of
+methods. Within appearance based methods, bags of words             safe operation, we refrain from initializing if the solution has
+techniques [14], such as the probabilistic approach FAB-MAP         a twofold ambiguity, as a corrupted solution could be selected.
+[15], are to the fore because of their high efficiency. DBoW2       We delay the initialization until the method produces a unique
+[5] used for the first time bags of binary words obtained from      solution with significant parallax.
+BRIEF descriptors [16] along with the very efficient FAST
+feature detector [17]. This reduced in more than one order of
+magnitude the time needed for feature extraction, compared to       C. Monocular SLAM
+SURF [18] and SIFT [19] features that were used in bags of              Monocular SLAM was initially solved by filtering [20],
+words approaches so far. Although the system demonstrated           [21], [29], [30]. In that approach every frame is processed
+to be very efficient and robust, the use of BRIEF, neither          by the filter to jointly estimate the map feature locations and
+rotation nor scale invariant, limited the system to in-plane        the camera pose. It has the drawbacks of wasting computation
+trajectories and loop detection from similar viewpoints. In         in processing consecutive frames with little new information
+our previous work [11], we proposed a bag of words place            and the accumulation of linearization errors. On the other
+recognizer built on DBoW2 with ORB [9]. ORB are binary              hand keyframe-based approaches [3], [4] estimate the map
+features invariant to rotation and scale (in a certain range),      using only selected frames (keyframes) allowing to perform
+resulting in a very fast recognizer with good invariance to         more costly but accurate bundle adjustment optimizations, as
+viewpoint. We demonstrated the high recall and robustness           mapping is not tied to frame-rate. Strasdat et. al [31] demon-
+of the recognizer in four different datasets, requiring less than   strated that keyframe-based techniques are more accurate than
+39ms (including feature extraction) to retrieve a loop candidate    filtering for the same computational cost.
+from a 10K image database. In this work we use an improved              The most representative keyframe-based SLAM system is
+version of that place recognizer, using covisibility information    probably PTAM by Klein and Murray [4]. It was the first work
+and returning several hypotheses when querying the database         to introduce the idea of splitting camera tracking and mapping
+instead of just the best match.                                     in parallel threads, and demonstrated to be successful for real
+                                                                    time augmented reality applications in small environments.
+B. Map Initialization                                               The original version was later improved with edge features, a
+   Monocular SLAM requires a procedure to create an initial         rotation estimation step during tracking and a better relocal-
+map because depth cannot be recovered from a single image.          ization method [32]. The map points of PTAM correspond to
+One way to solve the problem is to initially track a known          FAST corners matched by patch correlation. This makes the
+structure [20]. In the context of filtering approaches, points      points only useful for tracking but not for place recognition. In
+can be initialized with high uncertainty in depth using an          fact PTAM does not detect large loops, and the relocalization
+inverse depth parametrization [21], which hopefully will later      is based on the correlation of low resolution thumbnails of the
+converge to their real positions. The recent semi-dense work        keyframes, yielding a low invariance to viewpoint.
+of Engel et al. [10], follows a similar approach initializing the       Strasdat et. al [6] presented a large scale monocular SLAM
+depth of the pixels to a random value with high variance.           system with a front-end based on optical flow implemented
+   Initialization methods from two views either assumes locally     on a GPU, followed by FAST feature matching and motion-
+scene planarity [4], [22] and recover the relative camera pose      only BA, and a back-end based on sliding-window BA. Loop
+                                                                    closures were solved with a pose graph optimization with
+  1 http://webdiis.unizar.es/∼raulmur/orbslam                       similarity constraints (7DoF), that was able to correct the scale
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                              3
+
+
+
+drift appearing in monocular SLAM. From this work we take
+the idea of loop closing with 7DoF pose graph optimization
+and apply it to the Essential Graph defined in Section III-D
+   Strasdat et. al [7] used the front-end of PTAM, but per-
+formed the tracking only in a local map retrieved from a covi-
+sibility graph. They proposed a double window optimization
+back-end that continuously performs BA in the inner window,
+and pose graph in a limited-size outer window. However, loop
+closing is only effective if the size of the outer window is
+large enough to include the whole loop. In our system we
+take advantage of the excellent ideas of using a local map
+based on covisibility, and building the pose graph from the
+covisibility graph, but apply them in a totally redesigned front-
+end and back-end. Another difference is that, instead of using
+specific features for loop detection (SURF), we perform the
+place recognition on the same tracked and mapped features,
+obtaining robust frame-rate relocalization and loop detection.
+                                                                    Fig. 1. ORB-SLAM system overview, showing all the steps performed by
+   Pirker et. al [33] proposed CD-SLAM, a very complete             the tracking, local mapping and loop closing threads. The main components
+system including loop closing, relocalization, large scale oper-    of the place recognition module and the map are also shown.
+ation and efforts to work on dynamic environments. However
+map initialization is not mentioned. The lack of a public
+                                                                    with all the points and all the frames is not feasible. The
+implementation does not allow us to perform a comparison
+                                                                    work of Strasdat et al. [31] showed that the most cost-
+of accuracy, robustness or large-scale capabilities.
+                                                                    effective approach is to keep as much points as possible,
+   The visual odometry of Song et al. [34] uses ORB features
+                                                                    while keeping only non-redundant keyframes. The PTAM
+for tracking and a temporal sliding window BA back-end. In
+                                                                    approach was to insert keyframes very cautiously to avoid
+comparison our system is more general as they do not have
+                                                                    an excessive growth of the computational complexity. This
+global relocalization, loop closing and do not reuse the map.
+                                                                    restrictive keyframe insertion policy makes the tracking fail in
+They are also using the known distance from the camera to
+                                                                    hard exploration conditions. Our survival of the fittest strategy
+the ground to limit monocular scale drift.
+                                                                    achieves unprecedented robustness in difficult scenarios by
+   Lim et. al [25], work published after we submitted our
+                                                                    inserting keyframes as quickly as possible, and removing later
+preliminary version of this work [12], use also the same
+                                                                    the redundant ones, to avoid the extra cost.
+features for tracking, mapping and loop detection. However
+the choice of BRIEF limits the system to in-plane trajectories.                        III. S YSTEM OVERVIEW
+Their system only tracks points from the last keyframe so the
+                                                                    A. Feature Choice
+map is not reused if revisited (similar to visual odometry)
+and has the problem of growing unbounded. We compare                   One of the main design ideas in our system is that the
+qualitatively our results with this approach in section VIII-E.     same features used by the mapping and tracking are used
+   The recent work of Engel et. al [10], known as LSD-              for place recognition to perform frame-rate relocalization and
+SLAM, is able to build large scale semi-dense maps, using           loop detection. This makes our system efficient and avoids
+direct methods (i.e. optimization directly over image pixel         the need to interpolate the depth of the recognition features
+intensities) instead of bundle adjustment over features. Their      from near SLAM features as in previous works [6], [7]. We
+results are very impressive as the system is able to operate        requiere features that need for extraction much less than 33ms
+in real time, without GPU acceleration, building a semi-dense       per image, which excludes the popular SIFT (∼ 300ms) [19],
+map, with more potential applications for robotics than the         SURF (∼ 300ms) [18] or the recent A-KAZE (∼ 100ms) [35].
+sparse output generated by feature-based SLAM. Nevertheless         To obtain general place recognition capabilities, we require
+they still need features for loop detection and their camera        rotation invariance, which excludes BRIEF [16] and LDB [36].
+localization accuracy is significantly lower than in our system        We chose ORB [9], which are oriented multi-scale FAST
+and PTAM, as we show experimentally in Section VIII-B. This         corners with a 256 bits descriptor associated. They are ex-
+surprising result is discussed in Section IX-B.                     tremely fast to compute and match, while they have good
+   In a halfway between direct and feature-based methods is         invariance to viewpoint. This allows to match them from wide
+the semi-direct visual odometry SVO of Forster et al. [22].         baselines, boosting the accuracy of BA. We already shown the
+Without requiring to extract features in every frame they are       good performance of ORB for place recognition in [11]. While
+able to operate at high frame-rates obtaining impressive results    our current implementation make use of ORB, the techniques
+in quadracopters. However no loop detection is performed and        proposed are not restricted to these features.
+the current implementation is mainly thought for downward
+looking cameras.                                                    B. Three Threads: Tracking, Local Mapping and Loop Closing
+   Finally we want to discuss about keyframe selection. All            Our system, see an overview in Fig. 1, incorporates three
+visual SLAM works in the literature agree that running BA           threads that run in parallel: tracking, local mapping and loop
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                4
+
+
+
+closing. The tracking is in charge of localizing the camera
+with every frame and deciding when to insert a new keyframe.
+We perform first an initial feature matching with the previous
+frame and optimize the pose using motion-only BA. If the
+tracking is lost (e.g. due to occlusions or abrupt movements),
+the place recognition module is used to perform a global
+relocalization. Once there is an initial estimation of the camera
+pose and feature matchings, a local visible map is retrieved
+using the covisibility graph of keyframes that is maintained
+by the system, see Fig. 2(a) and Fig. 2(b). Then matches with        (a) KeyFrames (blue), Current Cam-          (b) Covisibility Graph
+the local map points are searched by reprojection, and camera        era (green), MapPoints (black, red),
+pose is optimized again with all matches. Finally the tracking       Current Local MapPoints (red)
+thread decides if a new keyframe is inserted. All the tracking
+steps are explained in detail in Section V. The novel procedure
+to create an initial map is presented in Section IV.
+   The local mapping processes new keyframes and performs
+local BA to achieve an optimal reconstruction in the sur-
+roundings of the camera pose. New correspondences for un-
+matched ORB in the new keyframe are searched in connected
+keyframes in the covisibility graph to triangulate new points.
+Some time after creation, based on the information gathered
+during the tracking, an exigent point culling policy is applied      (c) Spanning Tree (green) and Loop           (d) Essential Graph
+in order to retain only high quality points. The local mapping       Closure (red)
+is also in charge of culling redundant keyframes. We explain        Fig. 2. Reconstruction and graphs in the sequence fr3 long office household
+in detail all local mapping steps in Section VI.                    from the TUM RGB-D Benchmark [38].
+   The loop closing searches for loops with every new
+keyframe. If a loop is detected, we compute a similarity trans-
+formation that informs about the drift accumulated in the loop.       •   The camera intrinsics, including focal length and princi-
+Then both sides of the loop are aligned and duplicated points             pal point.
+are fused. Finally a pose graph optimization over similarity           • All the ORB features extracted in the frame, associated
+constraints [6] is performed to achieve global consistency. The           or not to a map point, whose coordinates are undistorted
+main novelty is that we perform the optimization over the                 if a distortion model is provided.
+Essential Graph, a sparser subgraph of the covisibility graph          Map points and keyframes are created with a generous pol-
+which is explained in Section III-D. The loop detection and         icy, while a later very exigent culling mechanism is in charge
+correction steps are explained in detail in Section VII.            of detecting redundant keyframes and wrongly matched or not
+   We use the Levenberg-Marquardt algorithm implemented in          trackable map points. This permits a flexible map expansion
+g2o [37] to carry out all optimizations. In the Appendix we         during exploration, which boost tracking robustness under hard
+describe the error terms, cost functions, and variables involved    conditions (e.g. rotations, fast movements), while its size is
+in each optimization.                                               bounded in continual revisits to the same environment, i.e.
+                                                                    lifelong operation. Additionally our maps contain very few
+C. Map Points, KeyFrames and their Selection                        outliers compared with PTAM, at the expense of containing
+                                                                    less points. Culling procedures of map points and keyframes
+  Each map point pi stores:
+                                                                    are explained in Sections VI-B and VI-E respectively.
+  • Its 3D position Xw,i in the world coordinate system.
+  • The viewing direction ni , which is the mean unit vector
+    of all its viewing directions (the rays that join the point     D. Covisibility Graph and Essential Graph
+    with the optical center of the keyframes that observe it).         Covisibility information between keyframes is very useful in
+  • A representative ORB descriptor Di , which is the as-
+                                                                    several tasks of our system, and is represented as an undirected
+    sociated ORB descriptor whose hamming distance is               weighted graph as in [7]. Each node is a keyframe and an edge
+    minimum with respect to all other associated descriptors        between two keyframes exists if they share observations of the
+    in the keyframes in which the point is observed.                same map points (at least 15), being the weight θ of the edge
+  • The maximum dmax and minimum dmin distances at
+                                                                    the number of common map points.
+    which the point can be observed, according to the scale            In order to correct a loop we perform a pose graph opti-
+    invariance limits of the ORB features.                          mization [6] that distributes the loop closing error along the
+  Each keyframe Ki stores:                                          graph. In order not to include all the edges provided by the
+  • The camera pose Tiw , which is a rigid body transforma-         covisibility graph, which can be very dense, we propose to
+    tion that transforms points from the world to the camera        build an Essential Graph that retains all the nodes (keyframes),
+    coordinate system.                                              but less edges, still preserving a strong network that yields
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                              5
+
+
+
+accurate results. The system builds incrementally a spanning                   IV. AUTOMATIC M AP I NITIALIZATION
+tree from the initial keyframe, which provides a connected
+                                                                       The goal of the map initialization is to compute the relative
+subgraph of the covisibility graph with minimal number of
+                                                                    pose between two frames to triangulate an initial set of map
+edges. When a new keyframe is inserted, it is included in
+                                                                    points. This method should be independent of the scene (planar
+the tree linked to the keyframe which shares most point
+                                                                    or general) and should not require human intervention to
+observations, and when a keyframe is erased by the culling
+                                                                    select a good two-view configuration, i.e. a configuration with
+policy, the system updates the links affected by that keyframe.
+                                                                    significant parallax. We propose to compute in parallel two
+The Essential Graph contains the spanning tree, the subset
+                                                                    geometrical models, a homography assuming a planar scene
+of edges from the covisibility graph with high covisibility
+                                                                    and a fundamental matrix assuming a non-planar scene. We
+(θmin = 100), and the loop closure edges, resulting in a strong
+                                                                    then use a heuristic to select a model and try to recover the
+network of cameras. Fig. 2 shows an example of a covisibility
+                                                                    relative pose with a specific method for the selected model.
+graph, spanning tree and associated essential graph. As shown
+                                                                    Our method only initializes when it is certain that the two-
+in the experiments of Section VIII-E, when performing the
+                                                                    view configuration is safe, detecting low-parallax cases and
+pose graph optimization, the solution is so accurate that an
+                                                                    the well-known twofold planar ambiguity [27], avoiding to
+additional full bundle adjustment optimization barely improves
+                                                                    initialize a corrupted map. The steps of our algorithm are:
+the solution. The efficiency of the essential graph and the
+influence of the θmin is shown at the end of Section VIII-E.           1) Find initial correspondences:
+                                                                           Extract ORB features (only at the finest scale) in the
+                                                                           current frame Fc and search for matches xc ↔ xr in the
+E. Bags of Words Place Recognition                                         reference frame Fr . If not enough matches are found,
+                                                                           reset the reference frame.
+   The system has embedded a bags of words place recognition
+                                                                      2) Parallel computation of the two models:
+module, based on DBoW22 [5], to perform loop detection and
+                                                                         Compute in parallel threads a homography Hcr and a
+relocalization. Visual words are just a discretization of the
+                                                                         fundamental matrix Fcr :
+descriptor space, which is known as the visual vocabulary.
+The vocabulary is created offline with the ORB descriptors                              xc = Hcr xr             xTc Fcr xr = 0           (1)
+extracted from a large set of images. If the images are general
+enough, the same vocabulary can be used for different environ-            with the normalized DLT and 8-point algorithms respec-
+ments getting a good performance, as shown in our previous                tively as explained in [2] inside a RANSAC scheme.
+work [11]. The system builds incrementally a database that                To make homogeneous the procedure for both models,
+contains an invert index, which stores for each visual word               the number of iterations is prefixed and the same for
+in the vocabulary, in which keyframes it has been seen, so                both models, along with the points to be used at each
+that querying the database can be done very efficiently. The              iteration, 8 for the fundamental matrix, and 4 of them for
+database is also updated when a keyframe is deleted by the                the homography. At each iteration we compute a score
+culling procedure.                                                        SM for each model M (H for the homography, F for
+   Because there exists visual overlap between keyframes,                 the fundamental matrix):
+when querying the database there will not exist a unique                          X
+                                                                                        ρM d2cr (xic , xir , M ) + ρM (d2rc xic , xir , M )
+                                                                                                                                           
+                                                                           SM =
+keyframe with a high score. The original DBoW2 took this
+                                                                                    i
+overlapping into account, adding up the score of images that                                      (
+are close in time. This has the limitation of not including                                  2     Γ − d2        if   d2 < TM
+                                                                                        ρM (d ) =
+keyframes viewing the same place but inserted at a different                                       0             if   d2 ≥ TM
+time. Instead we group those keyframes that are connected                                                                       (2)
+in the covisibility graph. In addition our database returns all           where d2cr and d2rc are the symmetric transfer errors [2]
+keyframe matches whose scores are higher than the 75% of                  from one frame to the other. TM is the outlier rejection
+the best score.                                                           threshold based on the χ2 test at 95% (TH = 5.99,
+   An additional benefit of the bags of words representation              TF = 3.84, assuming a standard deviation of 1 pixel in
+for feature matching was reported in [5]. When we want                    the measurement error). Γ is defined equal to TH so that
+to compute the correspondences between two sets of ORB                    both models score equally for the same d in their inlier
+features, we can constraint the brute force matching only to              region, again to make the process homogeneous.
+those features that belong to the same node in the vocabulary             We keep the homography and fundamental matrix with
+tree at a certain level (we select the second out of six),                highest score. If no model could be found (not enough
+speeding up the search. We use this trick when searching                  inliers), we restart the process again from step 1.
+matches for triangulating new points, and at loop detection           3) Model selection:
+and relocalization. We also refine the correspondences with an           If the scene is planar, nearly planar or there is low
+orientation consistency test, see [11] for details, that discards        parallax, it can be explained by a homography. However
+outliers ensuring a coherent rotation for all correspondences.           a fundamental matrix can also be found, but the problem
+                                                                         is not well constrained [2] and any attempt to recover
+  2 https://github.com/dorian3d/DBoW2                                    the motion from the fundamental matrix would yield
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                 6
+
+
+
+      wrong results. We should select the homography as the
+      reconstruction method will correctly initialize from a
+      plane or it will detect the low parallax case and refuse
+      the initialization. On the other hand a non-planar scene
+      with enough parallax can only be explained by the
+      fundamental matrix, but a homography can also be found
+      explaining a subset of the matches if they lie on a plane
+      or they have low parallax (they are far away). In this
+      case we should select the fundamental matrix. We have
+      found that a robust heuristic is to compute:
+                                   SH
+                          RH =                               (3)
+                                 SH + SF
+      and select the homography if RH > 0.45, which
+      adequately captures the planar and low parallax cases.
+      Otherwise, we select the fundamental matrix.
+  4) Motion and Structure from Motion recovery:
+     Once a model is selected we retrieve the motion hy-
+     potheses associated. In the case of the homography
+     we retrieve 8 motion hypotheses using the method of
+     Faugeras et. al [23]. The method proposes cheriality
+     tests to select the valid solution. However these tests
+     fail if there is low parallax as points easily go in front
+     or back of the cameras, which could yield the selection
+     of a wrong solution. We propose to directly triangulate
+                                                                   Fig. 3. Top: PTAM, middle LSD-SLAM, bottom: ORB-SLAM, some time
+     the eight solutions, and check if there is one solution       after initialization in the NewCollege sequence [39]. PTAM and LSD-SLAM
+     with most points seen with parallax, in front of both         initialize a corrupted planar solution while our method has automatically
+     cameras and with low reprojection error. If there is          initialized from the fundamental matrix when it has detected enough parallax.
+                                                                   Depending on which keyframes are manually selected, PTAM is also able to
+     not a clear winner solution, we do not initialize and         initialize well.
+     continue from step 1. This technique to disambiguate
+     the solutions makes our initialization robust under low
+     parallax and the twofold ambiguity configuration, and         A. ORB Extraction
+     could be considered the key of the robustness of our
+     method.                                                          We extract FAST corners at 8 scale levels with a scale factor
+     In the case of the fundamental matrix, we convert it in       of 1.2. For image resolutions from 512 × 384 to 752 × 480
+     an essential matrix using the calibration matrix K:           pixels we found suitable to extract 1000 corners, for higher
+                                                                   resolutions, as the 1241 × 376 in the KITTI dataset [40]
+                          Erc = KT Frc K                     (4)   we extract 2000 corners. In order to ensure an homogeneous
+                                                                   distribution we divide each scale level in a grid, trying to
+      and then retrieve 4 motion hypotheses with the singular      extract at least 5 corners per cell. Then we detect corners
+      value decomposition method explained in [2]. We trian-       in each cell, adapting the detector threshold if not enough
+      gulate the four solutions and select the reconstruction as   corners are found. The amount of corners retained per cell is
+      done for the homography.                                     also adapted if some cells contains no corners (textureless or
+   5) Bundle adjustment:                                           low contrast). The orientation and ORB descriptor are then
+      Finally we perform a full BA, see the Appendix for           computed on the retained FAST corners. The ORB descriptor
+      details, to refine the initial reconstruction.               is used in all feature matching, in contrast to the search by
+   An example of a challenging initialization in the outdoor       patch correlation in PTAM.
+NewCollege robot sequence [39] is shown in Fig. 3. It can be
+seen how PTAM and LSD-SLAM have initialized all points
+in a plane, while our method has waited until there is enough      B. Initial Pose Estimation from Previous Frame
+parallax, initializing correctly from the fundamental matrix.
+                                                                      If tracking was successful for last frame, we use a constant
+                                                                   velocity motion model to predict the camera pose and perform
+                        V. T RACKING                               a guided search of the map points observed in the last frame. If
+   In this section we describe the steps of the tracking thread    not enough matches were found (i.e. motion model is clearly
+that are performed with every frame from the camera. The           violated), we use a wider search of the map points around
+camera pose optimizations, mentioned in several steps, consist     their position in the last frame. The pose is then optimized
+in motion-only BA, which is described in the Appendix.             with the found correspondences.
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                       7
+
+
+
+C. Initial Pose Estimation via Global Relocalization                 4). Condition 1 ensures a good relocalization and condition
+   If the tracking is lost, we convert the frame into bag            3 a good tracking. If a keyframe is inserted when the local
+of words and query the recognition database for keyframe             mapping is busy (second part of condition 2), a signal is sent
+candidates for global relocalization. We compute correspon-          to stop local bundle adjustment, so that it can process as soon
+dences with ORB associated to map points in each keyframe,           as possible the new keyframe.
+as explained in section III-E. We then perform alternatively
+RANSAC iterations for each keyframe and try to find a camera                             VI. L OCAL M APPING
+pose using the PnP algorithm [41]. If we find a camera                 In this section we describe the steps performed by the local
+pose with enough inliers, we optimize the pose and perform           mapping with every new keyframe Ki .
+a guided search of more matches with the map points of
+the candidate keyframe. Finally the camera pose is again
+                                                                     A. KeyFrame Insertion
+optimized, and if supported with enough inliers, tracking
+procedure continues.                                                    At first we update the covisibility graph, adding a new node
+                                                                     for Ki and updating the edges resulting from the shared map
+                                                                     points with other keyframes. We then update the spanning tree
+D. Track Local Map                                                   linking Ki with the keyframe with most points in common.
+   Once we have an estimation of the camera pose and an              We then compute the bags of words representation of the
+initial set of feature matches, we can project the map into the      keyframe, that will help in the data association for triangu-
+frame and search more map point correspondences. To bound            lating new points.
+the complexity in large maps, we only project a local map.
+This local map contains the set of keyframes K1 , that share
+                                                                     B. Recent Map Points Culling
+map points with the current frame, and a set K2 with neighbors
+to the keyframes K1 in the covisibility graph. The local map            Map points, in order to be retained in the map, must
+also has a reference keyframe Kref ∈ K1 which shares most            pass a restrictive test during the first three keyframes after
+map points with current frame. Now each map point seen in            creation, that ensures that they are trackable and not wrongly
+K1 and K2 is searched in the current frame as follows:               triangulated, i.e due to spurious data association. A point must
+                                                                     fulfill these two conditions:
+   1) Compute the map point projection x in the current
+       frame. Discard if it lays out of the image bounds.               1) The tracking must find the point in more than the 25%
+   2) Compute the angle between the current viewing ray v                    of the frames in which it is predicted to be visible.
+       and the map point mean viewing direction n. Discard if           2) If more than one keyframe has passed from map
+       v · n < cos(60◦ ).                                                    point creation, it must be observed from at least three
+   3) Compute the distance d from map point to camera                        keyframes.
+       center. Discard if it is out of the scale invariance region      Once a map point have passed this test, it can only be
+       of the map point d ∈  / [dmin , dmax ].                       removed if at any time it is observed from less than three
+   4) Compute the scale in the frame by the ratio d/dmin .           keyframes. This can happen when keyframes are culled and
+   5) Compare the representative descriptor D of the map             when local bundle adjustment discards outlier observations.
+       point with the still unmatched ORB features in the            This policy makes our map contain very few outliers.
+       frame, at the predicted scale, and near x, and associate
+       the map point with the best match.                            C. New Map Point Creation
+   The camera pose is finally optimized with all the map points         New map points are created by triangulating ORB from
+found in the frame.                                                  connected keyframes Kc in the covisibility graph. For each
+                                                                     unmatched ORB in Ki we search a match with other un-
+E. New Keyframe Decision                                             matched point in other keyframe. This matching is done as
+   The last step is to decide if the current frame is spawned as     explained in Section III-E and discard those matches that do
+a new keyframe. As there is a mechanism in the local mapping         not fulfill the epipolar constraint. ORB pairs are triangulated,
+to cull redundant keyframes, we will try to insert keyframes as      and to accept the new points, positive depth in both cameras,
+fast as possible, because that makes the tracking more robust to     parallax, reprojection error and scale consistency are checked.
+challenging camera movements, typically rotations. To insert         Initially a map point is observed from two keyframes but
+a new keyframe all the following conditions must be met:             it could be matched in others, so it is projected in the rest
+   1) More than 20 frames must have passed from the last             of connected keyframes, and correspondences are searched as
+       global relocalization.                                        detailed in section V-D.
+   2) Local mapping is idle, or more than 20 frames have
+       passed from last keyframe insertion.                          D. Local Bundle Adjustment
+   3) Current frame tracks at least 50 points.                         The local BA optimizes the currently processed keyframe
+   4) Current frame tracks less than 90% points than Kref .          Ki , all the keyframes connected to it in the covisibility graph
+   Instead of using a distance criterion to other keyframes          Kc , and all the map points seen by those keyframes. All other
+as PTAM, we impose a minimum visual change (condition                keyframes that see those points but are not connected to the
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                      8
+
+
+
+currently processed keyframe are included in the optimization     a guided search of more correspondences. We optimize it again
+but remain fixed. Observations that are marked as outliers are    and, if Sil is supported by enough inliers, the loop with Kl is
+discarded at the middle and at the end of the optimization.       accepted.
+See the Appendix for more details about this optimization.
+                                                                  C. Loop Fusion
+E. Local Keyframe Culling                                            The first step in the loop correction is to fuse duplicated
+   In order to maintain a compact reconstruction, the local       map points and insert new edges in the covisibility graph
+mapping tries to detect redundant keyframes and delete them.      that will attach the loop closure. At first the current keyframe
+This is beneficial as bundle adjustment complexity grows with     pose Tiw is corrected with the similarity transformation Sil
+the number of keyframes, but also because it enables lifelong     and this correction is propagated to all the neighbors of Ki ,
+operation in the same environment as the number of keyframes      concatenating transformations, so that both sides of the loop
+will not grow unbounded, unless the visual content in the scene   get aligned. All map points seen by the loop keyframe and its
+changes. We discard all the keyframes in Kc whose 90% of the      neighbors are projected into Ki and its neighbors and matches
+map points have been seen in at least other three keyframes in    are searched in a narrow area around the projection, as done
+the same or finer scale. The scale condition ensures that map     in section V-D. All those map points matched and those that
+points maintain keyframes from which they are measured with       were inliers in the computation of Sil are fused. All keyframes
+most accuracy. This policy was inspired by the one proposed       involved in the fusion will update their edges in the covisibility
+in the work of Tan et. al [24], where keyframes were discarded    graph effectively creating edges that attach the loop closure.
+after a process of change detection.
+                                                                  D. Essential Graph Optimization
+                    VII. L OOP C LOSING
+                                                                     To effectively close the loop, we perform a pose graph
+  The loop closing thread takes Ki , the last keyframe pro-       optimization over the Essential Graph, described in Section
+cessed by the local mapping, and tries to detect and close        III-D, that distributes the loop closing error along the graph.
+loops. The steps are next described.                              The optimization is performed over similarity transformations
+                                                                  to correct the scale drift [6]. The error terms and cost function
+A. Loop Candidates Detection                                      are detailed in the Appendix. After the optimization each map
+   At first we compute the similarity between the bag of          point is transformed according to the correction of one of the
+words vector of Ki and all its neighbors in the covisibility      keyframes that observes it.
+graph (θmin = 30) and retain the lowest score smin . Then we
+query the recognition database and discard all those keyframes                         VIII. E XPERIMENTS
+whose score is lower than smin . This is a similar operation         We have performed an extensive experimental validation of
+to gain robustness as the normalizing score in DBoW2,             our system in the large robot sequence of NewCollege [39],
+which is computed from the previous image, but here we            evaluating the general performance of the system, in 16 hand-
+use covisibility information. In addition all those keyframes     held indoor sequences of the TUM RGB-D benchmark [38],
+directly connected to Ki are discarded from the results. To       evaluating the localization accuracy, relocalization and lifelong
+accept a loop candidate we must detect consecutively three        capabilities, and in 10 car outdoor sequences from the KITTI
+loop candidates that are consistent (keyframes connected in       dataset [40], evaluating real-time large scale operation, local-
+the covisibility graph). There can be several loop candidates     ization accuracy and efficiency of the pose graph optimization.
+if there are several places with similar appearance to Ki .          Our system runs in real time and processes the images
+                                                                  exactly at the frame rate they were acquired. We have carried
+B. Compute the Similarity Transformation                          out all experiments with an Intel Core i7-4700MQ (4 cores
+                                                                  @ 2.40GHz) and 8Gb RAM. ORB-SLAM has three main
+   In monocular SLAM there are seven degrees of freedom
+                                                                  threads, that run in parallel with other tasks from ROS and
+in which the map can drift, three translations, three rotations
+                                                                  the operating system, which introduces some randomness in
+and a scale factor [6]. Therefore to close a loop we need to
+                                                                  the results. For this reason, in some experiments, we report
+compute a similarity transformation from the current keyframe
+                                                                  the median from several runs.
+Ki to the loop keyframe Kl that informs us about the error
+accumulated in the loop. The computation of this similarity
+will serve also as geometrical validation of the loop.            A. System Performance in the NewCollege Dataset
+   We first compute correspondences between ORB associated           The NewCollege dataset [39] contains a 2.2km sequence
+to map points in the current keyframe and the loop candidate      from a robot traversing a campus and adjacent parks. The
+keyframes, following the procedure explained in section III-E.    sequence is recorded by a stereo camera at 20 fps and a resolu-
+At this point we have 3D to 3D correspondences for each           tion 512 × 382. It contains several loops and fast rotations that
+loop candidate. We alternatively perform RANSAC iterations        makes the sequence quite challenging for monocular vision.
+with each candidate, trying to find a similarity transformation   To the best of our knowledge there is no other monocular
+using the method of Horn [42]. If we find a similarity Sil with   system in the literature able to process this whole sequence.
+enough inliers, we optimize it (see the Appendix), and perform    For example Strasdat et al. [7], despite being able to close
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                    9
+
+
+
+                                                                           TABLE II
+                                                              L OOP CLOSING TIMES IN N EW C OLLEGE
+
+
+                                                                          Loop Detection (ms)                 Loop Correction (s)
+                                          Essential Graph            Candidates         Similarity                    Essential Graph
+               Loop     KeyFrames                                                                         Fusion                           Total (s)
+                                              Edges                  Detection        Transformation                   Optimization
+                1             287              1347                    4.71               20.77            0.20             0.26             0.51
+                2             1082             5950                    4.14               17.98            0.39             1.06             1.52
+                3             1279             7128                    9.82               31.29            0.95             1.26             2.27
+                4             2648            12547                    12.37              30.36            0.97             2.30             3.33
+                5             3150            16033                    14.71              41.28            1.73             2.80             4.60
+                6             4496            21797                    13.52              48.68            0.97             3.62             4.69
+
+
+
+
+                             TABLE I
+           T RACKING AND M APPING TIMES IN N EW C OLLEGE
+
+
+                                              Median        Mean         Std
+      Thread          Operation
+                                               (ms)         (ms)        (ms)
+                      ORB extraction           11.10        11.42       1.61
+    TRACKING          Initial Pose Est.         3.38         3.45       0.99
+                      Track Local Map          14.84        16.01       9.98
+                      Total                    30.57        31.60      10.39
+                      KeyFrame Insertion       10.29        11.88       5.03
+                      Map Point Culling         0.10         3.18       6.70
+      LOCAL
+     MAPPING          Map Point Creation       66.79        72.96      31.48
+                      Local BA                 296.08       360.41     171.11
+                      KeyFrame Culling          8.07        15.79      18.98
+                      Total                    383.59       464.27     217.89
+
+
+
+
+                                                                                    Fig. 5. Map before and after a loop closure in the NewCollege sequence.
+                                                                                    The loop closure match is drawn in blue, the trajectory in green, and the local
+                                                                                    map for the tracking at that moment in red. The local map is extended along
+Fig. 4. Example of loop detected in the NewCollege sequence. We draw the            both sides of the loop after it is closed.
+inlier correspondences supporting the similarity transformation found.
+
+
+
+loops and work in large scale environments, only showed                             tracking and the local mapping. Tracking works at frame-rates
+monocular results for a small part of this sequence.                                around 25-30Hz, being the most demanding task to track the
+   As an example of our loop closing procedure we show in                           local map. If needed this time could be reduced limiting the
+Fig. 4 the detection of a loop with the inliers that support                        number of keyframes that are included in the local map. In
+the similarity transformation. Fig. 5 shows the reconstruction                      the local mapping thread the most demanding task is local
+before and after the loop closure. In red it is shown the local                     bundle adjustment. The local BA time varies if the robot is
+map, which after the loop closure extends along both sides                          exploring or in a well mapped area, because during exploration
+of the loop closure. The whole map after processing the full                        bundle adjustment is interrupted if tracking inserts a new
+sequence at its real frame-rate is shown in Fig. 6. The big loop                    keyframe, as explained in section V-E. In case of not needing
+on the right does not perfectly align because it was traversed                      new keyframes local bundle adjustment performs a generous
+in opposite directions and the place recognizer was not able                        number of prefixed iterations.
+to find loop closures.                                                                 Table II shows the results for each of the 6 loop clo-
+   We have extracted statistics of the times spent by each                          sures found. It can be seen how the loop detection increases
+thread in this experiment. Table I shows the results for the                        sublinearly with the number of keyframes. This is due to
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                    10
+
+
+
+                                                                                   the true solution and others the corrupted one, in which
+                                                                                   case the error is unacceptable. We have not noticed two
+                                                                                   different reconstructions from LSD-SLAM but the error in this
+                                                                                   sequence is very high. In the rest of the sequences, PTAM and
+                                                                                   LSD-SLAM exhibit less robustness than our method, loosing
+                                                                                   track in eight and three sequences respectively.
+                                                                                      In terms of accuracy ORB-SLAM and PTAM are similar
+                                                                                   in open trajectories, while ORB-SLAM achieves higher
+                                                                                   accuracy when detecting large loops as in the sequence
+                                                                                   fr3 nostructure texture near withloop (fr3 nstr tex near).
+                                                                                   The most surprising results is that both PTAM and ORB-
+                                                                                   SLAM are clearly more accurate than LSD-SLAM and
+                                                                                   RGBD-SLAM. One of the possible causes can be that they
+                                                                                   reduce the map optimization to a pose-graph optimization
+                                                                                   were sensor measurements are discarded, while we perform
+Fig. 6. ORB-SLAM reconstruction of the full sequence of NewCollege. The            bundle adjustment and jointly optimize cameras and map over
+bigger loop on the right is traversed in opposite directions and not visual loop
+closures were found, therefore they do not perfectly align.
+                                                                                   sensor measurements, which is the gold standard algorithm to
+                                                                                   solve structure from motion [2]. We further discuss this result
+                                                                                   in Section IX-B. Another interesting result is that LSD-SLAM
+the efficient querying of the database that only compare the                       seems to be less robust to dynamic objects than our system
+subset of images with words in common, which demonstrates                          as seen in fr2 desk with person and fr3 walking xyz.
+the potential of bag of words for place recognition. Our                              We have noticed that RGBD-SLAM has a bias in the scale
+Essential Graph includes edges around 5 times the number                           in fr2 sequences, as aligning the trajectories with 7 DoF
+of keyframes, which is a quite sparse graph.                                       significantly reduces the error. Finally it should be noted that
+                                                                                   Engel et al. [10] reported that PTAM has less accuracy than
+                                                                                   LSD-SLAM in fr2 xyz with an RMSE of 24.28cm. However,
+B. Localization Accuracy in the TUM RGB-D Benchmark                                the paper does not give enough details on how those results
+   The TUM RGB-D benchmark [38] is an excellent dataset                            were obtained, and we have been unable to reproduce them.
+to evaluate the accuracy of camera localization as it provides
+several sequences with accurate ground truth obtained with                         C. Relocalization in the TUM RGB-D Benchmark
+an external motion capture system. We have discarded all
+                                                                                      We perform two relocalization experiments in the TUM
+those sequences that we consider that are not suitable for pure
+                                                                                   RGB-D benchmark. In the first experiment we build a map
+monocular SLAM systems, as they contain strong rotations,
+                                                                                   with the first 30 seconds of the sequence fr2 xyz and perform
+no texture or no motion.
+                                                                                   global relocalization with every successive frame and evaluate
+   For comparison we have also executed the novel, direct,
+                                                                                   the accuracy of the recovered poses. We perform the same
+semi-dense LSD-SLAM [10] and PTAM [4] in the benchmark.
+                                                                                   experiment with PTAM for comparison. Fig. 7 shows the
+We compare also with the trajectories generated by RGBD-
+                                                                                   keyframes used to create the initial map, the poses of the
+SLAM [43] which are provided for some of the sequences
+                                                                                   relocalized frames and the ground truth for those frames. It
+in the benchmark website. In order to compare ORB-SLAM,
+                                                                                   can be seen that PTAM is only able to relocalize frames
+LSD-SLAM and PTAM with the ground truth, we align the
+                                                                                   which are near to the keyframes due to the little invariance of
+keyframe trajectories using a similarity transformation, as
+                                                                                   its relocalization method. Table IV shows the recall and the
+scale is unknown, and measure the absolute trajectory error
+                                                                                   error with respect to the ground truth. ORB-SLAM accurately
+(ATE) [38]. In the case of RGBD-SLAM we align the trajec-
+                                                                                   relocalizes more than the double of frames than PTAM. In
+tories with a rigid body transformation, but also a similarity to
+                                                                                   the second experiment we create an initial map with se-
+check if the scale was well recovered. LSD-SLAM initializes
+                                                                                   quence fr3 sitting xyz and try to relocalize all frames from
+from random depth values and takes time to converge, there-
+                                                                                   fr3 walking xyz. This is a challenging experiment as there
+fore we have discarded the first 10 keyframes when comparing
+                                                                                   are big occlusions due to people moving in the scene. Here
+with the ground truth. For PTAM we manually selected two
+                                                                                   PTAM finds no relocalizations while our system relocalizes
+frames from which we get a good initialization. Table III
+                                                                                   78% of the frames, as can be seen in Table IV. Fig. 8 shows
+shows the median results over 5 executions in each of the
+                                                                                   some examples of challenging relocalizations performed by
+16 sequences selected.
+                                                                                   our system in these experiments.
+   It can be seen that ORB-SLAM is able to process
+all the sequences, except for fr3 nostructure texture far
+(fr3 nstr tex far). This is a planar scene that because of the                     D. Lifelong Experiment in the TUM RGB-D Benchmark
+camera trajectory with respect to the plane has two possible                         Previous relocalization experiments have shown that our
+interpretations, i.e. the twofold ambiguity described in [27].                     system is able to localize in a map from very different view-
+Our initialization method detects the ambiguity and for safety                     points and robustly under moderate dynamic changes. This
+refuses to initialize. PTAM initializes selecting sometimes                        property in conjunction with our keyframe culling procedure
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                                          11
+
+
+
+                            TABLE III                                                                          PTAM                                         ORB−SLAM
+ K EYFRAME L OCALIZATION E RROR C OMPARISON IN THE TUM RGB-D                                  2                                                  2
+                       B ENCHMARK [38]                                                       1.8                                                1.8
+
+                                                                                             1.6                                                1.6
+                        Absolute KeyFrame Trajectory RMSE (cm)
+
+
+
+
+                                                                                     z [m]
+
+
+
+
+                                                                                                                                        z [m]
+                                                                                             1.4                                                1.4
+                 ORB-SLAM          PTAM       LSD-SLAM            RGBD-
+                                                                  SLAM                       1.2                                                1.2
+                                                                                                                  Frontal view                                      Frontal view
+   fr1 xyz           0.90           1.15          9.00          1.34 (1.34)                   1                                                  1
+                                                                                                   0.8     1       1.2   1.4   1.6                    0.8    1       1.2   1.4   1.6
+                                                                                                               x [m]                                             x [m]
+   fr2 xyz           0.30           0.20          2.15          2.61 (1.42)                                    PTAM                                         ORB−SLAM
+                                                                                             0.5                                                0.5
+
+   fr1 floor         2.99            X            38.07         3.51 (3.51)                  0.2                                                0.2
+
+                                                                                          −0.1                                               −0.1
+
+
+
+
+                                                                                  y [m]
+
+
+
+
+                                                                                                                                     y [m]
+   fr1 desk          1.69            X            10.65         2.58 (2.52)
+                                                                                          −0.4                                               −0.4
+   fr2 360                                                                                               R
+                     3.81           2.63            X          393.3 (100.5)              −0.7           KFs                                 −0.7
+    kidnap                                                                                               GT           Top view                                         Top view
+                                                                                             −1                                                 −1
+   fr2 desk          0.88            X            4.57          9.50 (3.94)                        0.8     1       1.2   1.4   1.6                    0.8    1       1.2   1.4   1.6
+                                                                                                               x [m]                                             x [m]
+   fr3 long          3.45            X            38.53              -
+       office                                                                     Fig. 7. Relocalization experiment in fr2 xyz. Map is initially created during
+   fr3 nstr       ambiguity        4.92 /                                         the first 30 seconds of the sequence (KFs). The goal is to relocalize subsequent
+                                                  18.31              -
+     tex far       detected        34.74                                          frames. Successful relocalizations (R) of our system and PTAM are shown.
+   fr3 nstr                                                                       The ground truth (GT) is only shown for the frames to relocalize.
+                     1.39           2.74          7.54               -
+   tex near
+    fr3 str          0.77           0.93          7.95               -
+     tex far
+    fr3 str          1.58           1.04            X                -
+   tex near
+   fr2 desk
+                     0.63            X            31.73         6.97 (2.00)
+      person
+    fr3 sit
+                     0.79           0.83          7.73               -
+       xyz
+    fr3 sit
+                     1.34            X            5.87               -
+      halfsph
+   fr3 walk
+                     1.24            X            12.44              -
+        xyz
+   fr3 walk
+                     1.74            X              X                -
+      halfsph
+Results for ORB-SLAM, PTAM and LSD-SLAM are the median over 5
+executions in each sequence. The trajectories have been aligned with 7DoF
+with the ground truth. Trajectories for RGBD-SLAM are taken from the
+benchmark website, only available for fr1 and fr2 sequences, and have been
+aligned with 6DoF and 7DoF (results between brackets). X means that the
+tracking is lost at some point and a significant portion of the sequence is not
+processed by the system.                                                          Fig. 8. Example of challenging relocalizations (severe scale change, dynamic
+                                                                                  objects) that our system successfully found in the relocalization experiments.
+
+allows to operate lifelong in the same environment under
+different viewpoints and some dynamic changes.                                    walking xyz, walking halfspehere and walking rpy. All the
+   In the case of a completely static scenario our system is                      sequences focus the camera to the same desk but perform
+able to maintain the number of keyframes bounded even if                          different trajectories, while people are moving and change
+the camera is looking at the scene from different viewpoints.                     some objects like chairs. Fig. 10(a) shows the evolution of the
+We demonstrate it in a custom sequence were the camera is                         total number of keyframes in the map, and Fig. 10(b) shows for
+looking at the same desk during 93 seconds but performing                         each keyframe its frame of creation and destruction, showing
+a trajectory so that the viewpoint is always changing. We                         how long the keyframes have survived in the map. It can be
+compare the evolution of the number of keyframes in our map                       seen that during the first two sequences the map size grows as
+and those generated by PTAM in Fig. 9. It can be seen how                         all the views of the scene are being seen for the first time. In
+PTAM is always inserting keyframes, while our mechanism to                        Fig. 10(b) we can see that several keyframes created during
+prune redundant keyframes makes its number to saturate.                           these two first sequences are maintained in the map during
+   While the lifelong operation in a static scenario should be a                  the whole experiment. During the sequences sitting rpy and
+requirement of any SLAM system, more interesting is the case                      walking xyz the map does not grow, because the map created
+where dynamic changes occur. We analyze the behavior of our                       so far explains well the scene. In contrast, during the last two
+system in such scenario by running consecutively the dynamic                      sequences, more keyframes are inserted showing that there
+sequences from fr3: sitting xyz, sitting halfsphere, sitting rpy,                 are some novelties in the scene that were not yet represented,
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                                                                       12
+
+
+
+                                           TABLE IV                                                                         sitting            sitting      sitting    walking      walking         walking
+                                                                                                                        100 xyz                halfsphere   rpy        xyz          halfsphere      rpy
+                         R ESULTS FOR THE RELOCALIZATION EXPERIMENTS
+                                                                                                                         80
+                                        Initial Map                       Relocalization
+
+
+
+
+                                                                                                         KeyFrames
+                                                                                                                         60
+                                                  RMSE       Recall       RMSE          Max. Error
+                      System           KFs
+                                                   (cm)       (%)          (cm)           (cm)
+                                                                                                                         40
+                                       fr2 xyz. 2769 frames to relocalize
+                                                                                                                         20
+                      PTAM             37         0.19        34.9         0.26            1.52
+             ORB-SLAM                  24         0.19        78.4         0.38            1.67                           0
+                                                                                                                              0         1000         2000        3000            4000        5000             6000
+                                 fr3 walking xyz. 859 frames to relocalize                                                                                      Frames
+
+                      PTAM             34         0.83         0.0           -              -                                     (a) Evolution of the number of keyframes in the map
+             ORB-SLAM                  31         0.82        77.9         1.32            4.95
+                                                                                                                            sitting            sitting      sitting    walking      walking         walking
+                                                                                                                        400 xyz                halfsphere   rpy        xyz          halfsphere      rpy
+
+                                                                                                                        350
+            120                                                                                                         300
+
+
+
+
+                                                                                                         KeyFrame ID
+                               ORB−SLAM
+            100                PTAM                                                                                     250
+                                                                                                                        200
+             80
+KeyFrames
+
+
+
+
+                                                                                                                        150
+             60
+                                                                                                                        100
+             40                                                                                                          50
+             20                                                                                                           0
+                                                                                                                              0         1000         2000        3000            4000        5000             6000
+              0                                                                                                                                                 Frames
+                  0       10      20         30     40      50       60     70     80      90     100
+                                                          Time [s]                                      (b) Keyframe creation and destruction. Each horizontal line corresponds to
+                                                                                                        a keyframe, from its creation frame until its destruction
+Fig. 9. Lifelong experiment in a static environment where the camera is
+always looking at the same place from different viewpoints. PTAM is always                                              40
+inserting keyframes, while ORB-SLAM is able to prune redundant keyframes
+and maintains a bounded-size map.                                                                                       30
+                                                                                                          % KeyFrames
+
+
+
+
+                                                                                                                        20
+due probably to dynamic changes. Finally Fig. 10(c) shows a
+                                                                                                                        10
+histogram of the keyframes according to the time they have
+survived with respect to the remaining time of the sequence                                                              0
+                                                                                                                             0     10     20      30       40       50      60      70     80        90       100
+from its moment of creation. It can be seen that most of the                                                                             % Survival with respect to the remaining sequence time
+keyframes are destroyed by the culling procedure soon after
+                                                                                                        (c) Histogram of the survival time of all spawned keyframes with respect to
+creation, and only a small subset survive until the end of the                                          the remaining time of the experiment
+experiment. On one hand, this shows that our system has a
+generous keyframe spawning policy, which is very useful when                                            Fig. 10. Lifelong experiment in a dynamic environment from the TUM RGB-
+                                                                                                        D Benchmark.
+performing abrupt motions in exploration. On the other hand
+the system is eventually able to select a small representative
+subset of those keyframes.                                                                              were correctly detected and closed by our system. Sequence
+   In these lifelong experiments we have shown that our map                                             09 contains a loop that can be detected only in a few frames
+grows with the content of the scene but not with the time,                                              at the end of the sequence, and our system not always detects
+and that is able to store the dynamic changes of the scene                                              it (the results provided are for the executions in which it was
+which could be useful to perform some scene understanding                                               detected).
+by accumulating experience in an environment.                                                              Qualitative comparisons of our trajectories and the ground
+                                                                                                        truth are shown in Fig. 11 and Fig. 12. As in the TUM RGB-D
+E. Large Scale and Large Loop Closing in the KITTI Dataset                                              benchmark we have aligned the keyframe trajectories of our
+   The odometry benchmark from the KITTI dataset [40]                                                   system and the ground truth with a similarity transformation.
+contains 11 sequences from a car driven around a residential                                            We can compare qualitatively our results from Fig. 11 and
+area with accurate ground truth from GPS and a Velodyne                                                 Fig. 12 with the results provided for sequences 00, 05, 06, 07
+laser scanner. This is a very challenging dataset for monocular                                         and 08 by the recent monocular SLAM approach of Lim et.
+vision due to fast rotations, areas with lot of foliage, which                                          al [25] in their figure 10. ORB-SLAM produces clearly more
+make more difficult data association, and relatively high car                                           accurate trajectories for all those sequences by the exception
+speed, being the sequences recorded at 10 fps. We play the                                              of sequence 08 in which they seem to suffer less drift.
+sequences at the real frame-rate they were recorded and ORB-                                               Table V shows the median RMSE error of the keyframe
+SLAM is able to process all the sequences by the exception                                              trajectory over five executions in each sequence. We also
+of sequence 01 which is a highway with few trackable close                                              provide the dimensions of the maps to put in context the errors.
+objects. Sequences 00, 02, 05, 06, 07, 09 contain loops that                                            The results demonstrate that our system is very accurate being
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                                                                                                                                                                                                                                                                                        13
+
+
+
+                                                                                                                                                        500                                                                                                                                                        500
+
+
+
+                                                                                                                                                        400                                                                                                                                                        400
+
+
+
+                                                                                                                                                        300                                                                                                                                                        300
+
+
+
+
+                                                                                                                                              y [m]
+
+
+
+
+                                                                                                                                                                                                                                                                                                          y [m]
+                                                                                                                                                        200                                                                                                                                                        200
+
+
+
+                                                                                                                                                        100                                                                                                                                                        100
+
+
+
+                                                                                                                                                             0                                                                                                                                                       0
+
+                                                                                                                                                                                  Ground truth                                                                                                                                     Ground truth
+                                                                                                                                                                                  ORB−SLAM + 7DoF Alignment                                                                                                                        ORB−SLAM + Global BA + 7DoF Alignment
+                                                                                                                                                       −100                                                                                                                                                       −100
+                                                                                                                                                         −300                     −200            −100                  0                      100            200                          300                      −300            −200                −100                 0                  100          200               300
+                                                                                                                                                                                                                      x [m]                                                                                                                                                x [m]
+
+
+
+                                                                                                                                                        400                                                                                                                                                        400
+
+                                                                                                                                                        350                                                                                                                                                        350
+
+                                                                                                                                                        300                                                                                                                                                        300
+
+                                                                                                                                                        250                                                                                                                                                        250
+
+                                                                                                                                                        200                                                                                                                                                        200
+
+                                                                                                                                                        150                                                                                                                                                        150
+                                                                                                                                              y [m]
+
+
+
+
+                                                                                                                                                                                                                                                                                                          y [m]
+                                                                                                                                                        100                                                                                                                                                        100
+
+                                                                                                                                                         50                                                                                                                                                         50
+
+                                                                                                                                                             0                                                                                                                                                       0
+
+                                                                                                                                                        −50                                                                                                                                                        −50
+
+                                                                                                                                                       −100                       Ground truth                                                                                                                    −100             Ground truth
+                                                                                                                                                                                  ORB−SLAM + 7DoF Alignment                                                                                                                        ORB−SLAM + Global BA + 7DoF Alignment
+                                                                                                                                                       −150                                                                                                                                                       −150
+                                                                                                                                                         −300                     −200            −100                  0                      100            200                          300                      −300            −200                −100                 0                  100          200               300
+                                                                                                                                                                                                                      x [m]                                                                                                                                                x [m]
+
+
+
+
+                                                                                                                                                        100                                                                                                                                                        100
+
+
+
+
+                                                                                                                                                         50                                                                                                                                                         50
+                                                                                                                                              y [m]
+
+
+
+
+                                                                                                                                                                                                                                                                                                          y [m]
+                                                                                                                                                             0                                                                                                                                                       0
+
+
+
+
+                                                                                                                                                        −50                                                                                                                                                        −50
+
+
+
+
+                                                                                                                                                       −100                                                                                                                                                       −100
+                                                                                                                                                                                  Ground truth                                                                                                                                     Ground truth
+                                                                                                                                                                                  ORB−SLAM + 7DoF Alignment                                                                                                                        ORB−SLAM + Global BA + 7DoF Alignment
+
+                                                                                                                                                                            −200                 −150                −100                        −50                        0                                                    −200                  −150                −100                  −50                 0
+                                                                                                                                                                                                                      x [m]                                                                                                                                                 x [m]
+
+
+
+
+Fig. 11. Sequences 00, 05 and 07 from the odometry benchmark of the KITTI dataset. Left: points and keyframe trajectory. Center: trajectory and ground
+truth. Right: trajectory after 20 iterations of full BA. The output of our system is quite accurate, while it can be slightly improved with some iterations of BA.
+
+
+                                                                                                                                                                                                                                                                                           450
+                                                           1000
+
+                                                                                                                                                                                                                                                                                           400
+                                                                                                                                                                            200
+
+                                                            800                                                                                                                                                                                                                            350
+
+                                                                                                                                                                            150                                                                                                            300
+                                                            600
+                                                                                                                                                                                                                                                                                           250
+
+                                                                                                                                                                            100
+                                                                                                                                                                                                                                                                                   y [m]
+                                                                                                                                                                    y [m]
+
+
+
+
+                                                                                                                                                                                                                                                                                           200
+                                                   y [m]
+
+
+
+
+                                                            400
+                                                                                                                                                                                                                                                                                           150
+
+                                                                                                                                                                             50
+                                                            200                                                                                                                                                                                                                            100
+
+                                                                                                                                                                                                                                                                                            50
+                                                              0                                                                                                               0
+                                                                                                                                                                                                                                                                                             0
+                                                                     Ground truth                                                                                                         Ground truth                                                                                                   Ground truth
+                                                                     ORB−SLAM + 7DoF Alignment                                                                                            ORB−SLAM + 7DoF Alignment                                                                        −50           ORB−SLAM + 7DoF Alignment
+                                                           −200                                                                                                             −50
+                                                             −100     0       100         200               300          400          500              600                   −100           0            100          200               300           400        500                        −50    −40       −30     −20     −10      0          10    20      30     40         50
+                                                                                                x [m]                                                                                                                x [m]                                                                                                          x [m]
+
+
+
+                                                                          (a) Sequence 02                                                                                                        (b) Sequence 03                                                                                                  (c) Sequence 04
+
+                                                                                                             450                                                                                                                  600
+
+              300                                                                                            400                                                                                                                                                                                                                                 150
+                                                                                                                                                                                                                                  500
+                                                                                                             350
+              200                                                                                                                                                                                                                 400                                                                                                            100
+                                                                                                             300
+
+                                                                                                             250
+                                                                                                                                                                                                                                  300
+              100
+                                                                                                             200                                                                                                                                                                                                                                  50
+                                                                                                                                                                                                                         y [m]
+     y [m]
+
+
+
+
+                                                                                                    y [m]
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                        y [m]
+
+
+
+
+                                                                                                                                                                                                                                  200
+                                                                                                             150
+                0
+                                                                                                             100                                                                                                                                                                                                                                   0
+                                                                                                                                                                                                                                  100
+                                                                                                              50
+             −100
+                                                                                                                                                                                                                                    0
+                                                                                                                  0                                                                                                                                                                                                                             −50
+
+             −200      Ground truth                                                                          −50               Ground truth                                                                                                      Ground truth                                                                                               Ground truth
+                                                                                                                                                                                                                                 −100
+                       ORB−SLAM + 7DoF Alignment                                                                               ORB−SLAM + 7DoF Alignment                                                                                         ORB−SLAM + 7DoF Alignment                                                                                  ORB−SLAM + 7DoF Alignment
+                                                                                                            −100                                                                                                                                                                                                                                −100
+              −200   −150   −100     −50        0             50    100    150      200                               −400     −300    −200           −100       0     100          200    300     400         500                      −150   −100    −50   0         50        100       150    200     250      300     350                         0        100        200        300       400    500     600       700
+                                              x [m]                                                                                                              x [m]                                                                                                          x [m]                                                                                                   x [m]
+
+
+
+                            (d) Sequence 06                                                                                           (e) Sequence 08                                                                                                 (f) Sequence 09                                                                                           (g) Sequence 10
+
+Fig. 12. ORB-SLAM keyframe trajectories in sequences 02, 03, 04 ,06, 08, 09 and 10 from the odometry benchmark of the KITTI dataset. Sequence 08
+does not contains loops and drift (especially scale) is not corrected.
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                                                  14
+
+
+
+                              TABLE V                                                                      TABLE VI
+            R ESULTS OF OUR SYSTEM IN THE KITTI DATASET.                               C OMPARISON OF LOOP CLOSING STRATEGIES IN KITTI 09
+
+
+                                                                                         Method                      Time (s)      Pose Graph Edges                       RMSE (m)
+                              ORB-SLAM        + Global BA (20 its.)
+                                                                                              -                               -                          -                      48.77
+               Dimension            RMSE       RMSE        Time BA
+ Sequence                    KFs                                                         BA (20)                         14.64                           -                      49.90
+                (m×m)                (m)        (m)           (s)
+ KITTI 00      564 × 496    1391     6.68       5.33        24.83                       BA (100)                         72.16                           -                      18.82
+
+ KITTI 01     1157 × 1827     X       X          X           X                          EG (200)                          0.38                     890                           8.84
+
+ KITTI 02      599 × 946    1801     21.75     21.28        30.07                       EG (100)                          0.48                    1979                           8.36
+
+ KITTI 03      471 × 199     250     1.59       1.51        4.88                         EG (50)                          0.59                    3583                           8.95
+
+ KITTI 04      0.5 × 394     108     1.79       1.62        1.58                         EG (15)                          0.94                    6663                           8.88
+
+ KITTI 05      479 × 426     820     8.23       4.85        15.20         EG (100) + BA (20)                             13.40                    1979                           7.22
+
+ KITTI 06       23 × 457     373     14.68     12.34        7.78      First row shows results without loop closing. Number between brackets for
+                                                                      BA (Bundle Adjustment) means number of Levenberg-Marquardt (LM)
+ KITTI 07      191 × 209     351     3.36       2.26        6.28      iterations, while for EG (Essential Graph) is the θmin to build the Essential
+ KITTI 08      808 × 391    1473     46.58     46.68        25.60     Graph. All EG optimizations perform 10 LM iterations.
+ KITTI 09      465 × 568     653     7.62       6.62        11.33
+ KITTI 10      671 × 177     411     8.68       8.80        7.64                600                                                        600
+
+                                                                                500                                                        500
+
+                                                                                400                                                        400
+
+                                                                                300                                                        300
+
+
+                                                                        y [m]
+
+
+
+
+                                                                                                                                   y [m]
+                                                                                200                                                        200
+
+                                                                                100                                                        100
+the trajectory error typically around the 1% of its dimensions,                   0                                                          0
+
+sometimes less as in sequence 03 with an error of the 0.3% or                   100                                 Ground truth           100                                  Ground truth
+                                                                                                                    Estimated                                                   Estimated
+                                                                                200                                                        200
+higher as in sequence 08 with the 5%. In sequence 08 there                              100       0    100
+                                                                                                      x [m]
+                                                                                                              200       300                        100        0    100
+                                                                                                                                                                  x [m]
+                                                                                                                                                                          200       300
+
+
+are no loops and drift cannot be corrected, which makes clear                         (a) Without Loop Closing                                               (b) BA (20)
+the need of loop closures to achieve accurate reconstructions.
+   In this experiment we have also checked how much the                         600                                                        600
+
+                                                                                500                                                        500
+reconstruction can be improved by performing 20 iterations                      400                                                        400
+
+of full BA, see the Appendix for details, at the end of each                    300                                                        300
+                                                                        y [m]
+
+
+
+
+                                                                                                                                   y [m]
+                                                                                200                                                        200
+sequence. We have noticed that some iterations of full BA                       100                                                        100
+slightly improves the accuracy in the trajectories with loops but                 0                                                          0
+
+it has negligible effect in open trajectories, which means that                 100                                 Ground truth
+                                                                                                                    Estimated
+                                                                                                                                           100                                  Ground truth
+                                                                                                                                                                                Estimated
+                                                                                200     100       0    100    200       300                200     100        0    100    200       300
+the output of our system is already very accurate. In any case                                        x [m]                                                       x [m]
+
+
+if the most accurate results are needed our algorithm provides                                (c) EG (100)                                       (d) EG (100) + BA (20)
+a set of matches, which define a strong camera network, and
+                                                                      Fig. 13. Comparison of different loop closing strategies in KITTI 09.
+an initial guess, so that full BA converge in few iterations.
+   Finally we wanted to show the efficacy of our loop closing
+approach and the influence of the θmin used to include edges                                   IX. C ONCLUSIONS AND D ISCUSSION
+in the essential graph. We have selected the sequence 09 (a
+very long sequence with a loop closure at the end), and in            A. Conclusions
+the same execution we have evaluated different loop closing              In this work we have presented a new monocular SLAM
+strategies. In table VI we show the keyframe trajectory RMSE          system with a detailed description of its building blocks and
+and the time spent in the optimization in different cases:            an exhaustive evaluation in public datasets. Our system has
+without loop closing, if we directly apply a full BA (20 or           demonstrated that it can process sequences from indoor and
+100 iterations), if we apply only pose graph optimization (10         outdoor scenes and from car, robot and hand-held motions.
+iterations with different number of edges) and if we apply            The accuracy of the system is typically below 1 cm in small
+pose graph optimization and full BA afterwards. The results           indoor scenarios and of a few meters in large outdoor scenarios
+clearly show that before loop closure, the solution is so far         (once we have aligned the scale with the ground truth).
+from the optimal, that BA has convergence problems. Even                 Currently PTAM by Klein and Murray [4] is considered the
+after 100 iterations still the error is very high. On the other       most accurate SLAM method from monocular video in real
+hand essential graph optimization shows fast convergence and          time. It is not coincidence that the backend of PTAM is bundle
+more accurate results. It can be seen that the choice of θmin has     adjustment, which is well known to be the gold standard
+not significant effect in accuracy but decreasing the number          method for the offline Structure From Motion problem [2].
+of edges the time can be significantly reduced. Performing            One of the main successes of PTAM, and the earlier work of
+an additional BA after the pose graph optimization slightly           Mouragnon [3], was to bring that knowledge into the robotics
+improves the accuracy while increasing substantially the time.        SLAM community and demonstrate its real time performance.
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                          15
+
+
+
+The main contribution of our work is to expand the versatility       In the context of structure and motion estimation, Torr and
+of PTAM to environments that are intractable for that system.        Zisserman [46] already pointed the benefits of feature-based
+To achieve this, we have designed from scratch a new monoc-          against direct methods. In this work we provide experimental
+ular SLAM system with some new ideas and algorithms,                 evidence (see Section VIII-B) of the superior accuracy of
+but also incorporating excellent works developed in the past         feature-based methods in real-time SLAM. We consider that
+few years, such as the loop detection of Gálvez-López and          the future of monocular SLAM should incorporate the best of
+Tardós [5], the loop closing procedure and covisibility graph       both approaches.
+of Strasdat et.al [6], [7], the optimization framework g2o
+by Kuemmerle et. al [37] and ORB features by Rubble et.              C. Future Work
+al [9]. To the best of our knowledge, no other system has
+                                                                        The accuracy of our system can still be improved incorpo-
+demonstrated to work in as many different scenarios and with
+                                                                     rating points at infinity in the tracking. These points, which
+such accuracy. Therefore our system is currently the most
+                                                                     are not seen with sufficient parallax and our system does not
+reliable and complete solution for monocular SLAM. Our
+                                                                     include in the map, are very informative of the rotation of the
+novel policy to spawn and cull keyframes, permits to create
+                                                                     camera [21].
+keyframes every few frames, which are eventually removed
+                                                                        Another open way is to upgrade the sparse map of our
+when considered redundant. This flexible map expansion is
+                                                                     system to a denser and more useful reconstruction. Thanks
+really useful in poorly conditioned exploration trajectories, i.e.
+                                                                     to our keyframe selection, keyframes comprise a compact
+close to pure rotations or fast movements. When operating
+                                                                     summary of the environment with a very high pose accuracy
+repeatedly in the same environment, the map only grows if
+                                                                     and rich information of covisibility. Therefore the ORB-SLAM
+the visual content of the scene changes, storing a history of
+                                                                     sparse map can be an excellent initial guess and skeleton, on
+its different visual appearances. Interesting results for long-
+                                                                     top of which a dense and accurate map of the scene can be
+term mapping could be extracted analyzing this history.
+                                                                     built. A first effort in this line is presented in [47].
+   Finally we have also demonstrated that ORB features have
+enough recognition power to enable place recognition from
+                                                                                                A PPENDIX
+severe viewpoint change. Moreover they are so fast to extract
+                                                                                      N ON -L INEAR O PTIMIZATIONS
+and match (without the need of multi-threading or GPU accel-
+eration) that enable real time accurate tracking and mapping.          •   Bundle Adjustment (BA) [1]:
+                                                                           Map point 3D locations Xw,j ∈ R3 and keyframe poses
+                                                                           Tiw ∈ SE(3), where w stands for the world reference, are
+B. Sparse/Feature-based vs. Dense/Direct Methods                           optimized minimizing the reprojection error with respect
+   Recent real-time monocular SLAM algorithms such as                      to the matched keypoints xi,j ∈ R2 . The error term for
+DTAM [44] and LSD-SLAM [10] are able to perform dense                      the observation of a map point j in a keyframe i is:
+or semi dense reconstructions of the environment, while the                               ei,j = xi,j − πi (Tiw , Xw,j )             (5)
+camera is localized by optimizing directly over image pixel
+intensities. These direct approaches do not need feature ex-               where πi is the projection function:
+traction and thus avoid the corresponding artifacts. They are                                            "      xi,j
+                                                                                                           fi,u zi,j + ci,u
+                                                                                                                            #
+also more robust to blur, low-texture environments and high-                          πi (Tiw , Xw,j ) =        yi,j
+                                                                                                           fi,v zi,j + ci,v          (6)
+frequency texture like asphalt [45]. Their denser reconstruc-
+                                                                                                      T
+tions, as compared to the sparse point map of our system or
+                                                                                   
+                                                                                     xi,j yi,j zi,j = Riw Xw,j + tiw
+PTAM, could be more useful for other tasks than just camera
+localization.                                                              where Riw ∈ SO(3) and tiw ∈ R3 are respectively
+   However, direct methods have their own limitations. Firstly,            the rotation and translation parts of Tiw , and (fi,u , fi,v )
+these methods assume a surface reflectance model that in real              and (ci,u , ci,v ) are the focal length and principle point
+scenes produces its own artifacts. The photometric consistency             associated to camera i. The cost function to be minimized
+limits the baseline of the matches, typically narrower than                is:                     X
+those that features allow. This has a great impact in recon-                                  C=       ρh (eTi,j Ω−1
+                                                                                                                  i,j ei,j )         (7)
+struction accuracy, which requires wide baseline observations                                     i,j
+
+to reduce depth uncertainty. Direct methods, if not correctly              where ρh is the Huber robust cost function and Ωi,j =
+modeled, are quite affected by rolling-shutter, auto-gain and                2
+                                                                           σi,j I2×2 is the covariance matrix associated to the scale
+auto-exposure artifacts (as in the TUM RGB-D Benchmark).                   at which the keypoint was detected. In case of full BA
+Finally, because direct methods are in general very computa-               (used in the map initialization explained in Section IV
+tionally demanding, the map is just incrementally expanded                 and in the experiments in Section VIII-E) we optimize
+as in DTAM, or map optimization is reduced to a pose graph,                all points and keyframes, by the exception of the first
+discarding all sensor measurements as in LSD-SLAM.                         keyframe which remain fixed as the origin. In local BA
+   In contrast, feature-based methods are able to match features           (see section VI-D) all points included in the local area
+with a wide baseline, thanks to their good invariance to                   are optimized, while a subset of keyframes is fixed. In
+viewpoint and illumination changes. Bundle adjustment jointly              pose optimization, or motion-only BA, (see section V) all
+optimizes camera poses and points over sensor measurements.                points are fixed and only the camera pose is optimized.
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                               16
+
+
+
+  •   Pose Graph Optimization over Sim(3) Constraints [6]:                      [8] C. Mei, G. Sibley, and P. Newman, “Closing loops without places,” in
+      Given a pose graph of binary edges (see Section VII-D)                        IEEE/RSJ International Conference on Intelligent Robots and Systems
+                                                                                    (IROS), Taipei, Taiwan, October 2010, pp. 3738–3744.
+      we define the error in an edge as:                                        [9] E. Rublee, V. Rabaud, K. Konolige, and G. Bradski, “ORB: an efficient
+                                                                                    alternative to SIFT or SURF,” in IEEE International Conference on
+                      ei,j = logSim(3) (Sij Sjw S−1
+                                                 iw )                   (8)         Computer Vision (ICCV), Barcelona, Spain, November 2011, pp. 2564–
+                                                                                    2571.
+      where Sij is the relative Sim(3) transformation between                  [10] J. Engel, T. Schöps, and D. Cremers, “LSD-SLAM: Large-scale di-
+      both keyframes computed from the SE(3) poses just                             rect monocular SLAM,” in European Conference on Computer Vision
+                                                                                    (ECCV), Zurich, Switzerland, September 2014, pp. 834–849.
+      before the pose graph optimization and setting the scale                 [11] R. Mur-Artal and J. D. Tardós, “Fast relocalisation and loop closing in
+      factor to 1. In the case of the loop closure edge this                        keyframe-based SLAM,” in IEEE International Conference on Robotics
+      relative transformation is computed with the method of                        and Automation (ICRA), Hong Kong, China, June 2014, pp. 846–853.
+                                                                               [12] ——, “ORB-SLAM: Tracking and mapping recognizable features,” in
+      Horn [42]. The logSim3 [48] transforms to the tangent                         MVIGRO Workshop at Robotics Science and Systems (RSS), Berkeley,
+      space, so that the error is a vector in R7 . The goal is to                   USA, July 2014.
+      optimize the Sim(3) keyframe poses minimizing the cost                   [13] B. Williams, M. Cummins, J. Neira, P. Newman, I. Reid, and J. D.
+                                                                                    Tardós, “A comparison of loop closing techniques in monocular SLAM,”
+      function:              X                                                      Robotics and Autonomous Systems, vol. 57, no. 12, pp. 1188–1197, 2009.
+                        C=       (eTi,j Λi,j ei,j )           (9)              [14] D. Nister and H. Stewenius, “Scalable recognition with a vocabulary
+                                 i,j                                                tree,” in IEEE Computer Society Conference on Computer Vision and
+                                                                                    Pattern Recognition (CVPR), vol. 2, New York City, USA, June 2006,
+      where Λi,j is the information matrix of the edge, which,                      pp. 2161–2168.
+      as in [48], we set to the identity. We fix the loop closure              [15] M. Cummins and P. Newman, “Appearance-only SLAM at large scale
+                                                                                    with FAB-MAP 2.0,” The International Journal of Robotics Research,
+      keyframe to fix the 7 degrees of gauge freedom. Although                      vol. 30, no. 9, pp. 1100–1123, 2011.
+      this method is a rough approximation of a full BA, we                    [16] M. Calonder, V. Lepetit, C. Strecha, and P. Fua, “BRIEF: Binary
+      demonstrate experimentally in Section VIII-E that it has                      Robust Independent Elementary Features,” in European Conference on
+                                                                                    Computer Vision (ECCV), Hersonissos, Greece, September 2010, pp.
+      significantly faster and better convergence than BA.                          778–792.
+                                                                               [17] E. Rosten and T. Drummond, “Machine learning for high-speed corner
+  •   Relative Sim(3) Optimization:                                                 detection,” in European Conference on Computer Vision (ECCV), Graz,
+      Given a set of n matches i ⇒ j (keypoints and their                           Austria, May 2006, pp. 430–443.
+      associated 3D map points) between keyframe 1 and                         [18] H. Bay, T. Tuytelaars, and L. Van Gool, “SURF: Speeded Up Robust
+                                                                                    Features,” in European Conference on Computer Vision (ECCV), Graz,
+      keyframe 2, we want to optimize the relative Sim(3)                           Austria, May 2006, pp. 404–417.
+      transformation S12 (see Section VII-B) that minimizes                    [19] D. G. Lowe, “Distinctive image features from scale-invariant keypoints,”
+      the reprojection error in both images:                                        International Journal of Computer Vision, vol. 60, no. 2, pp. 91–110,
+                                                                                    2004.
+                        e1 = x1,i − π1 (S12 , X2,j )                           [20] A. J. Davison, I. D. Reid, N. D. Molton, and O. Stasse, “MonoSLAM:
+                                                                      (10)          Real-time single camera SLAM,” IEEE Transactions on Pattern Analysis
+                       e2 = x2,j − π2 (S−1
+                                        12 , X1,i )                                 and Machine Intelligence, vol. 29, no. 6, pp. 1052–1067, 2007.
+                                                                               [21] J. Civera, A. J. Davison, and J. M. M. Montiel, “Inverse depth
+      and the cost function to minimize is:                                         parametrization for monocular SLAM,” IEEE Transactions on Robotics,
+                X                                                                   vol. 24, no. 5, pp. 932–945, 2008.
+                     ρh (eT1 Ω−1              T −1
+                                                         
+           C=                 1,i e1 ) + ρh (e2 Ω2,j e2 )             (11)     [22] C. Forster, M. Pizzoli, and D. Scaramuzza, “SVO: Fast semi-direct
+                  n                                                                 monocular visual odometry,” in Proc. IEEE Intl. Conf. on Robotics and
+                                                                                    Automation, Hong Kong, China, June 2014, pp. 15–22.
+      where Ω1,i and Ω2,i are the covariance matrices associ-                  [23] O. D. Faugeras and F. Lustman, “Motion and structure from motion
+      ated to the scale in which keypoints in image 1 and image                     in a piecewise planar environment,” International Journal of Pattern
+                                                                                    Recognition and Artificial Intelligence, vol. 2, no. 03, pp. 485–508, 1988.
+      2 were detected. In this optimization the points are fixed.              [24] W. Tan, H. Liu, Z. Dong, G. Zhang, and H. Bao, “Robust monocular
+                                                                                    SLAM in dynamic environments,” in IEEE International Symposium on
+                            R EFERENCES                                             Mixed and Augmented Reality (ISMAR), Adelaide, Australia, October
+                                                                                    2013, pp. 209–218.
+[1] B. Triggs, P. F. McLauchlan, R. I. Hartley, and A. W. Fitzgibbon,          [25] H. Lim, J. Lim, and H. J. Kim, “Real-time 6-DOF monocular visual
+    “Bundle adjustment a modern synthesis,” in Vision algorithms: theory            SLAM in a large-scale environment,” in IEEE International Conference
+    and practice, 2000, pp. 298–372.                                                on Robotics and Automation (ICRA), Hong Kong, China, June 2014, pp.
+[2] R. Hartley and A. Zisserman, Multiple View Geometry in Computer                 1532–1539.
+    Vision, 2nd ed. Cambridge University Press, 2004.                          [26] D. Nistér, “An efficient solution to the five-point relative pose prob-
+[3] E. Mouragnon, M. Lhuillier, M. Dhome, F. Dekeyser, and P. Sayd, “Real           lem,” IEEE Transactions on Pattern Analysis and Machine Intelligence,
+    time localization and 3d reconstruction,” in Computer Vision and Pattern        vol. 26, no. 6, pp. 756–770, 2004.
+    Recognition, 2006 IEEE Computer Society Conference on, vol. 1, 2006,       [27] H. Longuet-Higgins, “The reconstruction of a plane surface from two
+    pp. 363–370.                                                                    perspective projections,” Proceedings of the Royal Society of London.
+[4] G. Klein and D. Murray, “Parallel tracking and mapping for small AR             Series B. Biological Sciences, vol. 227, no. 1249, pp. 399–410, 1986.
+    workspaces,” in IEEE and ACM International Symposium on Mixed and          [28] P. H. Torr, A. W. Fitzgibbon, and A. Zisserman, “The problem of
+    Augmented Reality (ISMAR), Nara, Japan, November 2007, pp. 225–234.             degeneracy in structure and motion recovery from uncalibrated image
+[5] D. Gálvez-López and J. D. Tardós, “Bags of binary words for fast             sequences,” International Journal of Computer Vision, vol. 32, no. 1,
+    place recognition in image sequences,” IEEE Transactions on Robotics,           pp. 27–44, 1999.
+    vol. 28, no. 5, pp. 1188–1197, 2012.                                       [29] A. Chiuso, P. Favaro, H. Jin, and S. Soatto, “Structure from motion
+[6] H. Strasdat, J. M. M. Montiel, and A. J. Davison, “Scale drift-aware            causally integrated over time,” IEEE Transactions on Pattern Analysis
+    large scale monocular SLAM.” in Robotics: Science and Systems (RSS),            and Machine Intelligence, vol. 24, no. 4, pp. 523–535, 2002.
+    Zaragoza, Spain, June 2010.                                                [30] E. Eade and T. Drummond, “Scalable monocular SLAM,” in IEEE Com-
+[7] H. Strasdat, A. J. Davison, J. M. M. Montiel, and K. Konolige,                  puter Society Conference on Computer Vision and Pattern Recognition
+    “Double window optimisation for constant time visual SLAM,” in IEEE             (CVPR), vol. 1, New York City, USA, June 2006, pp. 469–476.
+    International Conference on Computer Vision (ICCV), Barcelona, Spain,      [31] H. Strasdat, J. M. M. Montiel, and A. J. Davison, “Visual SLAM: Why
+    November 2011, pp. 2352–2359.                                                   filter?” Image and Vision Computing, vol. 30, no. 2, pp. 65–77, 2012.
+IEEE TRANSACTIONS ON ROBOTICS                                                                                                                                  17
+
+
+
+[32] G. Klein and D. Murray, “Improving the agility of keyframe-based                                       J. M . M. Montiel was born in Arnedo, Spain,
+     slam,” in European Conference on Computer Vision (ECCV), Marseille,                                    in 1967. He received the M.S. and Ph.D. degrees
+     France, October 2008, pp. 802–815.                                                                     in electrical engineering from the Universidad de
+[33] K. Pirker, M. Ruther, and H. Bischof, “CD SLAM-continuous local-                                       Zaragoza, Spain, in 1992 and 1996, respectively.
+     ization and mapping in a dynamic world,” in IEEE/RSJ International                                     He is currently a Full Professor with the Depar-
+     Conference on Intelligent Robots and Systems (IROS), San Francisco,                                    tamento de Informática e Ingenierı́a de Sistemas,
+     USA, September 2011, pp. 3990–3997.                                                                    Universidad de Zaragoza, where he is in charge
+[34] S. Song, M. Chandraker, and C. C. Guest, “Parallel, real-time monocular                                of Perception and Computer Vision research grants
+     visual odometry,” in IEEE International Conference on Robotics and                                     and courses. His current interests include, real-time
+     Automation (ICRA), 2013, pp. 4698–4705.                                                                vision localization and semantic mapping for rigid
+[35] P. F. Alcantarilla, J. Nuevo, and A. Bartoli, “Fast explicit diffusion for                             and non rigid environments, and the transference of
+     accelerated features in nonlinear scale spaces,” in British Machine Vision   this technology to robotic and nonrobotic application domains. Prof. Martı́nez
+     Conference (BMVC), Bristol, UK, 2013.                                        Montiel is a member of the I3A Robotics, Perception, and Real-Time Group.
+[36] X. Yang and K.-T. Cheng, “LDB: An ultra-fast feature for scalable            He has been awarded several Spanish MEC grants to fund research at the
+     augmented reality on mobile devices,” in IEEE International Symposium        University of Oxford, UK, and at Imperial College London, UK.
+     on Mixed and Augmented Reality (ISMAR), 2012, pp. 49–57.
+[37] R. Kuemmerle, G. Grisetti, H. Strasdat, K. Konolige, and W. Burgard,
+     “g2o: A general framework for graph optimization,” in IEEE Interna-
+     tional Conference on Robotics and Automation (ICRA), Shanghai, China,
+     May 2011, pp. 3607–3613.
+[38] J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, “A
+     benchmark for the evaluation of RGB-D SLAM systems,” in IEEE/RSJ
+     International Conference on Intelligent Robots and Systems (IROS),
+     Vilamoura, Portugal, October 2012, pp. 573–580.
+[39] M. Smith, I. Baldwin, W. Churchill, R. Paul, and P. Newman, “The new
+     college vision and laser data set,” The International Journal of Robotics
+     Research, vol. 28, no. 5, pp. 595–599, 2009.
+[40] A. Geiger, P. Lenz, C. Stiller, and R. Urtasun, “Vision meets robotics:
+     The KITTI dataset,” The International Journal of Robotics Research,
+     vol. 32, no. 11, pp. 1231–1237, 2013.
+[41] V. Lepetit, F. Moreno-Noguer, and P. Fua, “EPnP: An accurate O(n)
+     solution to the PnP problem,” International Journal of Computer Vision,
+     vol. 81, no. 2, pp. 155–166, 2009.
+[42] B. K. P. Horn, “Closed-form solution of absolute orientation using unit
+     quaternions,” Journal of the Optical Society of America A, vol. 4, no. 4,
+     pp. 629–642, 1987.
+[43] F. Endres, J. Hess, J. Sturm, D. Cremers, and W. Burgard, “3-d mapping
+     with an rgb-d camera,” IEEE Transactions on Robotics, vol. 30, no. 1,
+     pp. 177–187, 2014.
+[44] R. A. Newcombe, S. J. Lovegrove, and A. J. Davison, “DTAM: Dense
+     tracking and mapping in real-time,” in IEEE International Conference on
+     Computer Vision (ICCV), Barcelona, Spain, November 2011, pp. 2320–
+     2327.                                                                                                 Juan D. Tardós was born in Huesca, Spain, in 1961.
+[45] S. Lovegrove, A. J. Davison, and J. Ibanez-Guzmán, “Accurate visual                                  He earned the M.S. and Ph.D. degrees in electrical
+     odometry from a rear parking camera,” in IEEE Intelligent Vehicles                                    engineering from the University of Zaragoza, Spain,
+     Symposium (IV), 2011, pp. 788–793.                                                                    in 1985 and 1991, respectively. He is Full Professor
+[46] P. H. Torr and A. Zisserman, “Feature based methods for structure                                     with the Departamento de Informática e Ingenierı́a
+     and motion estimation,” in Vision Algorithms: Theory and Practice.                                    de Sistemas, University of Zaragoza, where he is in
+     Springer, 2000, pp. 278–294.                                                                          charge of courses in robotics, computer vision, and
+[47] R. Mur-Artal and J. D. Tardos, “Probabilistic semi-dense mapping from                                 artificial intelligence. His research interests include
+     highly accurate feature-based monocular SLAM,” in Robotics: Science                                   SLAM, perception and mobile robotics. Prof. Tardós
+     and Systems (RSS), Rome, Italy, July 2015.                                                            is a member of the I3A Robotics, Perception, and
+[48] H. Strasdat, “Local Accuracy and Global Consistency for Efficient                                     Real-Time Group
+     Visual SLAM,” Ph.D. dissertation, Imperial College, London, October
+     2012.
+
+
+
+
+                         Raúl Mur Artal was born in Zaragoza, Spain in
+                         1989. He received the Industrial Engineering degree
+                         (mention in Industrial Automation and Robotics) in
+                         2012 and the M.S. degree in Systems and Com-
+                         puter Engineering in 2013 from the University of
+                         Zaragoza, where he is currently working towards the
+                         PhD. degree with the I3A Robotics, Perception and
+                         Real-Time Group.
+                           His research interests include Visual Localization
+                         and Long-Term Mapping.
+

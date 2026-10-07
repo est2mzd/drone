@@ -1,0 +1,407 @@
+[
+  {
+    "order": 1,
+    "id": "A01",
+    "title": "入力一式の準備",
+    "diagram": "図A: 動画・校正・特徴の辞書を用意する",
+    "connections": "開始 → A02",
+    "path": "chapters/01_A01.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 2,
+    "id": "A02",
+    "title": "次画像の有無と動画ループ",
+    "diagram": "図A: 次の画像がある?",
+    "connections": "A01/合流点A → A03 または A23",
+    "path": "chapters/02_A02.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 3,
+    "id": "A03",
+    "title": "画像読込と時刻付与",
+    "diagram": "図A: 画像を読む・時刻を付ける / DFD: 読込・時刻付与",
+    "connections": "D01,D02 → D05 → A04",
+    "path": "chapters/03_A03.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 4,
+    "id": "A04",
+    "title": "グレー化と特徴抽出",
+    "diagram": "図A: 画像中の目印を取り出す / DFD: グレー化・特徴抽出",
+    "connections": "D05,D03 → D06 → A05",
+    "path": "chapters/04_A04.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 5,
+    "id": "A05",
+    "title": "初期地図の有無の判断",
+    "diagram": "図A: 追跡に使える初期地図がある?",
+    "connections": "A04 → A06 または A08",
+    "path": "chapters/05_A05.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 6,
+    "id": "A06",
+    "title": "二視点からの初期地図作成",
+    "diagram": "図A: 複数画像から初期地図を作る",
+    "connections": "D06 → A07; 初期KeyFrame/MapPoint/初期BA → D09,D10,D11",
+    "path": "chapters/06_A06.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 7,
+    "id": "A07",
+    "title": "初期化の成立判定",
+    "diagram": "図A: 成立した?",
+    "connections": "A06 → A13 または 合流点A",
+    "path": "chapters/07_A07.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 8,
+    "id": "A08",
+    "title": "追跡状態による分岐",
+    "diagram": "図A: 現在の追跡状態は?",
+    "connections": "A05 → A09 または A14",
+    "path": "chapters/08_A08.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 9,
+    "id": "A09",
+    "title": "姿勢の予測と照合",
+    "diagram": "図A: 姿勢を予測・照合",
+    "connections": "D06,D08,D10 → A10",
+    "path": "chapters/09_A09.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 10,
+    "id": "A10",
+    "title": "局所地図を使う姿勢確認",
+    "diagram": "図A/図B: 局所地図で確認",
+    "connections": "A09/A15 → A11",
+    "path": "chapters/10_A10.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 11,
+    "id": "A11",
+    "title": "追跡の成立判定",
+    "diagram": "図A: 追跡できた?",
+    "connections": "A10 → A13 または A12",
+    "path": "chapters/11_A11.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 12,
+    "id": "A12",
+    "title": "一時的な追跡喪失への遷移",
+    "diagram": "図A: 喪失状態へ",
+    "connections": "A11失敗 → 次画像のA08/A14",
+    "path": "chapters/12_A12.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 13,
+    "id": "A13",
+    "title": "姿勢を得てキーフレームを選ぶ",
+    "diagram": "図A: 姿勢を得る・必要ならキーフレームを選ぶ",
+    "connections": "A07/A11 → D08,D09,P02; 合流点A",
+    "path": "chapters/13_A13.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 14,
+    "id": "A14",
+    "title": "喪失後の復帰経路の判断",
+    "diagram": "図A/図B: 復帰を判断",
+    "connections": "A08 → A15 または A19",
+    "path": "chapters/14_A14.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 15,
+    "id": "A15",
+    "title": "現在地図への再局在化",
+    "diagram": "図B: 既存地図の場所を探す",
+    "connections": "D06,D07,D10 → A16",
+    "path": "chapters/15_A15.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 16,
+    "id": "A16",
+    "title": "再局在化の成立判定",
+    "diagram": "図B: 復帰できた?",
+    "connections": "A15 → A10 または A17",
+    "path": "chapters/16_A16.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 17,
+    "id": "A17",
+    "title": "復帰試行を続けるかの判断",
+    "diagram": "図B: まだ復帰を試す?",
+    "connections": "A16失敗 → 合流点A または A18",
+    "path": "chapters/17_A17.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 18,
+    "id": "A18",
+    "title": "追跡喪失の確定",
+    "diagram": "図B: 喪失を確定",
+    "connections": "A17 → A19; 実装上は同画像内処理もある",
+    "path": "chapters/18_A18.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 19,
+    "id": "A19",
+    "title": "現在地図を残すかの判断",
+    "diagram": "図B: 地図を残せる?",
+    "connections": "A14/A18 → A20 または A21",
+    "path": "chapters/19_A19.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 20,
+    "id": "A20",
+    "title": "既存地図を残す新地図開始",
+    "diagram": "図B: 既存地図を残し新地図を開始",
+    "connections": "A19 → D10,A22",
+    "path": "chapters/20_A20.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 21,
+    "id": "A21",
+    "title": "現在地図のリセット",
+    "diagram": "図B: 現在地図をリセット",
+    "connections": "A19 → D10,A22",
+    "path": "chapters/21_A21.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 22,
+    "id": "A22",
+    "title": "再初期化への復帰",
+    "diagram": "図B: 再び初期化へ",
+    "connections": "A20/A21 → 合流点A → A05/A06",
+    "path": "chapters/22_A22.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 23,
+    "id": "A23",
+    "title": "終了要求と結果保存",
+    "diagram": "図A: 終了要求・結果保存 / DFD: このプロジェクトの保存処理",
+    "connections": "A02終端,D10,D13 → D14,D15",
+    "path": "chapters/23_A23.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 24,
+    "id": "P01",
+    "title": "Trackingの統括と実行境界",
+    "diagram": "並行図/DFD: Tracking / 境界図: 自前ラッパー・ORB-SLAM3本体",
+    "connections": "A03 → A04〜A22; D09 → P02",
+    "path": "chapters/24_P01.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 25,
+    "id": "P02",
+    "title": "LocalMappingと非同期キュー",
+    "diagram": "並行図/DFD: LocalMapping",
+    "connections": "D09,D10 → D11,D09 → P03",
+    "path": "chapters/25_P02.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 26,
+    "id": "P03",
+    "title": "LoopClosingの補正と地図統合",
+    "diagram": "並行図/DFD: LoopClosing",
+    "connections": "D09,D07,D10 → D12",
+    "path": "chapters/26_P03.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 27,
+    "id": "D01",
+    "title": "保存動画と映像入力の意味",
+    "diagram": "DFD/境界図: 保存動画",
+    "connections": "O02 → A03",
+    "path": "chapters/27_D01.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 28,
+    "id": "D02",
+    "title": "FPSと時間基準",
+    "diagram": "DFD: 動画のFPS",
+    "connections": "動画情報 → A03,D05",
+    "path": "chapters/28_D02.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 29,
+    "id": "D03",
+    "title": "カメラ校正と座標の前提",
+    "diagram": "DFD: 校正：画像と視線の対応",
+    "connections": "校正結果 → A01,A04,A06,A09,A10",
+    "path": "chapters/29_D03.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 30,
+    "id": "D04",
+    "title": "事前語彙と画像検索表現",
+    "diagram": "DFD: 特徴の辞書 / 特徴の辞書・検索用DBの辞書部分",
+    "connections": "語彙ファイル → P01,A15,P03",
+    "path": "chapters/30_D04.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 31,
+    "id": "D05",
+    "title": "画像とフレーム時刻",
+    "diagram": "DFD: 画像・フレーム時刻",
+    "connections": "A03 → A04,D06",
+    "path": "chapters/31_D05.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 32,
+    "id": "D06",
+    "title": "Frameと特徴・対応情報",
+    "diagram": "DFD: Frame：時刻・特徴・対応情報",
+    "connections": "A04 → P01,A06,A09,A15",
+    "path": "chapters/32_D06.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 33,
+    "id": "D07",
+    "title": "キーフレーム検索用データベース",
+    "diagram": "DFD: キーフレーム検索用DB / 辞書・検索用DBのDB部分",
+    "connections": "KeyFrame登録 → A15,P03",
+    "path": "chapters/33_D07.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 34,
+    "id": "D08",
+    "title": "各画像の姿勢と状態",
+    "diagram": "DFD: 各画像の姿勢・状態",
+    "connections": "P01/A13 → D13; 次画像予測",
+    "path": "chapters/34_D08.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 35,
+    "id": "D09",
+    "title": "KeyFrameと受け渡し",
+    "diagram": "DFD: 選ばれたKeyFrame / 処理したKeyFrame",
+    "connections": "A06/A13 → P02 → P03",
+    "path": "chapters/35_D09.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 36,
+    "id": "D10",
+    "title": "Atlas・地図群と共有更新",
+    "diagram": "並行図: 共有する地図群Atlas / DFD: Atlas・地図群",
+    "connections": "A06,P02,P03 ↔ P01; A20/A21; A23",
+    "path": "chapters/36_D10.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 37,
+    "id": "D11",
+    "title": "MapPointと観測関係",
+    "diagram": "DFD: 初期地図・観測関係 / 地図点・参照画像 / 新しいMapPoint・修正した姿勢・観測関係",
+    "connections": "A06/P02 → D10 → A09/A10",
+    "path": "chapters/37_D11.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 38,
+    "id": "D12",
+    "title": "整合を取り直した地図と統合結果",
+    "diagram": "DFD: 整合を取り直した地図・統合結果 / 地図・キーフレーム",
+    "connections": "P03 ↔ D10 → P01/A23",
+    "path": "chapters/38_D12.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 39,
+    "id": "D13",
+    "title": "Trackingの姿勢履歴",
+    "diagram": "DFD: Trackingの姿勢履歴",
+    "connections": "P01,D08 → A23",
+    "path": "chapters/39_D13.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 40,
+    "id": "D14",
+    "title": "時刻付き地図点ファイル",
+    "diagram": "DFD: 時刻付き地図点ファイル / 境界図: 点・姿勢ファイルの点部分",
+    "connections": "A23 → O01",
+    "path": "chapters/40_D14.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 41,
+    "id": "D15",
+    "title": "姿勢・有効フラグのファイル",
+    "diagram": "DFD: 姿勢・有効フラグのファイル / 境界図: 点・姿勢ファイルの姿勢部分",
+    "connections": "A23 → O01,O03",
+    "path": "chapters/41_D15.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 42,
+    "id": "O01",
+    "title": "結果の表示と再投影",
+    "diagram": "DFD: 別の表示ツール / 境界図: viewer・RViz",
+    "connections": "D14,D15,D01 → 表示",
+    "path": "chapters/42_O01.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 43,
+    "id": "O02",
+    "title": "mini3_bridgeと入力境界",
+    "diagram": "境界図: mini3_bridge・映像転送保存",
+    "connections": "機体映像 → D01",
+    "path": "chapters/43_O02.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 44,
+    "id": "O03",
+    "title": "patrolの別系統への接続",
+    "diagram": "境界図: patrol・別の特徴地図とPnP等",
+    "connections": "D01,D15 → 別の特徴地図・姿勢・巡回研究",
+    "path": "chapters/44_O03.md",
+    "status": "合格・3秒待機完了"
+  },
+  {
+    "order": 45,
+    "id": "O04",
+    "title": "object_mapの別系統の観測実験",
+    "diagram": "境界図: object_map・物体検出深度平面",
+    "connections": "D01 → 観測候補; ORB本体への直接接続なし",
+    "path": "chapters/45_O04.md",
+    "status": "合格・3秒待機完了"
+  }
+]

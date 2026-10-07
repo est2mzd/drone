@@ -1,0 +1,195 @@
+{"event": "rule_verified_and_inventory_created", "time": "2026-10-07T14:31:10Z", "blocks": 45}
+{"time": "2026-10-07T14:33:58.677983+00:00", "event": "assigned", "id": "A01", "supervisor": "/root/chapter_supervisor", "worker": "/root/chapter_supervisor/research_worker"}
+{"time": "2026-10-07T14:46:39.581101+00:00", "event": "rejected", "id": "A01", "reason": "本文の論理・三入力の根拠・式とコード対応は成立しています。ただしユーザー指定の略語の正式名称が未充足です。本文で初出するORB、SLAM、DBoW2、FPSを正式名称と短い意味付きで説明してください。YAMLは形式の説明済みで十分。追加調査不要、本文と小監督監査の軽微修正後に再提出してください。"}
+{"time": "2026-10-07T14:48:38.873646+00:00", "event": "approved", "id": "A01", "reason": "本文全文と作業者根拠を実読。三入力の役割、図接続、入力組と寸法条件、現行run.sh/main/Systemの版・行番号、論文PDF5頁図1/6頁IV節、具体例、未検証の区別を確認。略語定義の軽微差戻しも再確認し合格。"}
+{"time": "2026-10-07T14:48:38.873721+00:00", "event": "sleep_started", "id": "A01", "seconds": 3}
+{"time": "2026-10-07T14:48:41.874017+00:00", "event": "sleep_completed", "id": "A01", "elapsed_seconds": 3.000080651996541}
+{"time": "2026-10-07T14:48:41.918129+00:00", "event": "assigned", "id": "A02"}
+{"time": "2026-10-07T14:53:30.412679+00:00", "event": "approved", "id": "A02", "reason": "章全文とA02作業者根拠を確認。readが判定/取得を兼ねる図の抽象化、true/falseの型と読込試行、EOF/失敗と終了値の限界、main行45-67との対応、OpenCV公式文書と論文図1の位置付け、3枚例を監査し合格。"}
+{"time": "2026-10-07T14:53:30.412785+00:00", "event": "sleep_started", "id": "A02", "seconds": 3}
+{"time": "2026-10-07T14:53:33.413205+00:00", "event": "sleep_completed", "id": "A02", "elapsed_seconds": 3.0000888719951035}
+{"time": "2026-10-07T14:53:33.459211+00:00", "event": "assigned", "id": "A03"}
+{"time": "2026-10-07T14:59:12.557754+00:00", "event": "approved", "id": "A03", "reason": "本文全文・作業者9根拠・小監督監査を照合。t=k/fと観測組の型/単位/前提、main33-55とSystem→Tracking→Frameのtimestamp受渡し、実測撮像/処理時計との区別、fallbackの限界、ネット公式資料とPDF図1を監査し合格。"}
+{"time": "2026-10-07T14:59:12.557881+00:00", "event": "sleep_started", "id": "A03", "seconds": 3}
+{"time": "2026-10-07T14:59:15.558438+00:00", "event": "sleep_completed", "id": "A03", "elapsed_seconds": 3.0002124619932147}
+{"time": "2026-10-07T14:59:15.592420+00:00", "event": "assigned", "id": "A04"}
+{"time": "2026-10-07T15:12:10.401808+00:00", "event": "approved", "id": "A04", "reason": "本文全文・作業者根拠・現行ORBextractor/Tracking/Frameを照合。ピラミッド、モーメント方向、回転標本の256bit式と画素座標/度rad/型を確認。現行OctTree選別と公式紹介のHarris/角度離散化を区別。ORB原論文PDFは正規代替取得も失敗して未読と明示し、式は現行コード整理式と限定。関連ORB-SLAM3 PDF図1は実読済み。この制約を残して文書として合格。"}
+{"time": "2026-10-07T15:12:10.401909+00:00", "event": "sleep_started", "id": "A04", "seconds": 3}
+{"time": "2026-10-07T15:12:13.402296+00:00", "event": "sleep_completed", "id": "A04", "elapsed_seconds": 3.000099955999758}
+{"time": "2026-10-07T15:12:13.444057+00:00", "event": "assigned", "id": "A05"}
+{"time": "2026-10-07T15:13:12.760426+00:00", "event": "rejected", "id": "A04", "reason": "合格後の小監督の再確認で、初期抽出器のID差条件をフレーム経過範囲と解釈した表現に注意が必要と判明。Frame IDとKeyFrame IDの差という現行コードの条件に限定して追補修正する。A05は保留し再監査後に再開。"}
+{"time": "2026-10-07T15:13:35.187184+00:00", "event": "paused", "id": "A05", "reason": "A04追補。A05計画のみ保存、作業者割当前。"}
+{"time": "2026-10-07T15:14:05.552133+00:00", "event": "approved", "id": "A04", "reason": "追補再監査：本文98行を初期状態とGrabImageMonocularのID差条件というコード上の観測事実に限定。Tracking1611のlastID=Frame.mnId、2658のinitID=KeyFrame.mnIdを照合し、経過フレーム数の推測を除いた。他の合格内容は保持。A05は作業者割当前に保留済み。"}
+{"time": "2026-10-07T15:14:05.552211+00:00", "event": "sleep_started", "id": "A04", "seconds": 3}
+{"time": "2026-10-07T15:14:08.552433+00:00", "event": "sleep_completed", "id": "A04", "elapsed_seconds": 3.0000935370044317}
+{"time": "2026-10-07T15:14:08.597414+00:00", "event": "assigned", "id": "A05"}
+{"time": "2026-10-07T15:20:52.675619+00:00", "event": "approved", "id": "A05", "reason": "全文と7根拠を照合。初回NO_IMAGES_YET→NOT_INITIALIZED、状態述語B(s)と図の否定方向、Atlas/Map器との区別、初期化後に同一elseへ入り直さない点、コード版/行/公式固定ソースとPDF図1を監査して合格。"}
+{"time": "2026-10-07T15:20:52.675727+00:00", "event": "sleep_started", "id": "A05", "seconds": 3}
+{"time": "2026-10-07T15:20:55.676264+00:00", "event": "sleep_completed", "id": "A05", "elapsed_seconds": 3.000142924996908}
+{"time": "2026-10-07T15:20:55.732055+00:00", "event": "assigned", "id": "A04"}
+{"time": "2026-10-07T15:30:16.527115+00:00", "event": "approved", "id": "A04", "reason": "原論文追補を全文監査。m00と重心の前提、式番号とコード整理式の区別、Harris/OctTree・12度/三角関数丸め・平滑化方式の差を確認。先に独立確認したPDF抽出本文と一致し、画像未視認とローカル未保存の制約も適切に残す。A05変更なし、A06未着手。"}
+{"time": "2026-10-07T15:30:16.527208+00:00", "event": "sleep_started", "id": "A04", "seconds": 3}
+{"time": "2026-10-07T15:30:19.527631+00:00", "event": "sleep_completed", "id": "A04", "elapsed_seconds": 3.0000915589916985}
+{"time": "2026-10-07T15:30:19.908393+00:00", "event": "assigned", "id": "A06"}
+{"time": "2026-10-07T15:41:33.316915+00:00", "event": "approved", "id": "A06", "reason": "本文139行と作業者根拠・小監督監査を全文確認。Tracking初期化、Pinhole委譲、TwoView H/F、Optimizer固定姿勢と重み、中央値ソースを独立実読しPDF6–7頁画像とも照合。H/F方法、Tcwと中心、再投影BA、任意尺度の因果と前提が一貫。H成功時vP3D未代入は静的懸念として明確に区別し、実測済みと誤認させない。"}
+{"time": "2026-10-07T15:41:33.317015+00:00", "event": "sleep_started", "id": "A06", "seconds": 3}
+{"time": "2026-10-07T15:41:36.317415+00:00", "event": "sleep_completed", "id": "A06", "elapsed_seconds": 3.0000932779948926}
+{"time": "2026-10-07T15:41:36.681726+00:00", "event": "assigned", "id": "A07"}
+{"time": "2026-10-07T15:50:51.436525+00:00", "event": "approved", "id": "A07", "reason": "78行本文・8件根拠・小監督監査を確認。Tracking1912/2451–2522/2580–2593/2656とSystem450–471/514–518を独立照合。候補保存・保持・解除と最終OK、N/M/Pの異なる意味と不等号、次回入力時のリセット要求処理を正確に説明し、単一閾値の成立保証やゼロ深度安全性を主張していない。"}
+{"time": "2026-10-07T15:50:51.436638+00:00", "event": "sleep_started", "id": "A07", "seconds": 3}
+{"time": "2026-10-07T15:50:54.437047+00:00", "event": "sleep_completed", "id": "A07", "elapsed_seconds": 3.0000909800000954}
+{"time": "2026-10-07T15:50:54.804421+00:00", "event": "assigned", "id": "A08"}
+{"time": "2026-10-07T15:56:38.073164+00:00", "event": "approved", "id": "A08", "reason": "本文66行・5件根拠と自己監査を確認。Tracking1939–2031/2122–2162/2270–2288、状態enum、wrapperを独立実読。入口経路と次状態の区別、通常SLAMとonly-tracking、局所bOKとmState、同画像内変更と前半else非再突入を適切に整理。図への接続と例・前提が明瞭。"}
+{"time": "2026-10-07T15:56:38.073304+00:00", "event": "sleep_started", "id": "A08", "seconds": 3}
+{"time": "2026-10-07T15:56:41.073718+00:00", "event": "sleep_completed", "id": "A08", "elapsed_seconds": 3.000182837000466}
+{"time": "2026-10-07T15:56:41.464362+00:00", "event": "assigned", "id": "A09"}
+{"time": "2026-10-07T16:04:51.277848+00:00", "event": "approved", "id": "A09", "reason": "96行本文・根拠8件・小監督監査を読了。Tracking二経路と更新/予測積、UpdateLastFrame、ORBmatcher段別投影窓、Optimizer固定点・可変姿勢・外れ値再分類/Huber解除を独立照合。原論文Appendixの画像も実読。変換方向、時刻差未補正、更新条件、重み記号、数値例が整合し、A10と役割を分離している。"}
+{"time": "2026-10-07T16:04:51.277958+00:00", "event": "sleep_started", "id": "A09", "seconds": 3}
+{"time": "2026-10-07T16:04:54.278440+00:00", "event": "sleep_completed", "id": "A09", "elapsed_seconds": 3.0001300320000155}
+{"time": "2026-10-07T16:04:54.621868+00:00", "event": "assigned", "id": "A10"}
+{"time": "2026-10-07T16:11:13.441933+00:00", "event": "approved", "id": "A10", "reason": "96行本文・根拠8件・小監督監査を読了。Tracking局所集合構築/探索、Frame可視候補条件とMapPoint方向平均を独立照合しPDF8頁V.D画像も確認。投票と集合和、識別子/座標、選択的近傍追加、候補と対応、pose-onlyの役割が整合。例の票数と重複除外も正しい。"}
+{"time": "2026-10-07T16:11:13.442025+00:00", "event": "sleep_started", "id": "A10", "seconds": 3}
+{"time": "2026-10-07T16:11:16.442454+00:00", "event": "sleep_completed", "id": "A10", "elapsed_seconds": 3.000101662997622}
+{"time": "2026-10-07T16:11:16.794678+00:00", "event": "assigned", "id": "A11"}
+{"time": "2026-10-07T16:18:15.682770+00:00", "event": "approved", "id": "A11", "reason": "本文79行と根拠/小監督監査を確認。計数条件、ID範囲、先行50拒否・最近喪失>10例外・通常30の順、呼出し条件と状態更新をTrackingで独立照合。等号境界と仮定例が正しく、受理を位置精度保証と誤認させない。"}
+{"time": "2026-10-07T16:18:15.682944+00:00", "event": "sleep_started", "id": "A11", "seconds": 3}
+{"time": "2026-10-07T16:18:18.683137+00:00", "event": "sleep_completed", "id": "A11", "elapsed_seconds": 3.0000659709912725}
+{"time": "2026-10-07T16:18:19.001611+00:00", "event": "assigned", "id": "A12"}
+{"time": "2026-10-07T16:23:13.780716+00:00", "event": "approved", "id": "A12", "reason": "本文70行と根拠・小監督監査を読了。後段の条件付き遷移と先行失敗のKF数分岐、Frame289–291の時刻保持、wrapperからの時刻経路を独立照合。喪失開始時刻を毎回更新しないこと、同画像後続/次画像入口の区別、通信や機体喪失とは異なる状態であることが明確。"}
+{"time": "2026-10-07T16:23:13.780813+00:00", "event": "sleep_started", "id": "A12", "seconds": 3}
+{"time": "2026-10-07T16:23:16.781008+00:00", "event": "sleep_completed", "id": "A12", "elapsed_seconds": 3.0000735109933885}
+{"time": "2026-10-07T16:23:17.102124+00:00", "event": "assigned", "id": "A13"}
+{"time": "2026-10-07T16:30:59.265610+00:00", "event": "approved", "id": "A13", "reason": "109行本文・根拠8件・小監督監査を読了。Need/Create、Track呼出し条件、KeyFrameコピー、LocalMapping受付/停止防止/Insert境界を独立実読。純単眼簡約式と不等号、別計数の比較、初期2KFとの別経路、候補・受付・生成・処理完了の区別が明確。例も整合。"}
+{"time": "2026-10-07T16:30:59.265705+00:00", "event": "sleep_started", "id": "A13", "seconds": 3}
+{"time": "2026-10-07T16:31:02.266156+00:00", "event": "sleep_completed", "id": "A13", "elapsed_seconds": 3.00009121200128}
+{"time": "2026-10-07T16:31:02.624576+00:00", "event": "assigned", "id": "A14"}
+{"time": "2026-10-07T16:35:29.400135+00:00", "event": "approved", "id": "A14", "reason": "65行本文と根拠/小監督監査を確認。前半のRECENTLY_LOST/LOST分岐と現行候補検索のcurrentMap引数、DB834–835の他地図除外を独立照合。入口経路と次状態、現在地図候補とAtlas全体、同画像後半判定の区別が図Bと整合。"}
+{"time": "2026-10-07T16:35:29.400236+00:00", "event": "sleep_started", "id": "A14", "seconds": 3}
+{"time": "2026-10-07T16:35:32.400697+00:00", "event": "sleep_completed", "id": "A14", "elapsed_seconds": 3.000089219000074}
+{"time": "2026-10-07T16:35:32.741502+00:00", "event": "assigned", "id": "A15"}
+{"time": "2026-10-07T16:43:45.644977+00:00", "event": "approved", "id": "A15", "reason": "本文119行・根拠7件・小監督監査を読了。Relocalization全体とMLPnPsolver65–259/CheckInliers/共分散分岐を独立実読。既知3D点と2D観測、世界→カメラ姿勢、6点標本と全対応検査、pose-onlyと追加投影の因果が整合。旧コメントと現行型/反復条件、資料実読範囲を区別し最終成立はA16へ明確に接続。"}
+{"time": "2026-10-07T16:43:45.645075+00:00", "event": "sleep_started", "id": "A15", "seconds": 3}
+{"time": "2026-10-07T16:43:48.645507+00:00", "event": "sleep_completed", "id": "A15", "elapsed_seconds": 3.0001032339932863}
+{"time": "2026-10-07T16:43:48.990384+00:00", "event": "assigned", "id": "A16"}
+{"time": "2026-10-07T16:50:05.750171+00:00", "event": "approved", "id": "A16", "reason": "本文84行・作業者根拠/追補・小監督監査を読了。Relocalization3683–3774とOptimizer1113を独立照合。候補破棄情報/今回の姿勢返却、g+h再最適化条件/最終g>=50、候補失敗/関数false、関数true/最終追跡OKの区別が明確。49例も中間改善経路を正しく残す。"}
+{"time": "2026-10-07T16:50:05.750269+00:00", "event": "sleep_started", "id": "A16", "seconds": 3}
+{"time": "2026-10-07T16:50:08.750718+00:00", "event": "sleep_completed", "id": "A16", "elapsed_seconds": 3.0001054540043697}
+{"time": "2026-10-07T16:50:09.083962+00:00", "event": "assigned", "id": "A17"}
+{"time": "2026-10-07T16:58:24.962174+00:00", "event": "approved", "id": "A17", "reason": "本文・作業者根拠・Trackの該当分岐を独立照合。再局在先行、厳密な画像時刻差>3秒、今回戻り値false、後続局所地図確認前という条件が正確。時刻基準とIMU側5秒を区別し、全必須項目を確認。"}
+{"time": "2026-10-07T16:58:24.962270+00:00", "event": "sleep_started", "id": "A17", "seconds": 3}
+{"time": "2026-10-07T16:58:27.962699+00:00", "event": "sleep_completed", "id": "A17", "elapsed_seconds": 3.0001050099963322}
+{"time": "2026-10-07T16:58:28.300912+00:00", "event": "assigned", "id": "A18"}
+{"time": "2026-10-07T17:05:02.401127+00:00", "event": "approved", "id": "A18", "reason": "本文・根拠5件・Track分岐を独立照合。LOST代入直後と返却時の区別、else-if非再入、局所地図未呼出しでも出るログ、後半returnによる通常Frameコピー/履歴未到達が正確。必須項目と図接続を確認。"}
+{"time": "2026-10-07T17:05:02.401240+00:00", "event": "sleep_started", "id": "A18", "seconds": 3}
+{"time": "2026-10-07T17:05:05.401699+00:00", "event": "sleep_completed", "id": "A18", "elapsed_seconds": 3.000105402999907}
+{"time": "2026-10-07T17:05:05.741097+00:00", "event": "assigned", "id": "A19"}
+{"time": "2026-10-07T17:10:52.217256+00:00", "event": "approved", "id": "A19", "reason": "本文・根拠・Map/Tracking/Systemを独立照合。Kの集合サイズ、前半<10/後半<=10、K=9/10/11、図の分岐向き、要求と直接呼出しの時点を正確に区別。境界差の意図と実行結果を断定せず必須項目を確認。"}
+{"time": "2026-10-07T17:10:52.217350+00:00", "event": "sleep_started", "id": "A19", "seconds": 3}
+{"time": "2026-10-07T17:10:55.217788+00:00", "event": "sleep_completed", "id": "A19", "elapsed_seconds": 3.000089477005531}
+{"time": "2026-10-07T17:10:55.534933+00:00", "event": "assigned", "id": "A20"}
+{"time": "2026-10-07T17:18:25.548384+00:00", "event": "approved", "id": "A20", "reason": "本文95行と根拠6件、Tracking/Atlas/Map/Frameの実処理を独立照合。旧地図保持と新current、storedとファイル保存、器と幾何/座標統合、フラグ解除と値初期化、コメント代入と履歴保持を区別。集合式・相似関係の記号/前提・図接続を確認。"}
+{"time": "2026-10-07T17:18:25.548500+00:00", "event": "sleep_started", "id": "A20", "seconds": 3}
+{"time": "2026-10-07T17:18:28.548936+00:00", "event": "sleep_completed", "id": "A20", "elapsed_seconds": 3.000114845999633}
+{"time": "2026-10-07T17:18:28.899992+00:00", "event": "assigned", "id": "A21"}
+{"time": "2026-10-07T17:55:33.232080+00:00", "event": "approved", "id": "A21", "reason": "本文94行・根拠7件・System/Tracking/LM/LC/DB/Atlas/Mapを独立照合。要求の次回消費、応答フラグ待ちと終了待ちの相違、LM/LCの消去範囲、同一Map/ID保持、deleteコメント、履歴のindex再構成と全体Resetとの差を確認。全必須項目を満たす。"}
+{"time": "2026-10-07T17:55:33.232174+00:00", "event": "sleep_started", "id": "A21", "seconds": 3}
+{"time": "2026-10-07T17:55:36.232612+00:00", "event": "sleep_completed", "id": "A21", "elapsed_seconds": 3.000102738995338}
+{"time": "2026-10-07T17:55:36.587106+00:00", "event": "assigned", "id": "A22"}
+{"time": "2026-10-07T18:01:07.071625+00:00", "event": "approved", "id": "A22", "reason": "本文68行・根拠5件・wrapper/System/Trackingを独立照合。A20/A21の時点差、同じ次入力でreset後Frame構築、入力通番継続、初期抽出と状態遷移、初回は候補保存のみを正確に説明。全必須項目とA05〜A07への接続を確認。"}
+{"time": "2026-10-07T18:01:07.071746+00:00", "event": "sleep_started", "id": "A22", "seconds": 3}
+{"time": "2026-10-07T18:01:10.072197+00:00", "event": "sleep_completed", "id": "A22", "elapsed_seconds": 3.0001120600063587}
+{"time": "2026-10-07T18:01:10.421531+00:00", "event": "assigned", "id": "A23"}
+{"time": "2026-10-07T18:07:45.387474+00:00", "event": "approved", "id": "A23", "reason": "本文94行・根拠7件・wrapper全文/System/finish要求/既存差分を独立照合。無条件二保存、MapPoint数の独立選択、待機コメント、ストリーム未検査、正常return規則と例外・時間計測を正確に区別。公式固定版とローカル追加、静的懸念と未再現を明示し必須項目を確認。"}
+{"time": "2026-10-07T18:07:45.387577+00:00", "event": "sleep_started", "id": "A23", "seconds": 3}
+{"time": "2026-10-07T18:07:48.388060+00:00", "event": "sleep_completed", "id": "A23", "elapsed_seconds": 3.0001433339930372}
+{"time": "2026-10-07T18:07:48.733473+00:00", "event": "assigned", "id": "P01"}
+{"time": "2026-10-07T18:13:17.579531+00:00", "event": "approved", "id": "P01", "reason": "本文94行・根拠7件とSystem/Tracking/wrapper/キュー処理を独立照合。main上の同期呼出し、LM/LC別thread、入力時点、Tcw返却とwrapper実利用、取得時Mapのmutexスコープとキュー完了境界が正確。図とA群参照、必須項目を確認。"}
+{"time": "2026-10-07T18:13:17.579637+00:00", "event": "sleep_started", "id": "P01", "seconds": 3}
+{"time": "2026-10-07T18:13:20.579841+00:00", "event": "sleep_completed", "id": "P01", "elapsed_seconds": 3.0000675760093145}
+{"time": "2026-10-07T18:13:20.919669+00:00", "event": "assigned", "id": "P02"}
+{"time": "2026-10-07T18:23:00.245996+00:00", "event": "rejected", "id": "P02", "reason": "本文の論理・式は合格水準。最終追記したKeyFrame無効化保護の根拠をコード対応表へ追加すること（KeyFrame.cc:573–585）。出典補足だけを小監督へ依頼し、合格は補足確認後とする。"}
+{"time": "2026-10-07T18:24:28.264034+00:00", "event": "approved", "id": "P02", "reason": "本文・根拠8件・LocalMapping/Optimizer/g2o/KeyFrameと旧PDF8/9/16頁の本文画像を独立照合。Run条件、三角測量とBA、全記号/単位/固定集合、外れ値/部分反映、論文との差、保護時延期を確認。差戻しのKeyFrame.cc573–585出典表追記を読み戻し、必須項目を満たす。"}
+{"time": "2026-10-07T18:24:28.264112+00:00", "event": "sleep_started", "id": "P02", "seconds": 3}
+{"time": "2026-10-07T18:24:31.264563+00:00", "event": "sleep_completed", "id": "P02", "elapsed_seconds": 3.0001032410073094}
+{"time": "2026-10-07T18:24:31.588468+00:00", "event": "assigned", "id": "P03"}
+{"time": "2026-10-07T18:38:55.445781+00:00", "event": "approved", "id": "P03", "reason": "章全文・根拠・小監督監査を読み、Run候補分類、共視確認、Sim3方向と数値例、CorrectLoopの初期KF固定とGBA条件、MergeLocalの可動固定・純単眼の後半グラフ除外を現行ソースで独立照合した。新旧論文の該当本文と9/10/17頁画像も確認済み。論文と実装、非同期要求と完了、静的懸念と未再現を区別できており合格。"}
+{"time": "2026-10-07T18:38:55.445885+00:00", "event": "sleep_started", "id": "P03", "seconds": 3}
+{"time": "2026-10-07T18:38:58.446331+00:00", "event": "sleep_completed", "id": "P03", "elapsed_seconds": 3.000090514004114}
+{"time": "2026-10-07T18:38:58.487681+00:00", "event": "assigned", "id": "D01"}
+{"time": "2026-10-07T18:47:09.364421+00:00", "event": "approved", "id": "D01", "reason": "本文・根拠・小監督監査を全文確認。wrapper引数/VideoCapture/read、run.sh、README、System/Tracking入力を現行コードと照合し、OpenCV一次契約とPDF5頁本文/画像も独立確認した。保存ファイル・復号画像の区別、一般Matと前提付き8bit式、N=0/成分数例、開けたことと追跡等の保証範囲が適切で合格。"}
+{"time": "2026-10-07T18:47:09.364523+00:00", "event": "sleep_started", "id": "D01", "seconds": 3}
+{"time": "2026-10-07T18:47:12.365070+00:00", "event": "sleep_completed", "id": "D01", "elapsed_seconds": 3.0001928090059664}
+{"time": "2026-10-07T18:47:12.403671+00:00", "event": "assigned", "id": "D02"}
+{"time": "2026-10-07T18:56:00.760487+00:00", "event": "approved", "id": "D02", "reason": "本文・根拠・自己監査を全文確認。採用fpsの比較/fallback、double時刻生成、steady_clockの範囲、Settings→mMaxFramesの別経路をローカルで独立照合した。全記号/単位/有限正の前提、(N-1)/fと数値例、PTS等との区別が整合し、公式OpenCVとPDFの役割も適切に限定されているため合格。"}
+{"time": "2026-10-07T18:56:00.760655+00:00", "event": "sleep_started", "id": "D02", "seconds": 3}
+{"time": "2026-10-07T18:56:03.761050+00:00", "event": "sleep_completed", "id": "D02", "elapsed_seconds": 3.0000883110042196}
+{"time": "2026-10-07T18:56:03.798678+00:00", "event": "assigned", "id": "D03"}
+{"time": "2026-10-07T19:26:08.911618+00:00", "event": "approved", "id": "D03", "reason": "本文130行・7件根拠・小監督監査を確認。現行yaml/run.sh/calibrate/pattern/Settings/Frame/Pinholeを独立照合し、OpenCV calib3dの式とPDF6頁本文画像を実読した。K・歪み・逆K視線の全記号/単位/座標、P=Kによる画素出力、色順コメント差、RMS保存値と尺度の限界・数値例が整合して合格。小監督再初期化待ちを検知し、保存済み資料から監査記録のみ復旧した。"}
+{"time": "2026-10-07T19:26:08.911771+00:00", "event": "sleep_started", "id": "D03", "seconds": 3}
+{"time": "2026-10-07T19:26:11.912223+00:00", "event": "sleep_completed", "id": "D03", "elapsed_seconds": 3.0000907350040507}
+{"time": "2026-10-07T19:26:11.948876+00:00", "event": "assigned", "id": "D04"}
+{"time": "2026-10-07T19:34:56.848587+00:00", "event": "approved", "id": "D04", "reason": "本文127行・7件根拠・小監督監査を全文確認。語彙先頭、System/Frame/KeyFrame、DBoW2の木探索・TF-IDF集約・L1正規化/score・FeatureVectorを独立照合し、固定Webと旧PDF6頁本文画像を確認した。記号/前提と0.7例、空ベクトル例外、levelsup、語彙/DB/地図点の境界が適切で合格。"}
+{"time": "2026-10-07T19:34:56.848688+00:00", "event": "sleep_started", "id": "D04", "seconds": 3}
+{"time": "2026-10-07T19:34:59.849123+00:00", "event": "sleep_completed", "id": "D04", "elapsed_seconds": 3.000088982997113}
+{"time": "2026-10-07T19:34:59.891343+00:00", "event": "assigned", "id": "D05"}
+{"time": "2026-10-07T19:39:02.808265+00:00", "event": "approved", "id": "D05", "reason": "本文80行・4件根拠・自己監査を全文確認。wrapper→System clone/resize→Tracking→Frameの時刻値保存と別採番を現行コード・公式固定ソースで独立照合した。PDF5頁入力図の役割を再利用し、入力対の型/単位/前提と三画像例、const参照と値保存の区別が適切で合格。"}
+{"time": "2026-10-07T19:39:02.808392+00:00", "event": "sleep_started", "id": "D05", "seconds": 3}
+{"time": "2026-10-07T19:39:05.808835+00:00", "event": "sleep_completed", "id": "D05", "elapsed_seconds": 3.000102310994407}
+{"time": "2026-10-07T19:39:05.844898+00:00", "event": "assigned", "id": "D06"}
+{"time": "2026-10-07T19:48:25.859944+00:00", "event": "approved", "id": "D06", "reason": "本文95行・6件根拠・小監督監査を全文確認。Frame.h/単眼ctor/copy/grid/SetPose、ORBextractor記述子生成、Tracking対応代入/解除とOptimizerフラグ更新を独立照合した。特徴番号の共通添字、型/単位/画素座標、N=0とnull/false/-1の意味、姿勢設定と追跡成功の区別が整合し合格。新旧PDFの役割と固定一次ソースも確認。"}
+{"time": "2026-10-07T19:48:25.860045+00:00", "event": "sleep_started", "id": "D06", "seconds": 3}
+{"time": "2026-10-07T19:48:28.860469+00:00", "event": "sleep_completed", "id": "D06", "elapsed_seconds": 3.000097914991784}
+{"time": "2026-10-07T19:48:28.897524+00:00", "event": "assigned", "id": "D07"}
+{"time": "2026-10-07T20:00:15.882115+00:00", "event": "approved", "id": "D07", "reason": "本文97行・根拠7件・自己監査を読み、DB登録削除・Mapフィルタ位置・呼出し元を現行ソースと独立照合。概念集合と重複可能な実リスト、候補と幾何検証の区別を確認。合格。"}
+{"time": "2026-10-07T20:00:15.882213+00:00", "event": "sleep_started", "id": "D07", "seconds": 3}
+{"time": "2026-10-07T20:00:18.882677+00:00", "event": "sleep_completed", "id": "D07", "elapsed_seconds": 3.0001051819999702}
+{"time": "2026-10-07T20:00:19.220738+00:00", "event": "assigned", "id": "D08"}
+{"time": "2026-10-07T20:07:58.009382+00:00", "event": "approved", "id": "D08", "reason": "本文99行・実worker根拠5件・自己監査を全文確認。System/Grab/Frame/Tracking履歴・早期return・運動更新とwrapperを独立照合。Tcw/カメラ中心の座標式、任意尺度、HasPoseとOKの分離、入力/OK/履歴/保存件数の区別が整合し合格。"}
+{"time": "2026-10-07T20:07:58.009512+00:00", "event": "sleep_started", "id": "D08", "seconds": 3}
+{"time": "2026-10-07T20:08:01.009786+00:00", "event": "sleep_completed", "id": "D08", "elapsed_seconds": 3.0000949949899223}
+{"time": "2026-10-07T20:08:01.336264+00:00", "event": "assigned", "id": "D09"}
+{"time": "2026-10-07T20:13:59.143535+00:00", "event": "approved", "id": "D09", "reason": "本文99行・根拠6件・小監督監査を全文確認。KF構築/可変更新、Tracking初期と通常経路、LMキュー/観測/Map登録/LC投入、LC ID0除外を独立ソース照合。IDと時刻、記述子複製とMapPoint参照共有、単眼対応欄の型と仮定例、投入と処理完了の区別が整合し合格。"}
+{"time": "2026-10-07T20:13:59.143640+00:00", "event": "sleep_started", "id": "D09", "seconds": 3}
+{"time": "2026-10-07T20:14:02.143894+00:00", "event": "sleep_completed", "id": "D09", "elapsed_seconds": 3.0000710369931767}
+{"time": "2026-10-07T20:14:02.472044+00:00", "event": "assigned", "id": "D10"}
+{"time": "2026-10-07T20:22:48.804870+00:00", "event": "approved", "id": "D10", "reason": "本文・根拠6件・自己監査を全文確認。最終100行版は重複ASCII図削除のみ。Atlas/Map容器とgetter、所属、state setter、共有UpdateMutexを独立照合。Optimizerのlock開始行を1465から1464へ大監督が参照補正。r>=1安定状態の集合式、別地図の座標・尺度、参照コピーと原子的snapshotの区別が整合し合格。"}
+{"time": "2026-10-07T20:22:48.804971+00:00", "event": "sleep_started", "id": "D10", "seconds": 3}
+{"time": "2026-10-07T20:22:51.805450+00:00", "event": "sleep_completed", "id": "D10", "elapsed_seconds": 3.000113190995762}
+{"time": "2026-10-07T20:22:52.157349+00:00", "event": "assigned", "id": "D11"}
+{"time": "2026-10-07T20:32:19.464603+00:00", "event": "approved", "id": "D11", "reason": "本文101行・根拠6件・自己監査を全文確認。MapPointの生成/観測計数/代表記述子/平均方向/距離範囲/無効化置換、KF両側対応、局所生成、Pinhole投影を独立照合。参照と座標の型、nObs条件、中央下側距離、再正規化なし、座標系・任意尺度・画素残差例の区別が整合し合格。"}
+{"time": "2026-10-07T20:32:19.464710+00:00", "event": "sleep_started", "id": "D11", "seconds": 3}
+{"time": "2026-10-07T20:32:22.464961+00:00", "event": "sleep_completed", "id": "D11", "elapsed_seconds": 3.000073347997386}
+{"time": "2026-10-07T20:32:22.880148+00:00", "event": "assigned", "id": "D12"}
+{"time": "2026-10-07T20:37:59.692546+00:00", "event": "approved", "id": "D12", "reason": "本文102行・根拠6件・小監督監査を全文確認。LCの補正/融合/所属移動/Map ID変更、Tracking置換参照と前姿勢再構成、Atlas管理操作を独立照合。根拠4の通常集合除去とbad集合clear混同を指摘し、実workerの修正と本文反映を確認。点補正式/尺度例/出力差/非同期完了境界が整合し合格。"}
+{"time": "2026-10-07T20:37:59.692651+00:00", "event": "sleep_started", "id": "D12", "seconds": 3}
+{"time": "2026-10-07T20:38:02.693038+00:00", "event": "sleep_completed", "id": "D12", "elapsed_seconds": 3.0000889119983185}
+{"time": "2026-10-07T20:38:03.051727+00:00", "event": "assigned", "id": "D13"}
+{"time": "2026-10-07T20:54:28.596905+00:00", "event": "approved", "id": "D13", "reason": "本文107行・修正済み根拠6件・復旧記録付き自己監査を全文確認。4list、相対変換、追加/return/時刻copy、falseとActiveReset書換え、全Resetを独立照合。3入力の小地図LOST例は入力3/OK1/履歴1、else例は別仮定として整合。小監督pending_initを検知して同agentを復旧し、既存実worker根拠から再開した。合格。"}
+{"time": "2026-10-07T20:54:28.597009+00:00", "event": "sleep_started", "id": "D13", "seconds": 3}
+{"time": "2026-10-07T20:54:31.597428+00:00", "event": "sleep_completed", "id": "D13", "elapsed_seconds": 3.0000889119983185}
+{"time": "2026-10-07T20:54:31.950425+00:00", "event": "assigned", "id": "D14"}
+{"time": "2026-10-07T21:00:09.232824+00:00", "event": "rejected", "id": "D14", "reason": "Map0集合4点のうち2点が除外される例で、残る2点も時刻条件を満たすという前提がないまま出力2行と断定している。本文例に残る2点の採用条件を明記し、自己監査にも前提追加を記録する。追加調査は不要、他の根拠・式・仕様は独立照合済み。"}
+{"time": "2026-10-07T21:00:45.370348+00:00", "event": "approved", "id": "D14", "reason": "全文107行・実worker根拠6件・自己監査を確認し、独自関数1344–1392/wrapper/上流HEAD不在を独立照合。Map選択/最終finite/min式/世界座標/辞書順/書式/IO境界は整合。出力2行の例は差戻し後に残る2点のnull/badおよび時刻条件を追記し再読確認。合格。"}
+{"time": "2026-10-07T21:00:45.370420+00:00", "event": "sleep_started", "id": "D14", "seconds": 3}
+{"time": "2026-10-07T21:00:48.370874+00:00", "event": "sleep_completed", "id": "D14", "elapsed_seconds": 3.000106838007923}
+{"time": "2026-10-07T21:00:48.705241+00:00", "event": "assigned", "id": "D15"}
+{"time": "2026-10-07T21:06:19.300480+00:00", "event": "approved", "id": "D15", "reason": "本文118行・根拠6件・小監督監査を全文確認。独自出力1394–1463、KFのmTcp/GetParent、同梱Sophusのidentity、wrapper出力名を独立照合。9列/書式/無効値、validの条件順、親連鎖の方向と1+2+3=6・中心-6例、Map独立選択と履歴/IO/finiteの限定が整合し合格。"}
+{"time": "2026-10-07T21:06:19.300591+00:00", "event": "sleep_started", "id": "D15", "seconds": 3}
+{"time": "2026-10-07T21:06:22.301009+00:00", "event": "sleep_completed", "id": "D15", "elapsed_seconds": 3.000089292007033}
+{"time": "2026-10-07T21:06:22.686379+00:00", "event": "assigned", "id": "O01"}
+{"time": "2026-10-07T21:14:41.783921+00:00", "event": "approved", "id": "O01", "reason": "本文・根拠8件・自己監査を全文確認。viewer/RViz両スクリプト・入口・校正/pose読込・箱化/再投影/時刻処理/checkを独立照合し、公式OpenCV/ROS一次も確認。仮想と実カメラ、セル中心と最早実点、開始カメラ変換、時間対応/尺度/精度の限定が整合。開始基準を抽出結果の最初の有効行と文言明確化して合格。"}
+{"time": "2026-10-07T21:14:41.784026+00:00", "event": "sleep_started", "id": "O01", "seconds": 3}
+{"time": "2026-10-07T21:14:44.784337+00:00", "event": "sleep_completed", "id": "O01", "elapsed_seconds": 3.0000946969958022}
+{"time": "2026-10-07T21:14:45.133644+00:00", "event": "assigned", "id": "O02"}
+{"time": "2026-10-07T21:21:51.000603+00:00", "event": "approved", "id": "O02", "reason": "本文・根拠8件・小監督監査を全文確認。Android SDK依存/コールバック・転送形式・queue破棄・PC入口とremux・wrapper別段階を独立照合し、DJI/FFmpeg公式仕様も再確認。圧縮チャンクと画像、仮定FPSと撮像時計、キュー破棄とTCP、codec通知やMP4完成の限定を正しく区別。実測を装わず秘密実値なしとして合格。"}
+{"time": "2026-10-07T21:21:51.000703+00:00", "event": "sleep_started", "id": "O02", "seconds": 3}
+{"time": "2026-10-07T21:21:54.001152+00:00", "event": "sleep_completed", "id": "O02", "elapsed_seconds": 3.000107632004074}
+{"time": "2026-10-07T21:21:54.355223+00:00", "event": "assigned", "id": "O03"}
+{"time": "2026-10-07T21:27:52.209639+00:00", "event": "approved", "id": "O03", "reason": "本文・根拠8件・自己監査を全文確認。localization/cli/runtime/navigation/demo/bridge_cliとAndroidのLIVE値を独立照合、OpenCV公式PnP説明も確認。別NPZ生成、D15厳密時刻条件、正規化点、EPnP→LM、物理点重複の限定、任意尺度/外部校正・sigmaと合成巡回境界が整合。式のs/w座標区別と仮定例も妥当として合格。"}
+{"time": "2026-10-07T21:27:52.209731+00:00", "event": "sleep_started", "id": "O03", "seconds": 3}
+{"time": "2026-10-07T21:27:55.210040+00:00", "event": "sleep_completed", "id": "O03", "elapsed_seconds": 3.0000778210087446}
+{"time": "2026-10-07T21:27:55.560564+00:00", "event": "assigned", "id": "O04"}
+{"time": "2026-10-07T21:36:34.910870+00:00", "event": "approved", "id": "O04", "reason": "本文・根拠8件・自己監査を全文確認。extract_objects/verify_papers/render_review_videoの処理・出力を独立照合し、公式DA3/YOLO資料と取得済DA3 PDF3頁本文画像も確認。最多log幅、有限深度分母、縮小5%・dynamic未除外、近似逆投影/単位法線、固定カメラ上方向、public_frameと外部接続の限定が整合。6/10例の前提と相対単位が明確であり合格。"}
+{"time": "2026-10-07T21:36:34.910971+00:00", "event": "sleep_started", "id": "O04", "seconds": 3}
+{"time": "2026-10-07T21:36:37.911149+00:00", "event": "sleep_completed", "id": "O04", "elapsed_seconds": 3.0000614229938947}
+{"time": "2026-10-07T21:39:03.417913+00:00", "event": "final_audit_completed", "chapters": 45, "required_records": 225, "approvals_including_rework": 47, "actual_waits": 47, "minimum_wait_seconds": 3.0000614229938947, "local_links_checked": 118, "markdown_delimiter_issues": 0, "unresolved_review_items": 0, "outer_tracked_changes": 0, "nested_existing_added_lines": {"include/System.h": 10, "src/System.cc": 126}, "report": "002_final_audit.md"}
